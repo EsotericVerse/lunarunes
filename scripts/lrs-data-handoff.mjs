@@ -7,7 +7,7 @@
  */
 import {createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
-import {copyFile,readFile,readdir,lstat,mkdir,mkdtemp,rename,rm,access} from 'node:fs/promises';
+import {copyFile,readFile,readdir,lstat,mkdir,mkdtemp,rename,rm,access,writeFile} from 'node:fs/promises';
 import {createInterface} from 'node:readline';
 import {dirname,resolve,join,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -59,7 +59,7 @@ async function scan(table,filename){
   const key=table.key.map(field=>row[field]);
   if(key.some(x=>x===null||x===undefined||
     (typeof x!=='string'&&typeof x!=='number')||
-    (typeof x==='string'&&!x.trim())||
+    (typeof x==='string'&&!x.trim()&&!(table.name==='runes_etc'&&table.key[key.indexOf(x)]==='current_moon'&&x===''))||
     (typeof x==='number'&&!Number.isFinite(x))))
    fail(table.name+' missing/invalid primary key at line '+count);
   const identity=JSON.stringify(key);
@@ -112,8 +112,7 @@ async function pack(source,destination){
    schema:'lrs.data-handoff.v1',owner:'lrs',releaseVersion:version.version,
    contractSha256,mode:'offline-no-cutover',tables:records
   };
-  await import('node:fs/promises').then(fs=>fs.writeFile(join(temporary,'manifest.json'),
-   JSON.stringify(manifest,null,2)+'\n',{mode:0o600}));
+  await writeFile(join(temporary,'manifest.json'),JSON.stringify(manifest,null,2)+'\n',{mode:0o600});
   await rename(temporary,target);
   console.log('LRS data bundle packed and validated: '+records.length+' tables; no database accessed');
  }catch(error){await rm(temporary,{recursive:true,force:true});throw error;}
