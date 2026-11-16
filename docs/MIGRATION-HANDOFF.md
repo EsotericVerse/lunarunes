@@ -44,3 +44,39 @@ Scope: **LunaRunes only**. Another agent owns **LunArcus** (Auth/SSO/MCP Gateway
 - Do not treat a successful Preview build as complete validation; user keeps previews disabled.
 - No mass rollback or unrelated refactor of LOC directories, routing, RLS, SQL Portable, or other concurrent agents' work.
 - Use standalone `lunarunes` branches and reviewed PRs; do not merge incomplete Rune build into its `main`.
+
+
+## 2026-11-16 continuation — lrune module and independent build
+
+The original verified snapshot described above remains immutable as the migration
+baseline. The follow-on work is at `work/rune-artifact-contract`, PR #1
+(base: `migration/independent-deploy`), **not on Rune main or LOC main**.
+
+- Module identifiers: `lrune` = LunaRunes, `las` = LunArcus, `loc` =
+  LunaCodex. They do not rename the repositories or LOC's canonical `lrunes`
+  Scope route. Only `lrune` is implemented in this repository.
+- `modules/lrune/` now owns pure board-game and reading engines,
+  the Effekseer / Three.js VFX implementation, and Rune CSS. The old
+  `app/lrunes/**` paths retain small compatibility re-exports/imports.
+- `web/` is the **independent Vite 8 / React 19 Web build** with lazy Rune
+  game and 3D demo routes; `npm run build:web` produces `dist/web-app/`.
+  This build does not bundle original card images, WASM, or VFX resources.
+- `contracts/rune-original-art.json` pins 67 cards, nine group illustrations,
+  Rune card-back art and Effekseer license attribution; Web and iOS real-file
+  asset artifact outputs use distinct `dist/web/` and `dist/ios/` directories.
+  `npm run art:verify` and both art-only deliveries passed GitHub CI.
+- Independent Web compilation + game-engine smoke test passed GitHub CI.
+  Art/Effekseer **runtime playback**, HTTP asset MIME/CORS, a real browser,
+  full drawing/data/Scope parity, iOS IPA consumption, and Cloudflare live
+  deployment **are not yet verified**.
+- `app/lrunes` remains partially coupled to LOC for Silver table reads,
+  daily log, Scope home block editing, navigation and charts. Do not remove
+  LOC preparation, do not switch production routes, and do not merge this
+  work to `main` until all functional acceptance checks are satisfied.
+- LunArcus Auth/SSO/MCP/IPA integration remains exclusively owned by its
+  separate Agent. The `lrune` module provides file artifacts; it does not
+  create another IPA pipeline.
+
+Latest verified CI:
+- Web engine/build: https://github.com/EsotericVerse/lunarunes/actions/runs/43803453445
+- Original art: https://github.com/EsotericVerse/lunarunes/actions/runs/43803453521
