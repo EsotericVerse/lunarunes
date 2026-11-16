@@ -33,3 +33,10 @@ test('Wrangler native SPA and Worker preview config remain intact',async()=>{
   assert.equal(cfg.assets.not_found_handling,'single-page-application');
   assert.deepEqual(cfg.previews,{});
 });
+
+test('the current LRS product release baseline is owner-designated 1.0R, not an npm publication',async()=>{
+  const version=JSON.parse(await readFile('release/version.json','utf8'));
+  assert.equal(version.schema,'lunarunes.release-version.v1');
+  assert.equal(version.version,'1.0R');
+  assert.equal(version.status,'initial-release');
+});
