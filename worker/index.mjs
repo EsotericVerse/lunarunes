@@ -6,7 +6,7 @@ import {handlePublicRuneRead} from './public-rune-read.mjs';
 export default {
   async fetch(request,env){
     if(new URL(request.url).pathname==='/api/lrs/public-read')
-      return handlePublicRuneRead(request);
+      return handlePublicRuneRead(request,env);
     return env.ASSETS.fetch(request);
   }
 };
