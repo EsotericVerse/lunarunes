@@ -3,7 +3,7 @@
 import {useEffect,useState} from 'react';
 import dynamic from 'next/dynamic';
 import {prepareTransientResourceAction} from '../../packages/zenstack/client-queries';
-import './rune-presentation-switch.css';
+import '../../modules/lrs/rune/styles/rune-presentation-switch.css';
 
 // Keep the canonical 2D original-art module entirely independent of the
 // licensed Effekseer/Three.js renderer. Load only the selected presentation.

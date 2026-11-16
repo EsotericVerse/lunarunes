@@ -1,9 +1,9 @@
 'use client';
 import {useState} from 'react';
 import dynamic from 'next/dynamic';
-import {runeGlyphProfile} from './effekseer/rune-glyph-library.mjs';
+import {runeGlyphProfile} from '../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
 
-const RuneExtrudedGlyph=dynamic(()=>import('./effekseer/RuneExtrudedGlyph'),{ssr:false,loading:()=>null});
+const RuneExtrudedGlyph=dynamic(()=>import('../../modules/lrs/rune/vfx/RuneExtrudedGlyph'),{ssr:false,loading:()=>null});
 
 export function RuneImage({src,alt,className,card,fallbackText,glyphFirst=false,...imgProps}){
   const [imageFailed,setImageFailed]=useState(false);

@@ -31,7 +31,8 @@
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
     "build:lrs:assets:status": "node scripts/prepare-lrs-release-assets.mjs --check",
     "build:lrs:assets:force": "node scripts/prepare-lrs-release-assets.mjs --force",
-    "build:lrs:app": "npm run build:web"
+    "build:lrs:app": "npm run build:web",
+    "check:lrs:ownership": "node scripts/check-lrs-source-ownership.mjs && node --test tests/lrs-single-source.test.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",

@@ -10,7 +10,7 @@
 import {mkdir,rename,rm,writeFile} from 'node:fs/promises';
 import {dirname,resolve,sep} from 'node:path';
 import sharp from 'sharp';
-import {SOFT_MATTE_NAMES} from '../app/lrunes/effekseer/soft-matte-textures.mjs';
+import {SOFT_MATTE_NAMES} from '../modules/lrs/rune/vfx/soft-matte-textures.mjs';
 
 const SRC_DIR=resolve('public/vendor/effekseer/Collections/MAGICALxSPIRAL/Texture');
 const REPORT=resolve('public/vendor/effekseer/soft-matte-report.json');

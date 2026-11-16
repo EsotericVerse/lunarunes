@@ -10,7 +10,7 @@ import {
   Tooltip,XAxis,YAxis
 } from 'recharts';
 import {selectDailyRuneRange,selectFirstDailyRuneDate} from '../loc/runes/daily-runes';
-import {realMoonPhase} from '../loc/model/moon-phase';
+import {realMoonPhase} from '../../modules/lrs/daily/real-moon-phase.mjs';
 import CultureTimeline from '../modular/modules/culture-timeline/CultureTimeline';
 import {availableStatisticChartTypes} from '../modular/modules/statistics/statistics-time-zoom.mjs';
 const StatisticsMultiChart=dynamic(()=>import('../modular/modules/statistics/StatisticsMultiChart'),{loading:()=>null});

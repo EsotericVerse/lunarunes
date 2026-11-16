@@ -1,3 +1,4 @@
+// Rune lunar reading; local calendar only. No LOC time or SQL dependency.
 // The lunar reading uses the Taipei Chinese-calendar day, not the card's
 // intrinsic moon_phase. iOS/WebKit can return Chinese day names instead of
 // ASCII digits, even for a numeric DateTimeFormat request.

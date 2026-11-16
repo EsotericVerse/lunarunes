@@ -9,9 +9,9 @@ import {selectRows} from '../../loc/db/db-query.mjs';
 import {navigationHref} from '../../modular/routing/scope-registry.js';
 import useNativeNavigation from '../../modular/use-native-navigation';
 import ScopeLink from '../../modular/ScopeLink';
-import {runeImage,groupImage} from '../rune-directory.mjs';
-import '../skin-lab.css';
-import '../visual/rune-art-layout.css';
+import {runeImage,groupImage} from '../../../modules/lrs/rune/rune-directory.mjs';
+import '../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../modules/lrs/rune/art/rune-art-layout.css';
 import {lRunes66ColumnString} from '../../../packages/zenstack/lrunes-read-model.mjs';
 
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';

@@ -3,19 +3,19 @@
 import {useEffect,useRef,useState} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
 import {createPortal} from 'react-dom';
-import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from './effekseer/EffekseerStage';
+import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from '../../modules/lrs/rune/vfx/EffekseerStage';
 import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
 import {selectRows} from '../loc/db/db-query.mjs';
-import {realMoonPhase} from '../loc/model/moon-phase';
+import {realMoonPhase} from '../../modules/lrs/daily/real-moon-phase.mjs';
 import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs';
-import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from './rune-directory.mjs';
-import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from './rune-draw-motion.mjs';
+import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from '../../modules/lrs/rune/rune-directory.mjs';
+import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from '../../modules/lrs/card/rune-draw-motion.mjs';
 import RuneCardInfo from './RuneCardInfo';
 import {lRunes66ColumnString} from '../../packages/zenstack/lrunes-read-model.mjs';
-import './skin-lab.css';
-import './effekseer/effekseer-stage.css';
+import '../../modules/lrs/rune/styles/skin-lab.css';
+import '../../modules/lrs/rune/vfx/effekseer-stage.css';
 
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
 const DAILY_FIELDS=[['sit_q','狀況形容'],['sit_a','狀況表達'],['daily_r','每日占卜提醒'],['daily_g','每日占卜引導'],['daily_b','每日占卜祝福']];

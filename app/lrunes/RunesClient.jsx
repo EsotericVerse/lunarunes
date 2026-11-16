@@ -4,7 +4,7 @@ import {usePassiveSessionAccount} from '../loc/auth/use-account';
 import ScopeLink from '../modular/ScopeLink';
 import RuneIntroSection from './RuneIntroSection';
 import RuneCardEntryBubbles from './RuneCardEntryBubbles';
-import {HomeBlock} from '../loc/blocks/home-block-model';
+import {HomeBlock} from '../../modules/lrs/rune/hero/home-presentation.mjs';
 import {resolveHomeImage,RunesHomeBlockDisplay,locHomeBlockClass,homeBlockMediaStyle} from '../loc/blocks/LocHomeBlockDisplay';
 import ScopeEditableBlocks from '../loc/blocks/ScopeEditableBlocks';
 
