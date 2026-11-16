@@ -38,6 +38,14 @@
 - **LRS Web 素材由 LRS 獨立部署**；其他 Web 使用者以資產 URL 引用，iOS 是實體檔案交付，不混同。LRS `main` 合併後自動部署**唯一既有** `lunarunes` Production Worker；不部署 dev／Preview，不因日常 LRS 更新觸發 LOC。緊急及由作者裁定的大版本，才走既有 LOC 特殊通道與限時授權，禁止自行 Grant／Renew。不得擅改正式 Trigger。
 - 不因跨模組的需求就在其他 Repo 建相似實作；介面有問題，查來源與當前契約，不能自行代另一邊決策。
 
+## 唯一程式來源與歸屬（防止再次重疊）
+
+- **符文原畫、Hero 呈現、Effekseer／3D**：`modules/lrs/rune/`，其中 `hero/`、`vfx/`、`art/` 各自維護原始實作；不要復活 `modules/lrune/` 或 `app/lrunes/effekseer/` 中介副本。
+- **抽牌／牌陣與閱讀**：`modules/lrs/card/`；**桌遊引擎**：`modules/lrs/boardgame/`。
+- **每日月相、記錄格位與裝置本機紀錄**：`modules/lrs/daily/`；`app/lrunes/` 和 `app/daily/` 只保留需在頁面／原生流程執行的 UI 與整合入口，不再建立業務程式副本。
+- 不把別個專案的 `app/loc/` 業務模型複製進 LRS。缺少外部授權／私有資料介面時要保持不可用，不能自行 Grant 或開放私有資料。
+- 修改 LRS 畫面、符文功能或建置路徑時，執行 `npm run check:lrs:ownership`；這是 LRS 原始碼去重檢查，**不是 SQL Dialect 測試**。
+
 ## Skills 聚焦設計圖與玩家行為
 
 - **禁止將 Superpowers 當 LRS 流程、禁止安裝或註冊 superpowers 技能。** 優先 `game-ui-ux`、`art-direction`、`game-feel`；依場景選 `card-experience`、`game-rules`、`life-simulation`、`3d-rendering`、`effekseer-vfx`、`motion-direction`、`performance`、`playtesting` 等。這些是遊戲專業，不是網站技能換名字。
