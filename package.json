@@ -15,7 +15,7 @@
     "build:web": "vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
     "check:lrune:core": "npm run check:lrs:modules",
-    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs",
+    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs tests/lrs-asset-url.test.mjs",
     "check:lrs:package": "node scripts/check-lrs-package.mjs",
     "check:lrs:consumer": "node --test tests/lrs-consumer.test.mjs",
     "build:cloudflare": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
