@@ -10,6 +10,7 @@ on:
       - 'web/**'
       - 'worker/**'
       - 'tests/lrs-original-pages.test.mjs'
+      - 'tests/lrs-life-engine.test.mjs'
       - 'scripts/build-lrs-modules.mjs'
       - 'scripts/prepare-lrs-release-assets.mjs'
       - 'tests/lrune-core.test.mjs'
@@ -45,6 +46,8 @@ jobs:
         run: npm run check:lrune:core
       - name: Verify importable module subpaths (rune/card/boardgame)
         run: npm run check:lrs:consumer
+      - name: Check independent tabletop and Rune-life simulation engines
+        run: node --test tests/lrs-life-engine.test.mjs
       - name: Verify portable lrs package excludes art binaries and build files
         run: npm run check:lrs:package
       - name: Verify read-only original-page transport and real upstream response contract
