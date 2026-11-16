@@ -32,3 +32,18 @@ Three domains of responsibility are independent: `lo3r@loc` LunaCodex, `lo3r@lrs
 
 ## Definition of done
 LRS standalone Worker serves **the same LOC Rune pages minus top NAV and bottom Footer**, with original live Hero, real rune draw, daily, 2D/3D and boardgame. Shared LOC dependencies are imported through honest reusable boundaries, no duplicate SQL adapter/service. LOC build can later stop bundling/processing Rune art/effects only after verified LRS live URLs. At handoff, **source copies are complete for the explicitly listed 20 files, but the independent Web route rewire is not complete.**
+
+## 2026-11-16 — LRS_DATABASE_URL direct-connection decision (supersedes older LOC HTTP proxy notes)
+The owner explicitly selected **`LRS_DATABASE_URL`** as LRS's own database connection. The existing table definitions, columns, keyword semantics, Z-Model and LOC workflows must not be moved, rewritten or deleted. The original LOC keyword/language-analysis capability remains LOC's responsibility. The LRS pages and Worker build independently.
+
+Implemented in this branch:
+- `worker/index.mjs` passes Cloudflare Worker environment into the same existing `/api/lrs/public-read` API route; static art and effects remain served by the same existing LRS Worker.
+- `worker/public-rune-read.mjs` validates a **read-only allowlist** of the four existing `silver` relations, approved columns, operators, limits, ordering, and the `lrunes_blocks.page_name='hero'` restriction. It does not accept credentials, SQL, or database/table override from the browser.
+- `worker/lrs-database.mjs` reads **only `env.LRS_DATABASE_URL`** using request-scoped `pg` + `Kysely`, issues parameterized SELECT, and closes the client. **No HTTP call to LOC Web is made**, and there is no fallback to LOC when the connection is unavailable.
+- `LRS_DATABASE_URL` is a **Cloudflare Worker Secret**, not a build-time Vite environment variable, GitHub secret committed to a repo, or a browser API response. Configure its actual value on the **existing** `lunarunes` Worker; do not print it, hardcode it or ask for it in chat. It must point to a PostgreSQL database role with read-only access to the specific existing Rune tables. **Setting the secret is an external configuration task; source-code changes do not create it.**
+- LOC and LAS repositories, LOC Routing Table, existing tables, schema and production deployments remain unchanged. PR #2 stays a draft until the user chooses the independent Rune production cutover.
+- `modules/lrs/{rune,boardgame,card,daily}` have standalone code-only build scripts. Original art/Effekseer are produced once and reused when immutable inputs match; Web-only builds do not rebuild those assets.
+- `lrs:boardgame` now exports two independent pure engines: the original local tabletop (`createLunaRunesGame`) and the monthly simulation life core (`createRuneLifeEngine`). The simulation currently encodes eight domains, eight cards per month, five chosen and three unused; it does **not** claim that resource economy or story generation is implemented.
+- CI checks the actual PostgreSQL SELECT compilation, Secret isolation, allowed tables and bounded queries, no fictitious data fallback, original Web compilation and Worker dry-run. CI success does **not** establish that a production Secret has been set or that live database connectivity works.
+
+**Operational boundary:** LRS Web may read its Rune data from the existing tables through its own configured database URL. This is a separate runtime connection but does **not** require moving data or tables. LOC's language and keyword services remain intact; any cross-system data mapping that is required later is LAS's separate responsibility.
