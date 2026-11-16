@@ -1,0 +1,50 @@
+name: Verify independent Rune asset artifacts
+on:
+  pull_request:
+    branches:
+      - migration/independent-deploy
+    paths:
+      - 'assets/**'
+      - 'contracts/rune-original-art.json'
+      - 'scripts/build-rune-artifacts.mjs'
+      - 'package.json'
+      - '.github/workflows/verify-rune-artifacts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-art:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check exact source-art blob identities
+        run: npm run art:verify
+      - name: Produce independent Web and real-file iOS art deliveries
+        run: |
+          npm run artifacts:web:art
+          npm run artifacts:ios:art
+      - name: Check published paths and content equality without deployment
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFile} from 'node:fs/promises';
+          for(const target of ['web','ios']){
+            const root='dist/'+target+'/';
+            const pack=JSON.parse(await readFile(root+'rune-artifacts.json','utf8'));
+            assert.equal(pack.schema,'lunarunes.artifacts.v1');
+            assert.equal(pack.target,target);
+            assert.equal(pack.includesEffects,false);
+            assert.equal(pack.files.length,78);
+            for(let n=0;n<=66;n++){
+              const name='assets/lunarunes/cards/'+String(n).padStart(2,'0')+'.png';
+              assert(pack.files.some(item=>item.path===name));
+              assert((await readFile(root+name)).length>0);
+            }
+            assert((await readFile(root+'assets/site/icons/lrunes-favicon.png')).length>0);
+            assert((await readFile(root+'vendor/effekseer/NOTICE.txt')).length>0);
+          }
+          NODE
