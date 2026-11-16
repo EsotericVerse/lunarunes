@@ -57,9 +57,9 @@ async function scan(table,filename){
   if(!row||typeof row!=='object'||Array.isArray(row))
    fail(table.name+' row '+count+' must be a JSON object');
   const key=table.key.map(field=>row[field]);
-  if(key.some(x=>x===null||x===undefined||
+  if(key.some((x,index)=>x===null||x===undefined||
     (typeof x!=='string'&&typeof x!=='number')||
-    (typeof x==='string'&&!x.trim()&&!(table.name==='runes_etc'&&table.key[key.indexOf(x)]==='current_moon'&&x===''))||
+    (typeof x==='string'&&!x.trim()&&!(table.name==='runes_etc'&&table.key[index]==='current_moon'&&x===''))||
     (typeof x==='number'&&!Number.isFinite(x))))
    fail(table.name+' missing/invalid primary key at line '+count);
   const identity=JSON.stringify(key);
