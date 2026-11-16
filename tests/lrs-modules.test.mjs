@@ -21,8 +21,8 @@ test('lrs:boardgame operates without SQL, LOC or LunArcus',()=>{
   }
   assert.equal(G.stage,'event');
 });
-test('lrs:card requires loc:dialect explicit read port and projections',()=>{
-  assert.throws(()=>card.createCardModule(),/loc:dialect/);
+test('lrs:card requires an explicit LRS data read port and projections',()=>{
+  assert.throws(()=>card.createCardModule(),/lrs:card requires explicit LRS/);
   assert.throws(()=>card.createCardModule({readRows:async()=>{},projectColumns:()=>'*'}),/explicit/);
 });
 test('lrs:card preserves multi-card sit_q, pinned source and direction',async()=>{
@@ -64,10 +64,10 @@ test('lrs:card preserves single-card static and moon-conditioned data reads',asy
   await assert.rejects(()=>runtime.loadDrawCards([{runeNumber:1,dir:1}],{moonTypes:['sit_q'],currentMoon:'未知'}),/月相/);
 });
 
-test('lrs:daily requires explicit host SQL and lunar time ports',async()=>{
+test('lrs:daily requires explicit LRS data and lunar time ports',async()=>{
   assert.equal(LRS_MODULE.identity,'lo3r@lrs');
-  assert.throws(()=>daily.createDailyModule(),/loc:dialect/);
-  assert.throws(()=>daily.createDailyModule({readDailyMonth:async()=>[],readDailyRange:async()=>[]}),/loc:time/);
+  assert.throws(()=>daily.createDailyModule(),/explicit LRS readDailyMonth/);
+  assert.throws(()=>daily.createDailyModule({readDailyMonth:async()=>[],readDailyRange:async()=>[]}),/phaseAtDate/);
   const calls=[];
   const runtime=daily.createDailyModule({
     readDailyMonth:async query=>{calls.push(['month',query]);return [{record_date:'2026-11-01'}];},
