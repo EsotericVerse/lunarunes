@@ -10,6 +10,7 @@ on:
       - 'web/**'
       - 'worker/**'
       - 'tests/lrs-original-pages.test.mjs'
+      - 'tests/lrs-web-routes.test.mjs'
       - 'tests/lrs-life-engine.test.mjs'
       - 'scripts/build-lrs-modules.mjs'
       - 'scripts/prepare-lrs-release-assets.mjs'
@@ -50,6 +51,8 @@ jobs:
         run: node --test tests/lrs-life-engine.test.mjs
       - name: Verify portable lrs package excludes art binaries and build files
         run: npm run check:lrs:package
+      - name: Verify original LRS Web routes and native LOC card hub entry
+        run: node --test tests/lrs-web-routes.test.mjs
       - name: Verify read-only original-page transport and real upstream response contract
         run: node --test tests/lrs-original-pages.test.mjs
       - name: Assert module artifacts are separate from Web and iOS release
