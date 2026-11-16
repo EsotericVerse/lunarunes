@@ -2,7 +2,7 @@ name: Verify independent Rune asset artifacts
 on:
   pull_request:
     branches:
-      - migration/independent-deploy
+      - main
     paths:
       - 'assets/**'
       - 'contracts/rune-original-art.json'
