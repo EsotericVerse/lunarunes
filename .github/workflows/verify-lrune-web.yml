@@ -2,7 +2,7 @@ name: Verify standalone lrune Web and engine
 on:
   pull_request:
     branches:
-      - migration/independent-deploy
+      - main
     paths:
       - 'app/lrunes/**'
       - 'modules/lrune/**'
