@@ -52,3 +52,29 @@ npm run deploy:cloudflare:dry-run
 ```
 
 The real `npm run deploy:cloudflare` command must only execute after those checks pass and the independent Worker release is approved. Real iOS files still go through LunArcus' existing IPA packaging flow; no web URL substitute or new IPA workflow.
+
+## First complete independent release validation (GitHub CI, 2026-11-16)
+
+Full **build-and-dry-run** verification passed at commit `5a38ae850b2ff4c470099de156180634457bd35e`:
+
+- [Full Worker release GitHub Action](https://github.com/EsotericVerse/lunarunes/actions/runs/43810484805): **success**, including actual pinned effects, source images, static assets and Wrangler deploy dry-run.
+- 458 released payload assets, 35,104,097 bytes total, verified SHA-256 against the assembled artifact manifest; 67 cards, 67 semantic icons, 85 `.efkefc` authored effects.
+- 2048×2048 alpha fog checked against its pinned SHA-256; 187 pinned base Effekseer assets verified.
+- `wrangler 4.162.0` read the Worker assets and exited successfully with `--dry-run`. **No Cloudflare release occurred**.
+- [Web and module checks](https://github.com/EsotericVerse/lunarunes/actions/runs/43810484723) also passed.
+
+The **Cloudflare connection already has the GitHub repository and the dedicated lunarunes build token**, confirmed by querying using the Worker's internal `tag`. The present connected Cloudflare API integration returns **HTTP 403 with missing `workers-ci.write`** when it tries to PATCH *build settings*, not because the owner lacks a build token or failed to connect GitHub. No further credential creation is required. The same Worker still has `main` selected, blank build command and `auto_build_enabled:false`.
+
+To configure the existing Worker using the account's own dashboard permissions (without changing any token), set **Settings > Builds**:
+
+| Value | Correct configuration |
+| --- | --- |
+| GitHub | `EsotericVerse/lunarunes` — already connected |
+| Branch for staging | `work/rune-artifact-contract` |
+| Build command | `npm run build:cloudflare` |
+| Deploy command | `npm run deploy:cloudflare` |
+| Root | `/` |
+| Existing dedicated build token | Retain, do not rotate |
+| Auto-build | Keep disabled until live deployment is explicitly approved |
+
+Cloudflare Worker `lunarunes` must later have an approved public endpoint to smoke test in a browser. Do **not** remove LOC's legacy effect preparation or switch its asset URLs before that endpoint and the functional cutover have passed.
