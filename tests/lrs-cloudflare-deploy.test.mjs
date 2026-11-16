@@ -4,10 +4,10 @@ import {readFile} from 'node:fs/promises';
 import {deploymentMode,deploymentArgs} from '../scripts/deploy-rune-cloudflare.mjs';
 
 const sha='a'.repeat(40);
-test('LRS main merges do not deploy regardless of approval flags',()=>{
+test('LRS main merge deploys LRS itself, independently of LOC',()=>{
   const env={WORKERS_CI:'1',WORKERS_CI_BRANCH:'main',LRS_RELEASE_APPROVED:'1',LRS_RELEASE_SHA:sha};
-  assert.equal(deploymentMode(env),'skip');
-  assert.deepEqual(deploymentArgs(env),[]);
+  assert.equal(deploymentMode(env),'automatic');
+  assert.deepEqual(deploymentArgs(env),['deploy']);
 });
 test('LRS feature branch Workers Builds only creates an isolated preview',()=>{
   assert.equal(deploymentMode({WORKERS_CI:'1',WORKERS_CI_BRANCH:'work/rune-art'}),'preview');
