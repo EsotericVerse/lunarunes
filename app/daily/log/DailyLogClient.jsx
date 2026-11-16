@@ -18,7 +18,7 @@ import {
   updateDailyRuneRecord
 } from '../../loc/runes/daily-runes';
 import {selectRows} from '../../loc/db/db-query.mjs';
-import {lRunes66ColumnString} from '../../../packages/zenstack/lrunes-read-model.mjs';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import {useAccount} from '../../loc/auth/use-account';
 import {useResourceCache} from '../../../packages/zenstack/client-queries';
 import {listLocalDailyRunes,importLocalDailyTransfer,updateLocalDailyRune,deleteLocalDailyRune} from '../../../modules/lrs/daily/local-records.mjs';

@@ -12,7 +12,7 @@ import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../modules/l
 import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
-import {lRunes66ColumnString} from '../../packages/zenstack/lrunes-read-model.mjs';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import '../../modules/lrs/rune/styles/skin-lab.css';
 import '../../modules/lrs/rune/art/rune-art-layout.css';
 import '../../modules/lrs/rune/vfx/effekseer-stage.css';

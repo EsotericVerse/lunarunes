@@ -20,7 +20,6 @@ const runeAliases=[
   {find:/^(?:\.\.\/)+loc\/blocks\/LocHomeBlockDisplay(?:\.jsx)?$/,replacement:home},
   {find:/^(?:\.\.\/)+loc\/blocks\/ScopeEditableBlocks(?:\.jsx)?$/,replacement:home},
   {find:/^(?:\.\.\/)+loc\/db\/db-query\.mjs$/,replacement:read},
-  {find:/^(?:\.\.\/)+packages\/zenstack\/lrunes-read-model\.mjs$/,replacement:read},
   {find:/^(?:\.\.\/)+packages\/zenstack\/client-queries(?:\.mjs|\.js)?$/,replacement:queries},
   {find:'next/dynamic',replacement:local('./src/runtime/next-dynamic.jsx')}
 ];

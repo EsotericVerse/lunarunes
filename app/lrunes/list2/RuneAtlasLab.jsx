@@ -12,7 +12,7 @@ import ScopeLink from '../../modular/ScopeLink';
 import {runeImage,groupImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import '../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../modules/lrs/rune/art/rune-art-layout.css';
-import {lRunes66ColumnString} from '../../../packages/zenstack/lrunes-read-model.mjs';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
 const DETAIL_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords','extra_rules','extra_notes','rune_evolution_history','myth_story','soul_question','practice_challenge','ritual_advice','harmony_advice');

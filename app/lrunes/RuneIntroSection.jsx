@@ -4,7 +4,7 @@ import {useAsyncResource} from '../../packages/zenstack/client-queries';
 import {selectRows} from '../loc/db/db-query.mjs';
 import {runeImage} from '../../modules/lrs/rune/rune-directory.mjs';
 import RuneCardInfo from './RuneCardInfo';
-import {lRunes66ColumnString} from '../../packages/zenstack/lrunes-read-model.mjs';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 
 export default function RuneIntroSection(){
   const sample=useAsyncResource(['lunarunes-intro-rune',66],async()=>{
