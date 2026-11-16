@@ -10,6 +10,8 @@ on:
       - 'web/**'
       - 'worker/**'
       - 'tests/lrs-original-pages.test.mjs'
+      - 'scripts/build-lrs-modules.mjs'
+      - 'scripts/prepare-lrs-release-assets.mjs'
       - 'tests/lrune-core.test.mjs'
       - 'package.json'
       - 'cloudflare.config.ts'
@@ -35,6 +37,8 @@ jobs:
           name: lrune-package-lock
           path: package-lock.json
           if-no-files-found: error
+      - name: Build all four independent LRS ESM modules (no Vite, Worker or effects)
+        run: npm run build:lrs:modules
       - name: Verify all lrs modules, loc:dialect port and real local board-game rules
         run: npm run check:lrs:modules
       - name: Regression-check legacy module test
@@ -45,6 +49,13 @@ jobs:
         run: npm run check:lrs:package
       - name: Verify read-only original-page transport and real upstream response contract
         run: node --test tests/lrs-original-pages.test.mjs
+      - name: Assert module artifacts are separate from Web and iOS release
+        run: |
+          test -s dist/modules/rune.json
+          test -s dist/modules/boardgame.json
+          test -s dist/modules/card.json
+          test -s dist/modules/daily.json
+          test ! -e dist/cloudflare/index.html
       - name: Build standalone Rune Web (LOC and LunArcus are not required)
         run: npm run build:web
       - name: Verify independent build has no bundled original art/WASM
