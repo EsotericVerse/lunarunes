@@ -75,5 +75,9 @@
     "three": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "kysely": "0.29.8",
+    "pg": "8.23.1"
   }
 }
