@@ -68,3 +68,5 @@ The future Rune-life simulation and election-strategy games remain planned; they
 [Engineering handoff](docs/MIGRATION-HANDOFF.md) · [Asset integrity/hand-off contract](docs/ARTIFACT-CONTRACT.md)
 
 The canonical three-way architecture and precise IDs `lo3r@loc`, `lo3r@lrs`, `lo3r@las` are documented in [Luna Module Architecture](docs/LUNA-MODULE-ARCHITECTURE.md).
+
+For the existing Cloudflare Worker `lunarunes`, the independent release commands are `npm run build:cloudflare`, `npm run check:cloudflare:release`, and `npm run deploy:cloudflare:dry-run` before enabling a real release. See [Cloudflare deploy](docs/CLOUDFLARE-DEPLOY.md).

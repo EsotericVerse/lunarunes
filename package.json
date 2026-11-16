@@ -19,7 +19,9 @@
     "check:lrs:package": "node scripts/check-lrs-package.mjs",
     "check:lrs:consumer": "node --test tests/lrs-consumer.test.mjs",
     "build:cloudflare": "npm run effects:prepare && npm run artifacts:web && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
-    "deploy:cloudflare": "cf deploy dist/cloudflare"
+    "deploy:cloudflare": "wrangler deploy",
+    "check:cloudflare:release": "node scripts/check-rune-cloudflare-release.mjs",
+    "deploy:cloudflare:dry-run": "wrangler deploy --dry-run --outdir dist/worker-dry-run"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
@@ -29,7 +31,7 @@
     "react-dom": "19.3.1",
     "motion": "13.4.4",
     "three": "0.187.0",
-    "cf": "^1.0.0-beta.31"
+    "wrangler": "^4.148.0"
   },
   "exports": {
     ".": "./modules/lrs/index.mjs",

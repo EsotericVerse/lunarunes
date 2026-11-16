@@ -6,7 +6,7 @@
  * the Web application build, then combined only in this release artifact.
  */
 import {createHash} from 'node:crypto';
-import {cp,mkdir,readFile,readdir,rm,rename,stat} from 'node:fs/promises';
+import {cp,mkdir,readFile,readdir,rm,rename,stat,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -68,6 +68,7 @@ try{
   const output={schema:'lunarunes.cloudflare-release.v1',
     sourceCommit:manifest.sourceCommit,includesEffects:true,
     files:releaseEntries};
+  await writeFile(path.join(stage,'rune-release.json'),JSON.stringify(output,null,2)+'\n');
   await rm(dest,{recursive:true,force:true});
   await rename(stage,dest);
   console.log('LunaRunes Worker static asset release: '+releaseEntries.length+
