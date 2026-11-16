@@ -1,7 +1,8 @@
-// This is the existing LunaRunes Worker's *public-read* edge, not another
-// SQL adapter, database connection, Auth service, or Scope Routing Table.
-// LOC's existing Kysely+ZenStack+Zod endpoint remains the authoritative read.
+// LRS owns its standalone public Rune read endpoint; LOC keyword analysis,
+// Z-Model Galaxy/Anchor and existing tables are NOT moved or modified.
+// This validates the narrow loc:dialect read port before direct LRS DB access.
 import {LRS_CARD_RUNE66_FIELDS} from '../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import {readLrsPublicRows} from './lrs-database.mjs';
 
 const TABLE_FIELDS=Object.freeze({
   'silver.runes':new Set(Object.keys(LRS_CARD_RUNE66_FIELDS)),
@@ -19,7 +20,6 @@ const FILTER_FIELDS=Object.freeze({
   'silver.lrunes_blocks':new Set(['page_name'])
 });
 const LIMITS=Object.freeze({'silver.runes':67,'silver.runes_etc':20,'silver.runes_group':9,'silver.lrunes_blocks':8});
-const UPSTREAM='https://loc.lo3rwang.cc/api/loc-public-query';
 const HEADERS={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'};
 const response=(data,status)=>new Response(JSON.stringify(data),{status,headers:HEADERS});
 function invalid(){return response({error:'Invalid LRS public Rune query'},400);}
@@ -41,7 +41,7 @@ export function publicRuneQuery(body){
       Object.keys(item).some(k=>!['column','operator','value'].includes(k))||
       !FILTER_FIELDS[table].has(item.column)||!['eq','in'].includes(item.operator))return null;
     if(item.operator==='in'){
-      if(!Array.isArray(item.value)||item.value.length>67||
+      if(!Array.isArray(item.value)||item.value.length<1||item.value.length>67||
         item.value.some(v=>typeof v!=='string'&&typeof v!=='number'))return null;
     }else if(typeof item.value!=='string'&&typeof item.value!=='number')return null;
     if(typeof item.value==='string'&&item.value.length>70)return null;
@@ -65,27 +65,26 @@ export function publicRuneQuery(body){
     head:false,count:null,cardinality:null
   };
 }
-export async function handlePublicRuneRead(request,fetchImpl=fetch){
+export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublicRows){
   if(request.method!=='POST')return response({error:'Method not allowed'},405);
   if(Number(request.headers.get('content-length')||0)>12000)return invalid();
   let body;
   try{body=await request.json();}catch{return invalid();}
   const query=publicRuneQuery(body);
   if(!query)return invalid();
+
+  // This is a server-side Cloudflare Worker Secret. The browser never sees
+  // LRS_DATABASE_URL; the API never accepts a database identifier or URL.
+  const connection=env?.LRS_DATABASE_URL;
+  if(typeof connection!=='string'||!connection.trim())
+    return response({error:'LRS database connection is not configured'},503);
   try{
-    const upstream=await fetchImpl(UPSTREAM,{
-      method:'POST',redirect:'error',cache:'no-store',
-      headers:{accept:'application/json','content-type':'application/json'},
-      body:JSON.stringify(query),signal:AbortSignal.timeout(10000)
-    });
-    if(!upstream.ok){
-      return response({error:'LOC public Rune data unavailable',status:upstream.status},502);
-    }
-    const result=await upstream.json();
-    if(!result||!Array.isArray(result.data))
-      return response({error:'Invalid LOC public Rune read response'},502);
-    return response({rows:result.data,dataSource:'loc-public'},200);
+    const result=await readImpl(connection,query);
+    if(!result||!Array.isArray(result.rows))
+      return response({error:'Invalid LRS database read response'},502);
+    return response({rows:result.rows,dataSource:'lrs-database'},200);
   }catch{
-    return response({error:'LOC public Rune data unavailable'},503);
+    // Never echo SQL, host names, credentials or database driver errors.
+    return response({error:'LRS database read unavailable'},503);
   }
 }
