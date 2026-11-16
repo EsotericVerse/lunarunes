@@ -1,51 +1,66 @@
-# LunaRunes · `lrune` module
+# LunaRunes — modular Rune and game engine
 
-**LunaRunes is the independent Rune and game-engine repository** (module ID `lrune`). It owns card art, original Rune drawing, 2D/3D visualizations, the Effekseer/Three.js/WebAssembly effect runtime, today's local tabletop game, and the future Rune-life simulation and election-strategy games. The future games are **not implemented yet**.
+This repository owns the **LunaRunes (lrs)** modules. The canonical, user-selected logical identifiers are:
 
-## Luna module boundaries
-
-| Module ID | Repository | Responsibility |
+| Module | Responsibility | Code |
 | --- | --- | --- |
-| `loc` | [LunaCodex](https://github.com/EsotericVerse/lunacodex) | Text/culture/statistics/trace/search and canonical Scope Routing Table |
-| `lrune` | **LunaRunes** | Rune data logic, original artwork, VFX and game engines |
-| `las` | [LunArcus](https://github.com/EsotericVerse/lunarcus) | Luna Protocol connections, Auth/SSO/MCP and the existing unified IPA orchestration |
+| `lrs:rune` | 66 Rune foundation, groups, canonical image identity, source artwork, Three.js/Effekseer/WASM resources | `modules/lrs/rune/` |
+| `lrs:boardgame` | Existing local tabletop rules and gameplay | `modules/lrs/boardgame/` |
+| `lrs:card` | Card draw algorithms, directions, spreads, moon-phase readings and card text composition | `modules/lrs/card/` |
 
-These are **module names**, not instructions to rename repositories or LOC's established `/lrunes/` Scope URL. LunaRunes does **not** build an IPA.
+**SQL is not owned by LRS.** LOC's `loc:dialect` supplies `readRows` and the ZModel-backed column projector to `lrs:card`. The card module does not import database drivers, credentials, LOC authorization or SQL transports.
 
-## Work in progress
+`LunaCodex` retains the canonical `/lrunes/` Scope routing and Web integration. `LunArcus` owns Luna Protocol, Auth/SSO/MCP and the existing IPA orchestration. LRS provides actual local artifact files for LunArcus, but never builds another IPA.
 
-The source was transferred on `migration/independent-deploy`. The ongoing work is on `work/rune-artifact-contract` (PR #1). `main` is not yet the production Rune application.
+## Package consumption
 
-- `modules/lrune/game/` — local board-game rules and data
-- `modules/lrune/draw/` — pure drawing mode and spread interpretation
-- `modules/lrune/vfx/` — 3D effects, Three.js, semantic glyphs, effect mappings
-- `modules/lrune/art/`, `modules/lrune/styles/` — original Rune visuals and styling
-- `app/lrunes/` — compatibility imports and remaining LOC-coupled features undergoing separation
-- `web/` — independent Rune Web app (Vite + React, heavy modules lazy-loaded)
-- `assets/` — immutable authored Rune card and group artwork
-- `contracts/` — pinned original-art integrity and artifact contracts
-- `scripts/` — effect preparation and separate artifact packaging
+The published **logical module IDs** contain a colon; portable JavaScript module import paths use package subpaths:
 
-## Commands
+```js
+import {runeImage} from 'lrs/rune';                 // lrs:rune
+import {createLunaRunesGame} from 'lrs/boardgame'; // lrs:boardgame
+import {createCardModule} from 'lrs/card';         // lrs:card
+// LOC-side:
+// import {createLocRuneCardDialect} from './modules/loc/dialect/lrs-card.mjs';
+// const draw = createCardModule(createLocRuneCardDialect());
+```
+
+These are import contracts, not a claim that LOC already installs an independently released LRS package. The package is still undergoing migration and is **not published to production**.
+
+The package `files` whitelist excludes generated Web output, immutable artwork, Effekseer effect binaries and WASM. 3D/React/Sharp dependencies are optional peers or project build-only dependencies, not required for a consumer of the pure `lrs/card` module.
+
+The historical `modules/lrune/**` and `app/lrunes/**` entry paths currently contain compatibility exports. They are not the primary implementation or new module IDs.
+
+## Build and verification
 
 ```bash
 npm install
-npm run check:lrune:core
+npm run check:lrs:modules
+npm run check:lrs:consumer
+npm run check:lrs:package
 npm run dev:web
 npm run build:web
+
 npm run art:verify
 npm run artifacts:web:art
 npm run artifacts:ios:art
-# Only when explicitly preparing/updating the pinned effect pack:
+
+# Heavy effects preparation is explicit and Rune-owned:
 npm run effects:prepare
 npm run artifacts:web
 npm run artifacts:ios
 ```
 
-`dist/web-app/` contains the independent Web JavaScript, CSS and HTML; **no Rune artwork or WASM is regenerated in that build**. `dist/web/` and `dist/ios/` are separate *real file* asset exports. The iOS file export is passed to **LunArcus**, which remains the only owner of IPA packaging.
+`dist/web-app` is the standalone Vite/React Web code output; it deliberately excludes original art and WASM. `dist/web` is independently publishable Web asset output, while `dist/ios` consists of the real files handed to LunArcus. Neither artifact exporter touches LOC's deployment.
 
-For independently hosted assets, build the Rune Web app with `VITE_LRUNE_ASSET_ORIGIN` pointing to the published Rune asset origin. This only applies to Web asset URLs; it never changes how LunArcus bundles actual files.
+`VITE_LRS_ASSET_ORIGIN` selects an independently published Rune Web asset origin; the earlier `VITE_LRUNE_ASSET_ORIGIN` is temporarily supported as a migration alias.
 
-The standalone Web shell currently validates original-art display, the local tabletop UI, and a 3D effect demonstration. LOC's canonical drawing, daily logs, database reads, full Scope integration and Cloudflare production cutover remain migration tasks. **Do not remove LOC's current Rune build/asset paths or announce migration complete before those checks pass.**
+## Migration status
 
-[Engineering handoff](docs/MIGRATION-HANDOFF.md) · [Artifact contract](docs/ARTIFACT-CONTRACT.md)
+Work is on `work/rune-artifact-contract` under PR #1 based on `migration/independent-deploy`. No standalone Rune Cloudflare publishing or LOC live cutover has yet occurred.
+
+LRS `lrs:card` and the LOC `loc:dialect` adapter exist in separate work branches; an integrated LOC import must await a version-pinned LRS delivery and functional validation. Current production drawing, Scope data, daily log and database routing remain untouched. **Do not** remove LOC's heavy Rune prebuild until the full live Rune cutover is verified.
+
+The future Rune-life simulation and election-strategy games remain planned; they are not yet implemented.
+
+[Engineering handoff](docs/MIGRATION-HANDOFF.md) · [Asset integrity/hand-off contract](docs/ARTIFACT-CONTRACT.md)
