@@ -1,7 +1,7 @@
 import {lazy,Suspense,useEffect,useState} from 'react';
 import {LRS_MODULE} from '../../modules/lrs/manifest.mjs';
 import {runeAssetUrl} from '../../modules/lrs/rune/asset-url.mjs';
-const GameBoard=lazy(()=>import('../../app/lrunes/game/GameBoard.jsx'));
+const GameBoard=lazy(()=>import('../../modules/lrs/boardgame/GameBoard.jsx'));
 const RuneEffects=lazy(()=>import('./RuneEffects.jsx'));
 
 const PAGES=Object.freeze([
@@ -46,7 +46,7 @@ function Cards(){
 }
 function Landing({go}){
   return <section className="lrune-landing">
-    <p className="lrune-eyebrow">LUNARUNES · MODULE lrune</p>
+    <p className="lrune-eyebrow">LUNARUNES · MODULE lrs</p>
     <h2>以符文為核心，讓引擎獨立。</h2>
     <p>符文原畫、互動牌局及 Effekseer 特效由 LunaRunes 自己管理與建置。LOC 保留統一路由，LunArcus 處理跨專案與 IPA 整合。</p>
     <div className="lrune-actions">

@@ -85,3 +85,12 @@ test('lrs:daily requires explicit host SQL and lunar time ports',async()=>{
   assert.equal(runtime.moonRiver('2026-11-01','2026-11-03',lanes,0).length,0);
   assert.equal(daily.DAILY_MOON_PHASES.length,5);
 });
+
+test('lrs:card owns a copied 25-column Rune66 ZModel and class hierarchy',()=>{
+  assert.equal(card.LRS_CARD_CLASS,'runes66');
+  assert.deepEqual(card.LRS_CARD_KEYWORD_TYPES,['item','group','class']);
+  assert.equal(Object.keys(card.LRS_CARD_RUNE66_FIELDS).length,25);
+  assert.equal(card.LRS_CARD_RUNE66_FIELDS.rune_id,'Int');
+  assert(card.LRS_CARD_DRAW_READ_FIELDS.every(name=>Object.hasOwn(card.LRS_CARD_RUNE66_FIELDS,name)));
+  assert.throws(()=>card.lrsCardRune66Columns('not_a_rune_field'),/Unknown/);
+});

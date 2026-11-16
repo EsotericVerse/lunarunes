@@ -1,8 +1,9 @@
 // Canonical draw data/reading logic, shared by the active 2D and 3D views.
 import {RUNE_ALL_DRAW_MODES} from './rune-draw-modes.mjs';
 import {buildSpreadAdvice} from './rune-guidance-engine.mjs';
+import {LRS_CARD_DRAW_READ_FIELDS} from './zmodel/lrs-card-model.mjs';
 const RUNE_DIRECTIONS=Object.freeze(['正位','半正位','半逆位','逆位']);
-const RUNE_FIELDS=Object.freeze(['rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','positive_keywords','negative_keywords','extra_rules','extra_notes']);
+const RUNE_FIELDS=LRS_CARD_DRAW_READ_FIELDS;
 function randomIndex(max){
   if(max<=1)return 0;
   if(globalThis.crypto?.getRandomValues){

@@ -33,7 +33,8 @@
     "./rune": "./modules/lrs/rune/index.mjs",
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
-    "./daily": "./modules/lrs/daily/index.mjs"
+    "./daily": "./modules/lrs/daily/index.mjs",
+    "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs"
   },
   "files": [
     "modules/lrs/**",
