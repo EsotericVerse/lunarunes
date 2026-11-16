@@ -8,7 +8,7 @@ import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
 import {selectRows} from '../loc/db/db-query.mjs';
-import {realMoonPhase} from '../loc/model/moon-phase';
+import {realMoonPhase} from '../../modules/lrs/daily/real-moon-phase.mjs';
 import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs';
 import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from '../../modules/lrs/rune/rune-directory.mjs';
 import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from '../../modules/lrs/card/rune-draw-motion.mjs';

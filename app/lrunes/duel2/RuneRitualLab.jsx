@@ -4,7 +4,7 @@ import {useEffect,useRef,useState} from 'react';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {createPortal} from 'react-dom';
-import {realMoonPhase} from '../../loc/model/moon-phase';
+import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
 import {navigationHref} from '../../modular/routing/scope-registry.js';
 import useNativeNavigation from '../../modular/use-native-navigation';
 import ScopeLink from '../../modular/ScopeLink';

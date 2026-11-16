@@ -1,8 +1,8 @@
 import {useEffect,useMemo,useState} from 'react';
 import {readPublicRuneHero} from './rune-dialect.mjs';
 import heroBlocks from '../../../app/modular/published-blocks/lrunes/hero.js';
-import {HomeBlock} from '../../../app/loc/blocks/home-block-model.js';
-import {parseBlockImage} from '../../../app/loc/blocks/hero-image.mjs';
+import {HomeBlock} from '../../../modules/lrs/rune/hero/home-presentation.mjs';
+import {parseBlockImage} from '../../../modules/lrs/rune/hero/image.mjs';
 import {runeAssetUrl} from '../../../modules/lrs/rune/asset-url.mjs';
 
 // Preserve LOC's original public hero block and class/slot layout.
