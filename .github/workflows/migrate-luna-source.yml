@@ -1,0 +1,53 @@
+name: One-time LunaRunes source snapshot transfer
+on:
+  push:
+    branches:
+      - migration/luna-protocol-separation
+    paths:
+      - .github/workflows/migrate-luna-source.yml
+permissions:
+  contents: write
+concurrency:
+  group: migrate-lunarunes-source
+  cancel-in-progress: false
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Copy pinned original Rune sources and binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="$(mktemp -d)"
+          git -C "$src" init -q
+          git -C "$src" remote add origin https://github.com/EsotericVerse/lunacodex.git
+          git -C "$src" sparse-checkout init --cone
+          git -C "$src" sparse-checkout set app/lrunes assets/lunarunes assets/pics public/vendor/effekseer scripts packages/zenstack
+          git -C "$src" fetch --quiet --depth=1 --filter=blob:none origin b7521860cbabb93f8d7c56d7c849a832d4251086
+          git -C "$src" checkout --quiet --detach FETCH_HEAD
+          test "$(git -C "$src" rev-parse HEAD)" = b7521860cbabb93f8d7c56d7c849a832d4251086
+          mkdir -p app/lrunes assets/lunarunes assets/pics public/vendor/effekseer scripts packages/zenstack
+          rsync -a "$src/app/lrunes/" app/lrunes/
+          rsync -a "$src/assets/lunarunes/" assets/lunarunes/
+          rsync -a "$src/assets/pics/" assets/pics/
+          rsync -a "$src/public/vendor/effekseer/" public/vendor/effekseer/
+          for name in prepare-rune-runtime-assets.mjs prepare-rune-effekseer-assets.mjs prepare-rune-effekseer-hd256.mjs prepare-rune-effekseer-soft-matte.mjs prepare-rune-fog-hd.mjs prepare-rune-semantic-icons.mjs prepare-effekseer-wasm.mjs pinned-effekseer-path.mjs rune-effekseer-asset-manifest.mjs rune-effekseer-retired-assets.mjs diagnose-effekseer-smoke.mjs; do
+            cp "$src/scripts/$name" "scripts/$name"
+          done
+          cp "$src/packages/zenstack/lrunes-read-model.mjs" packages/zenstack/lrunes-read-model.mjs
+          test "$(find assets/lunarunes/cards -maxdepth 1 -name '*.png' | wc -l)" -eq 67
+          test -s assets/lunarunes/source/LunarRunesCardCut.pdf
+          test -s public/vendor/effekseer/NOTICE.txt
+          git config user.name 'Luna Protocol Migration'
+          git config user.email 'actions@users.noreply.github.com'
+          git add app/lrunes assets/lunarunes assets/pics public/vendor/effekseer scripts packages/zenstack/lrunes-read-model.mjs
+          if git diff --cached --quiet; then
+            echo 'Snapshot is already identical'; exit 0
+          fi
+          git commit -m 'assets: import pinned original Rune sources and all binary artwork'
+          git push origin HEAD:migration/luna-protocol-separation
