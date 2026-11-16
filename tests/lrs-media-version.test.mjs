@@ -32,5 +32,7 @@ test('invalid/incomplete and duplicate media versions are rejected',()=>{
   assert.throws(()=>runeMediaVersion([]),/Incomplete/);
   assert.throws(()=>runeMediaVersion([...entries,entries[0]]),/repeated/);
   assert(isRuneMediaPath('vendor/effekseer/effekseer.wasm'));
+  assert(isRuneMediaPath('vendor/effekseer/Collections/MAGICALxSPIRAL/Effect.efkefc'));
+  assert(isRuneMediaPath('vendor/effekseer/Resources/Texture/star.png'));
   assert(!isRuneMediaPath('assets/index-3e4.js'));
 });

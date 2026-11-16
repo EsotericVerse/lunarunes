@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 
 export const RUNE_MEDIA_VERSION_SCHEMA='lrs.media.v1';
 export function isRuneMediaPath(path){
-  return /^(?:assets\/lunarunes\/cards\/\d{2}\.png|assets\/site\/icons\/lrunes-[^/]+|vendor\/(?:effekseer|rune-semantic-icons)\/[^/]+|pics\/[^/]+(?:\/[^/]+)*)$/.test(path);
+  return /^(?:assets\/lunarunes\/cards\/\d{2}\.png|assets\/site\/icons\/lrunes-[^/]+|vendor\/(?:effekseer|rune-semantic-icons)\/.+|pics\/[^/]+(?:\/[^/]+)*)$/.test(path);
 }
 export function runeMediaVersion(entries){
   if(!Array.isArray(entries))throw TypeError('Rune release entries required');
