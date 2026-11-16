@@ -15,23 +15,48 @@
     "build:web": "vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
     "check:lrune:core": "npm run check:lrs:modules",
-    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs"
-  },
-  "dependencies": {
-    "sharp": "0.35.5",
-    "motion": "13.4.4",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "three": "0.187.0"
+    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs",
+    "check:lrs:package": "node scripts/check-lrs-package.mjs",
+    "check:lrs:consumer": "node --test tests/lrs-consumer.test.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
-    "vite": "8.3.8"
+    "vite": "8.3.8",
+    "sharp": "0.35.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "motion": "13.4.4",
+    "three": "0.187.0"
   },
   "exports": {
     ".": "./modules/lrs/index.mjs",
     "./rune": "./modules/lrs/rune/index.mjs",
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs"
+  },
+  "files": [
+    "modules/lrs/**",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "motion": "13.4.4",
+    "three": "0.187.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "motion": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
   }
 }
