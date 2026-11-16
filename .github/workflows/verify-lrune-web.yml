@@ -24,6 +24,12 @@ jobs:
           node-version: '24'
       - name: Install only the independent Rune module dependencies
         run: npm install --no-audit --no-fund
+      - name: Keep generated npm lockfile for reproducible dependency pinning
+        uses: actions/upload-artifact@v4
+        with:
+          name: lrune-package-lock
+          path: package-lock.json
+          if-no-files-found: error
       - name: Verify pure lrune engine and real local board-game rules
         run: npm run check:lrune:core
       - name: Build standalone Rune Web (LOC and LunArcus are not required)
