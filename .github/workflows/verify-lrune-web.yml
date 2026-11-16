@@ -6,6 +6,7 @@ on:
     paths:
       - 'app/lrunes/**'
       - 'modules/lrune/**'
+      - 'modules/lrs/**'
       - 'web/**'
       - 'tests/lrune-core.test.mjs'
       - 'package.json'
@@ -30,7 +31,9 @@ jobs:
           name: lrune-package-lock
           path: package-lock.json
           if-no-files-found: error
-      - name: Verify pure lrune engine and real local board-game rules
+      - name: Verify all lrs modules, loc:dialect port and real local board-game rules
+        run: npm run check:lrs:modules
+      - name: Regression-check legacy module test
         run: npm run check:lrune:core
       - name: Build standalone Rune Web (LOC and LunArcus are not required)
         run: npm run build:web

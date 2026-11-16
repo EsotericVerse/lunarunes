@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {LRUNE_MODULE,runeAssetUrl,createLunaRunesGame,localTabletopRules,RUNE_ALL_DRAW_MODES}
-  from '../modules/lrune/index.mjs';
+import {LRS_MODULE as LRUNE_MODULE} from '../modules/lrs/manifest.mjs';
+import {runeAssetUrl} from '../modules/lrs/rune/index.mjs';
+import {createLunaRunesGame,localTabletopRules} from '../modules/lrs/boardgame/index.mjs';
+import {RUNE_ALL_DRAW_MODES} from '../modules/lrs/card/index.mjs';
 
 test('lrune owns Rune core, not LOC or LunArcus',()=>{
-  assert.equal(LRUNE_MODULE.id,'lrune');
+  assert.equal(LRUNE_MODULE.modules.rune,'lrs:rune');
   assert.equal(LRUNE_MODULE.repository,'EsotericVerse/lunarunes');
   assert.equal(LRUNE_MODULE.scope,'lrunes');
   assert.equal(runeAssetUrl('assets/lunarunes/cards/00.png'),'/assets/lunarunes/cards/00.png');

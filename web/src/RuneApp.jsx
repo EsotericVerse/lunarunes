@@ -1,6 +1,6 @@
 import {lazy,Suspense,useEffect,useState} from 'react';
-import {LRUNE_MODULE} from '../../modules/lrune/manifest.mjs';
-import {runeAssetUrl} from '../../modules/lrune/asset-url.mjs';
+import {LRS_MODULE} from '../../modules/lrs/manifest.mjs';
+import {runeAssetUrl} from '../../modules/lrs/rune/asset-url.mjs';
 const GameBoard=lazy(()=>import('../../app/lrunes/game/GameBoard.jsx'));
 const RuneEffects=lazy(()=>import('./RuneEffects.jsx'));
 
@@ -60,7 +60,7 @@ export default function RuneApp(){
   const [page,go]=useRuneRoute();
   return <div className="lrune-shell">
     <header className="lrune-topbar">
-      <div><span className="lrune-brand">LunaRunes</span><small>{LRUNE_MODULE.id} · independent Web</small></div>
+      <div><span className="lrune-brand">LunaRunes</span><small>{LRS_MODULE.namespace} · independent Web</small></div>
       <nav aria-label="符文模組導覽">{PAGES.map(item=><a key={item.key}
         className={page===item.key?'active':''} href={item.path}
         aria-current={page===item.key?'page':undefined}
