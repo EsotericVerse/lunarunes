@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * LRS release policy: a merged main commit is NOT a production release.
- * Workers Builds may validate code, but cannot publish production.
- * Production only accepts an explicitly approved, pinned SHA checkout.
- * The credential for that one release is supplied by the operator at runtime.
+ * LRS release policy: main Workers Builds deploys its own Worker only.
+ * Branch builds remain preview-only. Independent manual/emergency releases
+ * still require explicit approved pinned SHA and an existing credential.
+ * No LRS merge triggers LOC production.
  */
 import {spawnSync} from 'node:child_process';
 import {resolve} from 'node:path';
@@ -14,7 +14,7 @@ export function deploymentMode(env=process.env){
   if(env.WORKERS_CI){
     if(!env.WORKERS_CI_BRANCH)
       throw new Error('Missing WORKERS_CI_BRANCH; refuse ambiguous deployment');
-    return env.WORKERS_CI_BRANCH==='main'?'skip':'preview';
+    return env.WORKERS_CI_BRANCH==='main'?'automatic':'preview';
   }
   if(env.LRS_RELEASE_APPROVED!=='1')return 'skip';
   if(!COMMIT_SHA.test(env.LRS_RELEASE_SHA||''))
@@ -23,7 +23,7 @@ export function deploymentMode(env=process.env){
 }
 export function deploymentArgs(env=process.env){
   const mode=deploymentMode(env);
-  return mode==='skip'?[]:[mode];
+  return mode==='skip'?[]:[mode==='automatic'?'deploy':mode];
 }
 function currentCommit(){
   const r=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8',windowsHide:true});
@@ -49,7 +49,7 @@ function main(){
       throw new Error('Supply a one-time CLOUDFLARE_API_TOKEN for the approved release');
   }
   const cli=process.platform==='win32'?'wrangler.cmd':'wrangler';
-  const args=[mode];
+  const args=deploymentArgs();
   console.log('[LRS Cloudflare]',mode,
     mode==='deploy'?process.env.LRS_RELEASE_SHA:process.env.WORKERS_CI_BRANCH);
   const child=spawnSync(cli,args,{stdio:'inherit',env:process.env,windowsHide:true});
