@@ -3,3 +3,6 @@ dist/
 .next/
 out/
 *.log
+
+# Operator-owned Rune database export/import snapshots (private records).
+.lrs-data-transfer/
