@@ -1,0 +1,37 @@
+name: Verify standalone lrune Web and engine
+on:
+  pull_request:
+    branches:
+      - migration/independent-deploy
+    paths:
+      - 'app/lrunes/**'
+      - 'modules/lrune/**'
+      - 'web/**'
+      - 'tests/lrune-core.test.mjs'
+      - 'package.json'
+      - '.github/workflows/verify-lrune-web.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  module-web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install only the independent Rune module dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify pure lrune engine and real local board-game rules
+        run: npm run check:lrune:core
+      - name: Build standalone Rune Web (LOC and LunArcus are not required)
+        run: npm run build:web
+      - name: Verify independent build has no bundled original art/WASM
+        run: |
+          test -s dist/web-app/index.html
+          test -s dist/web-app/_redirects
+          test ! -e dist/web-app/vendor/effekseer/effekseer.wasm
+          test ! -e dist/web-app/assets/lunarunes/cards/00.png
+          find dist/web-app -maxdepth 2 -type f | sort
