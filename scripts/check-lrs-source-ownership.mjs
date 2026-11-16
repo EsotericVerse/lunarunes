@@ -19,7 +19,8 @@ const removedPaths=new Set([
  'app/lrunes/skin-lab.css',
  'app/lrunes/visual/rune-art-layout.css',
  'app/lrunes/visual/rune-art-stage.css',
- 'app/lrunes/local-rune-records.mjs','app/daily/log/daily-record-slots.mjs'
+ 'app/lrunes/local-rune-records.mjs','app/daily/log/daily-record-slots.mjs',
+ 'packages/zenstack/lrunes-read-model.mjs'
 ]);
 const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix))||
  ['app/loc/blocks/home-block-model.js','app/loc/blocks/hero-image.mjs',
