@@ -11,9 +11,9 @@ import '../../app/styles/home-runes.css';
 import '../../app/styles/runes.css';
 import './style.css';
 
-// The existing LRS Worker forwards only read-only, table/column-checked
-// queries to LOC's current public Kysely endpoint. Never send cookies,
-// connection strings, or credentials from a standalone Rune browser.
+// The existing LRS Worker performs bounded read-only queries against its
+// LRS_DATABASE_URL secret. Never send cookies, SQL, connection strings or
+// credentials from a standalone Rune browser.
 bindRunePublicReadPort(async(table,query)=>{
   const response=await fetch('/api/lrs/public-read',{
     method:'POST',credentials:'omit',cache:'no-store',redirect:'error',
@@ -24,7 +24,7 @@ bindRunePublicReadPort(async(table,query)=>{
   const payload=await response.json().catch(()=>null);
   if(!response.ok||!Array.isArray(payload?.rows))
     throw new Error('符文公開資料讀取失敗（HTTP '+response.status+'）。');
-  return {rows:payload.rows,dataSource:payload.dataSource||'loc-public'};
+  return {rows:payload.rows,dataSource:payload.dataSource||'lrs-database'};
 });
 
 createRoot(document.getElementById('root')).render(
