@@ -6,6 +6,7 @@ const webRoot=fileURLToPath(new URL('.',import.meta.url));
 const repositoryRoot=fileURLToPath(new URL('..',import.meta.url));
 const local=path=>fileURLToPath(new URL(path,import.meta.url));
 const runeNav=local('./src/runtime/loc-navigation.jsx');
+const scopeLink=local('./src/runtime/scope-link.jsx');
 const home=local('./src/runtime/loc-home-public.jsx');
 const read=local('./src/runtime/rune-dialect.mjs');
 const queries=local('./src/runtime/rune-query-hooks.jsx');
@@ -14,7 +15,7 @@ const queries=local('./src/runtime/rune-query-hooks.jsx');
 const runeAliases=[
   {find:/^(?:\.\.\/)+modular\/routing\/scope-registry(?:\.js)?$/,replacement:runeNav},
   {find:/^(?:\.\.\/)+modular\/use-native-navigation(?:\.js)?$/,replacement:runeNav},
-  {find:/^(?:\.\.\/)+modular\/ScopeLink(?:\.jsx)?$/,replacement:runeNav},
+  {find:/^(?:\.\.\/)+modular\/ScopeLink(?:\.jsx)?$/,replacement:scopeLink},
   {find:/^(?:\.\.\/)+loc\/auth\/use-account(?:\.js)?$/,replacement:runeNav},
   {find:/^(?:\.\.\/)+loc\/blocks\/LocHomeBlockDisplay(?:\.jsx)?$/,replacement:home},
   {find:/^(?:\.\.\/)+loc\/blocks\/ScopeEditableBlocks(?:\.jsx)?$/,replacement:home},
