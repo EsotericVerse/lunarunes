@@ -5,17 +5,17 @@ import {motion,useReducedMotion} from 'motion/react';
 import {selectRows} from '../loc/db/db-query.mjs';
 import RuneArtStage from './visual/RuneArtStage';
 import RuneCardInfo from './RuneCardInfo';
-import EffekseerStage from './effekseer/EffekseerStage';
-import RuneExtrudedGlyph from './effekseer/RuneExtrudedGlyph';
-import {RUNE_GLYPH_STYLES,runeGlyphProfile} from './effekseer/rune-glyph-library.mjs';
-import {groupImage,runeImage,runeName,runeNumbersForGroup} from './rune-directory.mjs';
+import EffekseerStage from '../../modules/lrs/rune/vfx/EffekseerStage';
+import RuneExtrudedGlyph from '../../modules/lrs/rune/vfx/RuneExtrudedGlyph';
+import {RUNE_GLYPH_STYLES,runeGlyphProfile} from '../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
+import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../modules/lrs/rune/rune-directory.mjs';
 import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
 import {lRunes66ColumnString} from '../../packages/zenstack/lrunes-read-model.mjs';
-import './skin-lab.css';
-import './visual/rune-art-layout.css';
-import './effekseer/effekseer-stage.css';
+import '../../modules/lrs/rune/styles/skin-lab.css';
+import '../../modules/lrs/rune/art/rune-art-layout.css';
+import '../../modules/lrs/rune/vfx/effekseer-stage.css';
 
 // Nine canonical groups, eight runes each except the last group, which also
 // carries rune 0 (德 / Rune Zero, excluded from card draw): 0, 65, 66.

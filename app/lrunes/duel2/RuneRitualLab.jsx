@@ -9,11 +9,11 @@ import {navigationHref} from '../../modular/routing/scope-registry.js';
 import useNativeNavigation from '../../modular/use-native-navigation';
 import ScopeLink from '../../modular/ScopeLink';
 import {randomIndex,loadDrawCards,buildFixedReading} from '../rune-draw-core.mjs';
-import {runeImage} from '../rune-directory.mjs';
-import {RUNE_ALL_DRAW_MODES} from '../rune-draw-modes.mjs';
+import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
+import {RUNE_ALL_DRAW_MODES} from '../../../modules/lrs/card/rune-draw-modes.mjs';
 import RuneCardInfo from '../RuneCardInfo';
-import '../skin-lab.css';
-import '../visual/rune-art-layout.css';
+import '../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../modules/lrs/rune/art/rune-art-layout.css';
 
 const MAX_DRAW=11;
 const REVEAL_MS=1000;

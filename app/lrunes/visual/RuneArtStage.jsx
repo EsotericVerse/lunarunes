@@ -1,10 +1,10 @@
 'use client';
 
 import {motion,AnimatePresence,useReducedMotion} from 'motion/react';
-import {runeAssetUrl} from '../../../modules/lrune/asset-url.mjs';
-import {groupImage,runeImage,runeName} from '../rune-directory.mjs';
+import {runeAssetUrl} from '../../../modules/lrs/rune/asset-url.mjs';
+import {groupImage,runeImage,runeName} from '../../../modules/lrs/rune/rune-directory.mjs';
 import RuneCardInfo from '../RuneCardInfo';
-import './rune-art-stage.css';
+import '../../../modules/lrs/rune/art/rune-art-stage.css';
 
 const PHASES=['','新月','上弦','滿月','下弦'];
 // Match the original /duel and /list orientation of the original card artwork.
