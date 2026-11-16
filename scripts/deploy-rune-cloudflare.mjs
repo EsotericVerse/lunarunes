@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * LRS release policy: main Workers Builds deploys its own Worker only.
- * Branch builds remain preview-only. Independent manual/emergency releases
+ * All non-main Workers Builds are validation-only: no dev/preview Worker.\n * Independent manual/emergency releases
  * still require explicit approved pinned SHA and an existing credential.
  * No LRS merge triggers LOC production.
  */
@@ -14,7 +14,7 @@ export function deploymentMode(env=process.env){
   if(env.WORKERS_CI){
     if(!env.WORKERS_CI_BRANCH)
       throw new Error('Missing WORKERS_CI_BRANCH; refuse ambiguous deployment');
-    return env.WORKERS_CI_BRANCH==='main'?'automatic':'preview';
+    return env.WORKERS_CI_BRANCH==='main'?'automatic':'skip';
   }
   if(env.LRS_RELEASE_APPROVED!=='1')return 'skip';
   if(!COMMIT_SHA.test(env.LRS_RELEASE_SHA||''))
@@ -23,7 +23,7 @@ export function deploymentMode(env=process.env){
 }
 export function deploymentArgs(env=process.env){
   const mode=deploymentMode(env);
-  return mode==='skip'?[]:[mode==='automatic'?'deploy':mode];
+  return mode==='skip'?[]:['deploy'];
 }
 function currentCommit(){
   const r=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8',windowsHide:true});
@@ -33,7 +33,7 @@ function currentCommit(){
 function main(){
   const mode=deploymentMode();
   if(mode==='skip'){
-    console.log('[LRS] Deployment skipped: a merge/build is not a release.');
+    console.log('[LRS] No Worker deployment: only main builds or an explicitly approved pinned release can publish lunarunes.');
     return;
   }
   if(mode==='deploy'){
@@ -50,6 +50,7 @@ function main(){
   }
   const cli=process.platform==='win32'?'wrangler.cmd':'wrangler';
   const args=deploymentArgs();
+  if(args.length!==1||args[0]!=='deploy')throw new Error('Only the existing lunarunes production deployment is permitted');
   console.log('[LRS Cloudflare]',mode,
     mode==='deploy'?process.env.LRS_RELEASE_SHA:process.env.WORKERS_CI_BRANCH);
   const child=spawnSync(cli,args,{stdio:'inherit',env:process.env,windowsHide:true});
