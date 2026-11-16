@@ -1,0 +1,38 @@
+name: Verify LRS release gate (never publishes)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-lrs-release-policy.yml'
+      - 'scripts/deploy-rune-cloudflare.mjs'
+      - 'tests/lrs-cloudflare-deploy.test.mjs'
+      - 'scripts/rune-media-version.mjs'
+      - 'tests/lrs-media-version.test.mjs'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-lrs-release-policy.yml'
+      - 'scripts/deploy-rune-cloudflare.mjs'
+      - 'tests/lrs-cloudflare-deploy.test.mjs'
+      - 'scripts/rune-media-version.mjs'
+      - 'tests/lrs-media-version.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Parse deployment gate and media version code
+        run: node --check scripts/deploy-rune-cloudflare.mjs && node --check scripts/rune-media-version.mjs
+      - name: Verify main cannot publish and mediaVersion stays content-only
+        run: node --test tests/lrs-cloudflare-deploy.test.mjs tests/lrs-media-version.test.mjs
+      - name: No build or Cloudflare deployment in this verification job
+        run: echo 'Read-only verification only; merge does not publish LRS'
