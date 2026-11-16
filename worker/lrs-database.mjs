@@ -6,8 +6,8 @@
  * public-rune-read.mjs. No client-controlled host, DB URL, SQL or schema.
  * The original tables stay in place; this performs SELECT, never migration.
  */
-import {Kysely,PostgresDialect} from 'kysely';
-import pg from 'pg';
+// Fixed, module-only snapshot of LOC PR #1732. No loc-framework dependency.
+import {dialect} from '../vendor/loc-dialect/index.mjs';
 
 export function lrsPublicSelect(db,query){
   // Defense in depth: never accept an arbitrary schema/table here, even
@@ -31,13 +31,9 @@ export function lrsPublicSelect(db,query){
 export async function readLrsPublicRows(connectionString,query){
   if(typeof connectionString!=='string'||!/^postgres(?:ql)?:\/\//i.test(connectionString))
     throw Object.assign(new Error('LRS_DATABASE_URL unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
-  // Direct PostgreSQL connection, one request-scoped connection. No shared
-  // state, LOC website fetch, or pool stored across unrelated Workers.
-  const pool=new pg.Pool({
-    connectionString,max:1,connectionTimeoutMillis:5000,idleTimeoutMillis:1000,
-    allowExitOnIdle:true
-  });
-  const db=new Kysely({dialect:new PostgresDialect({pool})});
+  // The isolated loc:dialect server-only adapter owns request-scoped pg
+  // connection lifecycle; LRS retains the exact read whitelist and query shape.
+  const db=dialect('pg',connectionString);
   try{
     const rows=await lrsPublicSelect(db,query).execute();
     return {rows,dataSource:'lrs-database'};

@@ -5,6 +5,8 @@ on:
     paths:
       - 'wrangler.jsonc'
       - 'worker/**'
+      - 'vendor/loc-dialect/**'
+      - 'tests/lrs-original-pages.test.mjs'
       - 'scripts/deploy-rune-cloudflare.mjs'
       - 'tests/lrs-cloudflare-deploy.test.mjs'
       - 'scripts/assemble-rune-cloudflare.mjs'

@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Kysely,PostgresDialect} from 'kysely';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {dialect as locDialect} from '../vendor/loc-dialect/index.mjs';
 import {publicRuneQuery,handlePublicRuneRead} from '../worker/public-rune-read.mjs';
 import {lrsPublicSelect,readLrsPublicRows} from '../worker/lrs-database.mjs';
 
@@ -98,4 +101,24 @@ test('failed database connections never expose credentials or fake empty data',a
   assert(!result.includes('password'));
   assert(!result.includes('db.example'));
   assert(!result.includes('rows'));
+});
+
+test('LRS consumes only pinned standalone loc:dialect, never the LOC framework',async()=>{
+  const source=await readFile(new URL('../vendor/loc-dialect/index.mjs',import.meta.url));
+  const originalBlobHash=createHash('sha1')
+    .update('blob '+source.length+'\0').update(source).digest('hex');
+  assert.equal(originalBlobHash,'65259840058c0ef2e251f7ca59731950263f1135',
+    'LOC PR #1732 module snapshot must match its pinned source blob');
+  const pkg=JSON.parse(await readFile(new URL('../vendor/loc-dialect/package.json',import.meta.url),'utf8'));
+  assert.equal(pkg.name,'@lo3r/loc-dialect');
+  assert.equal(pkg.private,true);
+  assert.deepEqual(Object.keys(pkg.dependencies).sort(),['kysely','pg']);
+  const db=locDialect('pg','postgresql://localhost/lrs_test');
+  try{
+    const compiled=lrsPublicSelect(db,publicRuneQuery(hero)).compile();
+    assert.match(compiled.sql,/"silver"\."lrunes_blocks"/);
+    assert.deepEqual(compiled.parameters,['hero',8,0]);
+  }finally{await db.destroy();}
+  assert.throws(()=>locDialect('pg','https://example.invalid'),/PostgreSQL URL/);
+  assert.throws(()=>locDialect('mysql','postgresql://localhost/lrs_test'),/Unsupported SQL driver/);
 });
