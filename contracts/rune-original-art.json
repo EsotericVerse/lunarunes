@@ -1,0 +1,315 @@
+{
+  "schema": "lunarunes.original-art.v1",
+  "sourceRepository": "EsotericVerse/lunacodex",
+  "sourceCommit": "b7521860cbabb93f8d7c56d7c849a832d4251086",
+  "immutableSourceFiles": {
+    "assets/lunarunes/cards/00.png": {
+      "sha": "38758944c8ee312b245efea9f41008c320d0a383",
+      "size": 78939
+    },
+    "assets/lunarunes/cards/01.png": {
+      "sha": "1bcdd5a56b8a6a3169127732499fb4cd6349b764",
+      "size": 107133
+    },
+    "assets/lunarunes/cards/02.png": {
+      "sha": "e9aa6bb172cddca420e0259a6ab05b74fdc32425",
+      "size": 120187
+    },
+    "assets/lunarunes/cards/03.png": {
+      "sha": "bcbe243243faf6c3d1470dd7da6b27b1be0b97a6",
+      "size": 165928
+    },
+    "assets/lunarunes/cards/04.png": {
+      "sha": "899c26303bf511daa50ada07caca25e919f7734d",
+      "size": 159811
+    },
+    "assets/lunarunes/cards/05.png": {
+      "sha": "526bb6331f287ea6f8023c88f0443937f7c1843c",
+      "size": 131699
+    },
+    "assets/lunarunes/cards/06.png": {
+      "sha": "06fa97b72eb0a5cf4a73528248def39021d92255",
+      "size": 148363
+    },
+    "assets/lunarunes/cards/07.png": {
+      "sha": "d604ebdb65b295017db531f82ba2d705fcf14f28",
+      "size": 141372
+    },
+    "assets/lunarunes/cards/08.png": {
+      "sha": "6ebef8ce92e28ba06dabedba6d1469911fe89e9e",
+      "size": 122919
+    },
+    "assets/lunarunes/cards/09.png": {
+      "sha": "fbf5196e1391ce6a3cf168b4b4bb713de5cc22c2",
+      "size": 119973
+    },
+    "assets/lunarunes/cards/10.png": {
+      "sha": "b5012c729fb9e6ff43f831cb0b91f84423ed8c54",
+      "size": 138778
+    },
+    "assets/lunarunes/cards/11.png": {
+      "sha": "b109a1e1c242d6995a9a2ae9f7d216a55548ba7d",
+      "size": 174405
+    },
+    "assets/lunarunes/cards/12.png": {
+      "sha": "e4d867bda84c63dd27036241fd09bfe7cacf6380",
+      "size": 169926
+    },
+    "assets/lunarunes/cards/13.png": {
+      "sha": "f5a979fd94596505599c95abe8bfa8b742dd9a12",
+      "size": 151946
+    },
+    "assets/lunarunes/cards/14.png": {
+      "sha": "089f90fdf9b4aabb572accd15d12205d0c22ab43",
+      "size": 123704
+    },
+    "assets/lunarunes/cards/15.png": {
+      "sha": "5e64bfbc9436a826f03c4558c16d3575758976ed",
+      "size": 131587
+    },
+    "assets/lunarunes/cards/16.png": {
+      "sha": "46a40a3ad5254cf6ebc4085845896f5a5e0b9a2d",
+      "size": 164868
+    },
+    "assets/lunarunes/cards/17.png": {
+      "sha": "ffec36f5cc193e2614f5d871f2ec8029717b00b6",
+      "size": 177302
+    },
+    "assets/lunarunes/cards/18.png": {
+      "sha": "ebd1dcc320000a5164b5eefd54a0577b245c6ca8",
+      "size": 141908
+    },
+    "assets/lunarunes/cards/19.png": {
+      "sha": "f0dcb87cbedcce45797b41e19f4b94721efdd8c2",
+      "size": 141526
+    },
+    "assets/lunarunes/cards/20.png": {
+      "sha": "5d928545b81d065ad5701f5c24f75a3aeb9de36c",
+      "size": 148773
+    },
+    "assets/lunarunes/cards/21.png": {
+      "sha": "06ad8876c298edd24928cd23e656aca6b9a37a49",
+      "size": 134243
+    },
+    "assets/lunarunes/cards/22.png": {
+      "sha": "397f57a84456d9dfc5f970c90e79c3a22e201f3c",
+      "size": 127674
+    },
+    "assets/lunarunes/cards/23.png": {
+      "sha": "29a541b0c43ccb8ff9b47c0b48fda52474bcfac1",
+      "size": 161779
+    },
+    "assets/lunarunes/cards/24.png": {
+      "sha": "5fc2d419029bc56de227dea32cb2dc751046dc75",
+      "size": 140111
+    },
+    "assets/lunarunes/cards/25.png": {
+      "sha": "d142844ff568f730171944da393c2c962f54db77",
+      "size": 158376
+    },
+    "assets/lunarunes/cards/26.png": {
+      "sha": "3a62c1026696e8cb1461eab3f5942791fcb0a1b1",
+      "size": 146465
+    },
+    "assets/lunarunes/cards/27.png": {
+      "sha": "18d79aa1e3882dc5f98c85c2631b5799423fc63a",
+      "size": 152774
+    },
+    "assets/lunarunes/cards/28.png": {
+      "sha": "687842aa46a74e1275bd21e1d53c7ff03404fce1",
+      "size": 139278
+    },
+    "assets/lunarunes/cards/29.png": {
+      "sha": "bff989d5ed78a6c6b5dd6272916816ddf1f2bd19",
+      "size": 178996
+    },
+    "assets/lunarunes/cards/30.png": {
+      "sha": "e496098829befc25669740f9bc682e603cf2c1c7",
+      "size": 115389
+    },
+    "assets/lunarunes/cards/31.png": {
+      "sha": "6fcc67124be7effc1eb000ae13b1e208d333b398",
+      "size": 167346
+    },
+    "assets/lunarunes/cards/32.png": {
+      "sha": "1a11198840c7fcbe0eae990f6125481b83e9d6ac",
+      "size": 166211
+    },
+    "assets/lunarunes/cards/33.png": {
+      "sha": "e9b92f3f7143720a46805f4d8353c1d801e72a62",
+      "size": 159559
+    },
+    "assets/lunarunes/cards/34.png": {
+      "sha": "b2d4bee4318eb3a61268fdccf4bd60adcaa489fd",
+      "size": 143697
+    },
+    "assets/lunarunes/cards/35.png": {
+      "sha": "2558854cfac50f0a34904e26900d54dc12b7683e",
+      "size": 147988
+    },
+    "assets/lunarunes/cards/36.png": {
+      "sha": "e7f5c96802ebe2f0446fb7d650e81e18a0a5016d",
+      "size": 167896
+    },
+    "assets/lunarunes/cards/37.png": {
+      "sha": "303fd1e454fb4e22bec88514bdad94d7114af2fc",
+      "size": 159567
+    },
+    "assets/lunarunes/cards/38.png": {
+      "sha": "2230a5b1b357ec1d994b8254b4cb4c992f7f7bd3",
+      "size": 152119
+    },
+    "assets/lunarunes/cards/39.png": {
+      "sha": "11ef38aaa5086f1e4ef140ed052390f74d727d0f",
+      "size": 166919
+    },
+    "assets/lunarunes/cards/40.png": {
+      "sha": "9ee778e7c02ceb0d2d1e2e447befb58f5b9d7e65",
+      "size": 134625
+    },
+    "assets/lunarunes/cards/41.png": {
+      "sha": "bb7440139e50e55b5f385443b311e5396fcc5fba",
+      "size": 145955
+    },
+    "assets/lunarunes/cards/42.png": {
+      "sha": "d686121b415c4cb67b4e17ce10e523bb3b8ef921",
+      "size": 136290
+    },
+    "assets/lunarunes/cards/43.png": {
+      "sha": "bfed2954205b3699367b2a6ffc3e2cef7a922157",
+      "size": 164906
+    },
+    "assets/lunarunes/cards/44.png": {
+      "sha": "0d3cf9f539931fd68546a539bd5417950d54b5ac",
+      "size": 172695
+    },
+    "assets/lunarunes/cards/45.png": {
+      "sha": "cf23d19fa93c53990a4ec55ed55c4ba0a49c20f4",
+      "size": 152330
+    },
+    "assets/lunarunes/cards/46.png": {
+      "sha": "013f775c3f08d26e5ba3500746a05b4b0418c429",
+      "size": 160984
+    },
+    "assets/lunarunes/cards/47.png": {
+      "sha": "51fcd0ea57934a8773159dfde260446e780493ea",
+      "size": 114795
+    },
+    "assets/lunarunes/cards/48.png": {
+      "sha": "4f210bd43fa18521866590a11fbcdb993e3b7230",
+      "size": 153809
+    },
+    "assets/lunarunes/cards/49.png": {
+      "sha": "83729225794012fb59957b2c6934c18c10f9683e",
+      "size": 117670
+    },
+    "assets/lunarunes/cards/50.png": {
+      "sha": "33360e466e7a9a01f5b5ba625220099dcd686570",
+      "size": 112126
+    },
+    "assets/lunarunes/cards/51.png": {
+      "sha": "4658b6648732260af3dea82cb621dfcd8f39c7bd",
+      "size": 120084
+    },
+    "assets/lunarunes/cards/52.png": {
+      "sha": "27c5fd2f10322654522fe8a22374256afa095ef3",
+      "size": 107866
+    },
+    "assets/lunarunes/cards/53.png": {
+      "sha": "2fc597191a82758c69d0265544404f2d71ca4141",
+      "size": 139783
+    },
+    "assets/lunarunes/cards/54.png": {
+      "sha": "3f462daf9964ffefcc04d1f424548a4e0bd3c3eb",
+      "size": 141027
+    },
+    "assets/lunarunes/cards/55.png": {
+      "sha": "b7b40c9d775158372a90114a8c4c6f1ec4216155",
+      "size": 129404
+    },
+    "assets/lunarunes/cards/56.png": {
+      "sha": "59046f79619d00c32cf102db305d0a2babbda42a",
+      "size": 115369
+    },
+    "assets/lunarunes/cards/57.png": {
+      "sha": "99840208552b639f35310bb318874acdb33226be",
+      "size": 122618
+    },
+    "assets/lunarunes/cards/58.png": {
+      "sha": "6dfa010aa970e4812db3a4f0a44a6a0bb6f4a531",
+      "size": 124382
+    },
+    "assets/lunarunes/cards/59.png": {
+      "sha": "48922bf943adfc03bbaa2011bacb249df0665dfc",
+      "size": 134609
+    },
+    "assets/lunarunes/cards/60.png": {
+      "sha": "044fcdb106ade0816702b93f38089af2d14a1c50",
+      "size": 120170
+    },
+    "assets/lunarunes/cards/61.png": {
+      "sha": "d2f1d8fb6259def1c5fb49a529e6e2684766e0d2",
+      "size": 127675
+    },
+    "assets/lunarunes/cards/62.png": {
+      "sha": "df7dcb59f68a3bd7cfc1f11866b783786bb8dd83",
+      "size": 162210
+    },
+    "assets/lunarunes/cards/63.png": {
+      "sha": "84eb3b82dc65be727ee5877a0b4cab4c3502921a",
+      "size": 99860
+    },
+    "assets/lunarunes/cards/64.png": {
+      "sha": "15591d7a0bc04a0b8105a0db604cf8d5abf22aad",
+      "size": 172551
+    },
+    "assets/lunarunes/cards/65.png": {
+      "sha": "e0f31585b7fd0fadb7ce1f4015f5467b9675f4f5",
+      "size": 100933
+    },
+    "assets/lunarunes/cards/66.png": {
+      "sha": "4146a73cf753137b939c32dc03465f665cd1636a",
+      "size": 132573
+    },
+    "assets/pics/01.soul.jpg": {
+      "sha": "ca79d39920f8589fe842a94f568944df40e2ff09",
+      "size": 200823
+    },
+    "assets/pics/02_connection.jpg": {
+      "sha": "3dfb25e8a8f28bedb595ca93f63cd950d78cff24",
+      "size": 340763
+    },
+    "assets/pics/03_life.jpg": {
+      "sha": "15d8e6865e74b6f1421c25b80dbbac5ada94e2a2",
+      "size": 308583
+    },
+    "assets/pics/04_nature.jpg": {
+      "sha": "8c313b09d67297ddf0b41af17940b2a62c8d8056",
+      "size": 277099
+    },
+    "assets/pics/05_mineral.jpg": {
+      "sha": "0d5d69666abe1b3b252a5d12c3618f77e74d34aa",
+      "size": 391197
+    },
+    "assets/pics/06_element.jpg": {
+      "sha": "da4f91778e36996c2365bf6d3328b9d066b96ccc",
+      "size": 285557
+    },
+    "assets/pics/07_order.jpg": {
+      "sha": "828552d38b8ed6b239e8025a30fe4c187a547410",
+      "size": 405002
+    },
+    "assets/pics/08_disorder.jpg": {
+      "sha": "0d5efaee75db9f210813f77773b138dabeb4d94f",
+      "size": 188568
+    },
+    "assets/pics/09_specia.jpg": {
+      "sha": "02bd434626608eca0cf2bd20b0d64ea7faa84628",
+      "size": 138671
+    },
+    "public/vendor/effekseer/NOTICE.txt": {
+      "sha": "c68aa803d3d789c0828f1ec353afaf941bf8269b",
+      "size": 3724
+    }
+  }
+}
