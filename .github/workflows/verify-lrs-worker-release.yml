@@ -4,6 +4,8 @@ on:
     branches: [migration/independent-deploy]
     paths:
       - 'wrangler.jsonc'
+      - 'scripts/deploy-rune-cloudflare.mjs'
+      - 'tests/lrs-cloudflare-deploy.test.mjs'
       - 'scripts/assemble-rune-cloudflare.mjs'
       - 'scripts/check-rune-cloudflare-release.mjs'
       - 'scripts/prepare-rune-**'
@@ -24,6 +26,8 @@ jobs:
           node-version: '24'
       - name: Install independent LRS dependencies
         run: npm install --no-audit --no-fund
+      - name: Confirm preview and production deployment are isolated
+        run: npm run check:cloudflare:deploy
       - name: Build original art, actual Effekseer resources and Vite app
         run: npm run build:cloudflare
       - name: Verify complete local Worker release and original SHA-256 integrity
