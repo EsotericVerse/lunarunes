@@ -1,0 +1,51 @@
+// lrs:card source-owned semantic ZModel COPY, not a physical SQL migration.
+// Copied without field/type changes from LunaCodex's LRunes66 on b7521860cbabb93f8d7c56d7c849a832d4251086.
+// The existing physical silver.runes table and loc_dialect dependency remain unchanged.
+// The KeywordAnchor relationship is class -> group -> item in persisted attr.uid;
+// applications may navigate item -> group -> class, but no extra SQL table/foreign keys exist.
+// class='runes66' is the logical identity; resolve its existing UID at read time.
+
+type LrsCardKeywordItem {
+    keyword String[]?
+    uid String[]?
+    total Int?
+}
+type LrsCardKeywordGroup {
+    uid String[]?
+}
+type LrsCardKeywordClass {
+    uid String[]?
+}
+type LrsCardKeywordHierarchy {
+    item LrsCardKeywordItem?
+    group LrsCardKeywordGroup?
+    class LrsCardKeywordClass?
+}
+
+type LrsCardRune66 {
+    rune_id Int
+    rune_name String?
+    english_name String?
+    totem String?
+    group_name String?
+    moon_phase Int?
+    card_attr Int?
+    rune_description String?
+    archetype String?
+    char_action String?
+    positive_keywords String?
+    negative_keywords String?
+    extra_rules String?
+    extra_notes String?
+    positive_meaning String?
+    half_positive_meaning String?
+    half_reverse_meaning String?
+    reverse_meaning String?
+    rune_evolution_history String?
+    myth_story String?
+    soul_question String?
+    practice_challenge String?
+    ritual_advice String?
+    harmony_advice String?
+    class_enable Boolean?
+}
