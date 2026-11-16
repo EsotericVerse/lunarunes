@@ -10,6 +10,8 @@ on:
       - 'web/**'
       - 'tests/lrune-core.test.mjs'
       - 'package.json'
+      - 'cloudflare.config.ts'
+      - 'scripts/assemble-rune-cloudflare.mjs'
       - '.github/workflows/verify-lrune-web.yml'
   workflow_dispatch:
 permissions:
