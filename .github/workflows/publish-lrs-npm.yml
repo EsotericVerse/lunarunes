@@ -1,0 +1,38 @@
+name: Publish independent LRS npm code module
+# No website deployment, no LOC/LAS build and no push-main trigger.
+on:
+  push:
+    tags:
+      - 'lrs-v*'
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  npm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - name: Verify exactly pinned module version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./modules/lrs/package.json').version")"
+          test "$RELEASE_TAG" = "lrs-v$version" || { echo '::error::LRS tag and package version disagree'; exit 1; }
+          test "$(node -p "require('./modules/lrs/package.json').name")" = '@lo3r/lrs'
+      - name: Verify tiny code-only npm package
+        run: node scripts/check-lrs-package.mjs
+      - name: Test LRS engines without Web, assets or Worker build
+        run: node --test tests/lrs-modules.test.mjs tests/lrs-life-engine.test.mjs
+      - name: Publish only this npm module
+        working-directory: modules/lrs
+        run: npm publish --access public --provenance --ignore-scripts

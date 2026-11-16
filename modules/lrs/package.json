@@ -1,0 +1,52 @@
+{
+  "name": "@lo3r/lrs",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Independent LunaRunes rune, card, daily and boardgame engines",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EsotericVerse/lunarunes.git",
+    "directory": "modules/lrs"
+  },
+  "exports": {
+    ".": "./index.mjs",
+    "./rune": "./rune/index.mjs",
+    "./card": "./card/index.mjs",
+    "./daily": "./daily/index.mjs",
+    "./boardgame": "./boardgame/index.mjs",
+    "./boardgame/ui": "./boardgame/ui.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.mjs",
+    "rune/**/*.mjs",
+    "rune/**/*.js",
+    "rune/**/*.jsx",
+    "rune/**/*.css",
+    "card/**/*.mjs",
+    "card/**/*.js",
+    "card/**/*.jsx",
+    "card/**/*.zmodel",
+    "daily/**/*.mjs",
+    "daily/**/*.js",
+    "daily/**/*.jsx",
+    "boardgame/**/*.mjs",
+    "boardgame/**/*.js",
+    "boardgame/**/*.jsx",
+    "boardgame/**/*.css"
+  ],
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
