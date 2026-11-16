@@ -5,16 +5,17 @@ on:
     paths:
       - 'wrangler.jsonc'
       - 'worker/**'
-      - 'web/**'
-      - 'app/lrunes/**'
-      - 'app/styles/**'
-      - 'tests/lrs-original-pages.test.mjs'
       - 'scripts/deploy-rune-cloudflare.mjs'
       - 'tests/lrs-cloudflare-deploy.test.mjs'
       - 'scripts/assemble-rune-cloudflare.mjs'
       - 'scripts/check-rune-cloudflare-release.mjs'
       - 'scripts/prepare-rune-**'
       - 'scripts/build-rune-artifacts.mjs'
+      - 'scripts/prepare-lrs-release-assets.mjs'
+      - 'scripts/build-lrs-modules.mjs'
+      - 'modules/lrs/rune/**'
+      - 'contracts/rune-original-art.json'
+      - 'assets/**'
       - 'package.json'
       - '.github/workflows/verify-lrs-worker-release.yml'
   workflow_dispatch:
@@ -35,8 +36,13 @@ jobs:
         run: node --test tests/lrs-original-pages.test.mjs
       - name: Confirm preview and production deployment are isolated
         run: npm run check:cloudflare:deploy
+      - name: Build original art and effects only if missing or pinned inputs changed
+        run: npm run build:lrs:assets:status
       - name: Build original art, actual Effekseer resources and Vite app
         run: npm run build:cloudflare
+      - name: Assert the art build is now reusable without re-preparing effects
+        run: |
+          npm run build:lrs:assets:status | grep '"reusable":true'
       - name: Verify complete local Worker release and original SHA-256 integrity
         run: npm run check:cloudflare:release
       - name: Validate Worker Static Assets deployment without publishing
