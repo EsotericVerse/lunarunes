@@ -7,7 +7,7 @@
  */
 import {createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
-import {copyFile,readFile,readdir,lstat,mkdir,mkdtemp,rename,rm,access,writeFile} from 'node:fs/promises';
+import {copyFile,readFile,readdir,lstat,mkdir,mkdtemp,rename,rm,access,writeFile,chmod} from 'node:fs/promises';
 import {createInterface} from 'node:readline';
 import {dirname,resolve,join,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -105,6 +105,7 @@ async function pack(source,destination){
    const filename=table.name+'.jsonl',sourceFile=join(input,filename);
    const metadata=await scan(table,sourceFile);
    await copyFile(sourceFile,join(temporary,filename));
+   await chmod(join(temporary,filename),0o600);
    records.push({table:table.name,file:filename,key:table.key,...metadata});
   }
   const version=JSON.parse(await readFile(join(root,'release/version.json'),'utf8'));
