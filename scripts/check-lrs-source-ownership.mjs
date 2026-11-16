@@ -9,7 +9,7 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const files=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'})
  .split(String.fromCharCode(0)).filter(Boolean);
 const fileSet=new Set(files);
-const removedPrefixes=['modules/lrune/','app/lrunes/effekseer/','app/loc/'];
+const removedPrefixes=['modules/lrune/','app/lrunes/effekseer/'];
 const removedPaths=new Set([
  'app/lrunes/game/GameBoard.jsx','app/lrunes/game/boardgame-rules.js',
  'app/lrunes/game/game-data.js','app/lrunes/game/game-board.css',
@@ -21,8 +21,10 @@ const removedPaths=new Set([
  'app/lrunes/visual/rune-art-stage.css',
  'app/lrunes/local-rune-records.mjs','app/daily/log/daily-record-slots.mjs'
 ]);
-const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix));
-const forbidden=files.filter(owns);
+const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix))||
+ ['app/loc/blocks/home-block-model.js','app/loc/blocks/hero-image.mjs',
+  'app/loc/model/moon-phase.js'].includes(p);
+const forbidden=files.filter(p=>p.startsWith('app/loc/')||owns(p));
 if(forbidden.length)throw Error('Legacy duplicate Rune implementation remains: '+forbidden.slice(0,10).join(', '));
 const expected=[
  'modules/lrs/rune/hero/home-presentation.mjs',
