@@ -9,6 +9,7 @@ import {createHash} from 'node:crypto';
 import {cp,mkdir,readFile,readdir,rm,rename,stat,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {runeMediaVersion,RUNE_MEDIA_VERSION_SCHEMA} from './rune-media-version.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const dist=path.join(root,'dist');
@@ -73,6 +74,7 @@ try{
   releaseEntries.sort((a,b)=>a.path.localeCompare(b.path,'en'));
   const output={schema:'lunarunes.cloudflare-release.v1',
     sourceCommit:manifest.sourceCommit,includesEffects:true,
+    mediaSchema:RUNE_MEDIA_VERSION_SCHEMA,mediaVersion:runeMediaVersion(releaseEntries),
     files:releaseEntries};
   await writeFile(path.join(stage,'rune-release.json'),JSON.stringify(output,null,2)+'\n');
   await rm(dest,{recursive:true,force:true});

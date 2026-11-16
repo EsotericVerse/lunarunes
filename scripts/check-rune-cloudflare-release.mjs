@@ -5,10 +5,15 @@ import {strict as assert} from 'node:assert';
 import {readFile,stat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
+import {runeMediaVersion,RUNE_MEDIA_VERSION_SCHEMA} from './rune-media-version.mjs';
 const root='dist/cloudflare';
 const release=JSON.parse(await readFile(path.join(root,'rune-release.json'),'utf8'));
 assert.equal(release.schema,'lunarunes.cloudflare-release.v1');
 assert.equal(release.includesEffects,true);
+assert.equal(release.mediaSchema,RUNE_MEDIA_VERSION_SCHEMA);
+assert.match(release.mediaVersion,/^[0-9a-f]{64}$/);
+assert.equal(release.mediaVersion,runeMediaVersion(release.files),
+  'Rune picture/effect content version mismatch');
 const records=new Map(release.files.map(e=>[e.path,e]));
 assert(!records.has('_redirects'),'Worker must use SPA not_found_handling instead of legacy _redirects');
 for (const required of [

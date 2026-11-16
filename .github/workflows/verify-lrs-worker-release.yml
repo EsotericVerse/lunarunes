@@ -10,6 +10,8 @@ on:
       - 'scripts/deploy-rune-cloudflare.mjs'
       - 'tests/lrs-cloudflare-deploy.test.mjs'
       - 'scripts/assemble-rune-cloudflare.mjs'
+      - 'scripts/rune-media-version.mjs'
+      - 'tests/lrs-media-version.test.mjs'
       - 'scripts/check-rune-cloudflare-release.mjs'
       - 'scripts/prepare-rune-**'
       - 'scripts/build-rune-artifacts.mjs'
@@ -35,7 +37,7 @@ jobs:
       - name: Install independent LRS dependencies
         run: npm install --no-audit --no-fund
       - name: Verify the exact public Rune read allowlist
-        run: node --test tests/lrs-original-pages.test.mjs
+        run: node --test tests/lrs-original-pages.test.mjs tests/lrs-media-version.test.mjs
       - name: Confirm preview and production deployment are isolated
         run: npm run check:cloudflare:deploy
       - name: Build original art and effects only if missing or pinned inputs changed
