@@ -18,6 +18,9 @@ const art=path.join(dist,'web');
 const dest=path.join(dist,'cloudflare');
 const stage=path.join(dist,'.cloudflare-stage-'+process.pid);
 const manifest=JSON.parse(await readFile(path.join(art,'rune-artifacts.json'),'utf8'));
+const version=JSON.parse(await readFile(path.join(root,'release','version.json'),'utf8'));
+if(version.schema!=='lunarunes.release-version.v1'||!/^\d+\.\d+R$/.test(version.version))
+  throw Error('LRS release must have a valid owner-designated version');
 if(manifest.schema!=='lunarunes.artifacts.v1'||manifest.target!=='web'||!manifest.includesEffects)
   throw Error('LunaRunes Cloudflare release requires a validated Web runtime/artifact pack');
 if(!(await stat(path.join(app,'index.html'))).size)throw Error('Missing standalone Rune Web build');
@@ -73,7 +76,7 @@ try{
      !seen.has('index.html'))throw Error('Rune Cloudflare release missing critical runtime dependencies');
   releaseEntries.sort((a,b)=>a.path.localeCompare(b.path,'en'));
   const output={schema:'lunarunes.cloudflare-release.v1',
-    sourceCommit:manifest.sourceCommit,includesEffects:true,
+    sourceCommit:manifest.sourceCommit,releaseVersion:version.version,includesEffects:true,
     mediaSchema:RUNE_MEDIA_VERSION_SCHEMA,mediaVersion:runeMediaVersion(releaseEntries),
     files:releaseEntries};
   await writeFile(path.join(stage,'rune-release.json'),JSON.stringify(output,null,2)+'\n');

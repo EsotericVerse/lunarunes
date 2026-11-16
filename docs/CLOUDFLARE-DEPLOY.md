@@ -1,14 +1,16 @@
-## Current release policy (2026-11-17) — authoritative over old migration notes below
+## Current release policy (2026-11-17) — supersedes historical migration notes below
 
-- **LRS PR/branch changes:** Preview only, never Production. The GitHub PR workflows validate full Worker outputs. A true cloud Preview requires Cloudflare Preview Builds enabled or an approved dedicated PR dispatch; no cross-repo build.
-- **LRS merge to `main`:** Updates source only. `scripts/deploy-rune-cloudflare.mjs` deliberately returns success without invoking Wrangler for Workers Builds on `main`, so a lingering automatic Build trigger cannot publish Production. Disable the unnecessary main Build trigger in Cloudflare only when one-time authorization is available.
-- **LRS manual production release:** Pin the intended **40-character SHA** already on `origin/main`; check out that exact SHA, build and verify LRS's own assets and Worker, then set `LRS_RELEASE_APPROVED=1`, `LRS_RELEASE_SHA=<exact SHA>` and an operator-supplied **one-time** `CLOUDFLARE_API_TOKEN` for `npm run deploy:cloudflare`. The script checks the checked-out SHA and that it descends from `origin/main`. Never store a permanent token or grant in source or output.
-- **LOC coordination:** LOC may request publishing a specific approved LRS SHA if different from the currently deployed one; this is the same release gate, **not** an automatic publication on LRS merge. LRS `rune-release.json` publishes its `mediaVersion` separately from its deployed game-code SHA. Neither requires three npm packages.
-- **iOS:** LOC owns the complete IPA workflow. LRS supplies pinned real-file assets; do not treat Web URLs as native material. LAS has no IPA ownership.
-- **No Cloudflare modifications were performed by this source change.** The current Git-connected main Build trigger still needs to be disabled or restricted at Cloudflare after release dispatch is available. Until then, production publication is blocked by the script, but the automatic Build itself can still consume time.
-- The older migration status and historical claims below are not a description of current effective deployment settings.
+- **LRS first release:** owner-designated `1.0R` in `release/version.json`, embedded in generated `rune-release.json`. This is a product/release label, not an npm package publish. The immutable deployed source is still identified by its 40-character Git commit SHA; the separate `mediaVersion` remains a content checksum.
+- **LRS PR updates:** build/verify an isolated Preview, never Production. No cross-repo Preview triggers.
+- **LRS merge into `main`:** Cloudflare Workers Builds automatically builds and deploys only the existing `lunarunes` Worker, using the existing GitHub connection, build token and deploy command. A regular LRS merge does not trigger LOC or LAS.
+- **LOC coordinated deployment:** LOC controls integration and compares pinned versions. It does not gain permission to publish LRS on every LRS change.
+- **Exceptional LOC dispatch:** existing `loc-lrs-emergency` path is reserved for verified security cases and an explicitly owner-approved major release at an exact SHA. All signed requests remain TTL-bound. No automatic grant, refresh, token creation, or fallback permission escalation. The exceptional path does not replace LRS's normal main auto-deploy.
+- **Manual source-pinned release:** the explicit `LRS_RELEASE_APPROVED=1` / `LRS_RELEASE_SHA=<40-character SHA>` path stays available with an operator-supplied existing valid credential; do not persist credentials in source.
+- **iOS:** LOC owns the complete IPA. LRS provides pinned real-file assets, rather than Web URLs; LAS owns Auth, SSO, MCP, Plugins and Tunnel, not IPA packaging.
+- **Cloudflare live configuration:** previously read from the connected account: repository `EsotericVerse/lunarunes`, branch `main`, build `npm run build:cloudflare`, deploy `npm run deploy:cloudflare`, `auto_build_enabled:true`, Preview enabled and existing `LOC_EMERGENCY_KEY` secret binding. This repository change does not alter those settings.
+- **Release gates:** review PR checks, confirm build output and live 2D/3D/daily/API smoke after merge. A passed build is not evidence of complete user-facing parity.
 
-### Manual release procedure (no persistent credential)
+### Manual pinned release procedure
 
 ```sh
 git fetch origin main
@@ -18,11 +20,11 @@ npm run check:cloudflare:deploy
 npm run build:cloudflare
 npm run check:cloudflare:release
 npm run deploy:cloudflare:dry-run
-# Supply a one-time Cloudflare API token in the process environment.
+# Supply an existing one-time credential outside source; no auto-grant.
 # LRS_RELEASE_APPROVED=1 LRS_RELEASE_SHA=<EXACT_LRS_MAIN_SHA> npm run deploy:cloudflare
 ```
 
-The deploy command refuses to publish if it is not running at that exact committed source revision or lacks the explicit approval/token. Confirm the Worker deployment version and actual media/API routes after release.
+The manual command checks the exact source SHA. The routine main deployment uses the separate Cloudflare Builds branch gate.
 
 ---
 

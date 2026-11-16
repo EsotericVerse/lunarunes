@@ -1,0 +1,7 @@
+{
+  "schema": "lunarunes.release-version.v1",
+  "version": "1.0R",
+  "status": "initial-release",
+  "owner": "LRS",
+  "notes": "Owner-designated first LRS release; exact Git SHA remains the immutable release identity."
+}
