@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Kysely,PostgresDialect} from 'kysely';
+import {Kysely,PostgresDialect,MysqlDialect,MssqlDialect} from 'kysely';
 import {publicRuneQuery,handlePublicRuneRead} from '../worker/public-rune-read.mjs';
-import {lrsPublicSelect,readLrsPublicRows} from '../worker/lrs-database.mjs';
+import {lrsPhysicalSchema,lrsPublicSelect,readLrsPublicRows} from '../worker/lrs-database.mjs';
 
 const hero={table:'silver.lrunes_blocks',query:{
   columns:'uid,page_name,block_title,block_text,block_image,block_order',
@@ -98,4 +98,44 @@ test('failed database connections never expose credentials or fake empty data',a
   assert(!result.includes('password'));
   assert(!result.includes('db.example'));
   assert(!result.includes('rows'));
+});
+
+test('LRS physical table location is Worker-owned and cannot be selected by a public client',async()=>{
+  assert.equal(lrsPhysicalSchema('lrs'),'lrs');
+  assert.throws(()=>lrsPhysicalSchema('loc.private'),/Invalid LRS/);
+  assert.throws(()=>lrsPhysicalSchema('information_schema'),/Invalid LRS/);
+  const q=publicRuneQuery(card);
+  const pg=new Kysely({dialect:new PostgresDialect({pool:{}})});
+  const statement=lrsPublicSelect(pg,q,{schema:'lrs'}).compile();
+  assert.match(statement.sql,/"lrs"\."runes"/);
+  assert.deepEqual(statement.parameters,[66,1,0]);
+  assert.throws(()=>lrsPublicSelect(pg,q,{schema:'loc.private'}),/Invalid LRS/);
+  let physical;
+  const response=await handlePublicRuneRead(requestFor(card),{
+    LRS_DATABASE_URL:'postgresql://lrs-only.example/runes',
+    LRS_DATABASE_SCHEMA:'lrs'
+  },async(_url,_q,options)=>{physical=options.schema;return {rows:[]}});
+  assert.equal(response.status,200);
+  assert.equal(physical,'lrs');
+  assert.equal(publicRuneQuery({...card,query:{...card.query,schema:'loc'}}),null);
+});
+
+test('one LRS read query compiles under PostgreSQL, MySQL and MSSQL without driver access',()=>{
+  // This proves SQL compilation portability, NOT live connectivity, DDL or
+  // that every target server has already been provisioned.
+  const query=publicRuneQuery(hero);
+  const dialects=[
+    ['postgres',new PostgresDialect({pool:{}})],
+    ['mysql',new MysqlDialect({pool:{}})],
+    ['mssql',new MssqlDialect({tedious:{},tarn:{}})]
+  ];
+  for(const [name,dialect] of dialects){
+    const db=new Kysely({dialect});
+    const compiled=lrsPublicSelect(db,query,{schema:'lrs'}).compile();
+    assert.match(compiled.sql,/select/i,name);
+    assert.match(compiled.sql,/lrunes_blocks/i,name);
+    assert.match(compiled.sql,/page_name/i,name);
+    assert.match(compiled.sql,/order by/i,name);
+    assert(compiled.parameters.includes('hero'),name+' must bind filter values');
+  }
 });

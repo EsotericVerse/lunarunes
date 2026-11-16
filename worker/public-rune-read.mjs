@@ -79,7 +79,7 @@ export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublic
   if(typeof connection!=='string'||!connection.trim())
     return response({error:'LRS database connection is not configured'},503);
   try{
-    const result=await readImpl(connection,query);
+    const result=await readImpl(connection,query,{schema:env?.LRS_DATABASE_SCHEMA||'silver'});
     if(!result||!Array.isArray(result.rows))
       return response({error:'Invalid LRS database read response'},502);
     return response({rows:result.rows,dataSource:'lrs-database'},200);
