@@ -10,6 +10,7 @@ const release=JSON.parse(await readFile(path.join(root,'rune-release.json'),'utf
 assert.equal(release.schema,'lunarunes.cloudflare-release.v1');
 assert.equal(release.includesEffects,true);
 const records=new Map(release.files.map(e=>[e.path,e]));
+assert(!records.has('_redirects'),'Worker must use SPA not_found_handling instead of legacy _redirects');
 for (const required of [
   'index.html','assets/lunarunes/cards/00.png',
   'assets/lunarunes/cards/66.png','assets/site/icons/lrunes-favicon.png',

@@ -40,6 +40,10 @@ async function recursivelyCopy(dir,prefix=''){
   for(const entry of await readdir(dir,{withFileTypes:true})){
     if(entry.isSymbolicLink())throw Error('Refusing to publish symlink');
     const relative=path.posix.join(prefix,entry.name),real=path.join(dir,entry.name);
+    // Wrangler serves the SPA via assets.not_found_handling; the legacy
+    // /lrunes/* _redirects rewrite loops at Worker publish time (100324).
+    // Keep the Vite _redirects for other local/legacy previews, never Worker.
+    if(relative==='_redirects')continue;
     if(entry.isDirectory())await recursivelyCopy(real,relative);
     else if(entry.isFile())await install(real,relative);
     else throw Error('Unsupported file type: '+relative);
