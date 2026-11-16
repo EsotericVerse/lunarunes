@@ -9,9 +9,9 @@ test('LRS main merge deploys LRS itself, independently of LOC',()=>{
   assert.equal(deploymentMode(env),'automatic');
   assert.deepEqual(deploymentArgs(env),['deploy']);
 });
-test('LRS feature branch Workers Builds only creates an isolated preview',()=>{
-  assert.equal(deploymentMode({WORKERS_CI:'1',WORKERS_CI_BRANCH:'work/rune-art'}),'preview');
-  assert.deepEqual(deploymentArgs({WORKERS_CI:'1',WORKERS_CI_BRANCH:'feature/game'}),['preview']);
+test('LRS branch Workers Builds never creates a dev or preview Worker',()=>{
+  assert.equal(deploymentMode({WORKERS_CI:'1',WORKERS_CI_BRANCH:'work/rune-art'}),'skip');
+  assert.deepEqual(deploymentArgs({WORKERS_CI:'1',WORKERS_CI_BRANCH:'feature/game'}),[]);
 });
 test('Missing Workers branch is rejected, never guessed as production',()=>{
   assert.throws(()=>deploymentMode({WORKERS_CI:'1'}),/Missing WORKERS_CI_BRANCH/);
@@ -27,11 +27,11 @@ test('Approved production release requires an exact immutable commit SHA',()=>{
   assert.equal(deploymentMode({LRS_RELEASE_APPROVED:'1',LRS_RELEASE_SHA:sha}),'deploy');
   assert.deepEqual(deploymentArgs({LRS_RELEASE_APPROVED:'1',LRS_RELEASE_SHA:sha}),['deploy']);
 });
-test('Wrangler native SPA and Worker preview config remain intact',async()=>{
+test('Wrangler native SPA stays on the single existing Worker',async()=>{
   const cfg=JSON.parse(await readFile('wrangler.jsonc','utf8'));
   assert.equal(cfg.name,'lunarunes');
   assert.equal(cfg.assets.not_found_handling,'single-page-application');
-  assert.deepEqual(cfg.previews,{});
+  assert.equal(cfg.main,'worker/index.mjs');
 });
 
 test('the current LRS product release baseline is owner-designated 1.0R, not an npm publication',async()=>{
