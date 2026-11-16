@@ -1,4 +1,5 @@
-import {useMemo} from 'react';
+import {useEffect,useMemo,useState} from 'react';
+import {readPublicRuneHero} from './rune-dialect.mjs';
 import heroBlocks from '../../../app/modular/published-blocks/lrunes/hero.js';
 import {HomeBlock} from '../../../app/loc/blocks/home-block-model.js';
 import {parseBlockImage} from '../../../app/loc/blocks/hero-image.mjs';
@@ -54,10 +55,24 @@ export default function ScopeEditableBlocks({
   renderDisplay,resolveSlotClassName,resolveSlotStyle,toggleExtra,containerless,
   slotClassName='loc-card',className=''
 }){
-  // Source-of-truth live published-block reads remain a migration gate.
-  // Do not silently present a snapshot as the current database state.
-  if(scopeId!=='lrunes'||page!=='hero')throw new Error('LRS only implements its original public Rune Hero');
-  const slots=useMemo(()=>publishedSlots.filter(slot=>!maxBlocks||slot.order<=maxBlocks),[maxBlocks]);
+  // The snapshot preserves the original Hero while its current published
+  // rows are fetched from LOC. Only public SELECT is permitted here.
+  const [blocks,setBlocks]=useState(publishedSlots);
+  const [failure,setFailure]=useState('');
+  useEffect(()=>{
+    if(scopeId!=='lrunes'||page!=='hero')return;
+    let mounted=true;
+    readPublicRuneHero().then(rows=>{
+      if(!mounted)return;
+      setBlocks(rows.map(normalizeRow).sort((a,b)=>a.order-b.order));
+      setFailure('');
+    }).catch(error=>{
+      if(mounted)setFailure('Hero 即時同步失敗，暫時顯示已發布版本。');
+      console.warn('[LRS Hero] Public read unavailable',error);
+    });
+    return()=>{mounted=false;};
+  },[scopeId,page]);
+  const slots=useMemo(()=>blocks.filter(slot=>!maxBlocks||slot.order<=maxBlocks),[blocks,maxBlocks]);
   const contents=<>
     {slots.map(slot=><section key={slot.uid||slot.order}
       className={(resolveSlotClassName?.(slot)||slotClassName)+' scope-editable-block'}
@@ -65,6 +80,7 @@ export default function ScopeEditableBlocks({
       {renderDisplay?.(slot)||RunesHomeBlockDisplay(slot)}
     </section>)}
     {slots.length===0&&placeholderFirstOrder?<section className="scope-status" role="status">符文首頁 Hero 尚未發布。</section>:null}
+    {failure?<p className="scope-status" role="status">{failure}</p>:null}
     {toggleExtra?<div className="scope-edit-mode-toggle">{toggleExtra}</div>:null}
   </>;
   return containerless?contents:<div className={'scope-editable-block-grid '+className}>{contents}</div>;
