@@ -2,8 +2,8 @@ import {bindCardDialect} from '../../../app/lrunes/rune-draw-core.mjs';
 import {lrsCardRune66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 
 // Public-read port. LRS sends only bounded, anonymous read requests to its
-// own existing Worker. The LRS Worker owns the LRS_DATABASE_URL secret, while
-// the existing LOC language/keyword modules remain unchanged.
+// own existing Worker. Only the LRS Worker may hold LRS_DATABASE_URL;
+// Rune Web must not access another project's database or private record APIs.
 let readRows=null;
 const ALLOWED_TABLES=new Set([
   'silver.runes','silver.runes_etc','silver.runes_group','silver.lrunes_blocks'
@@ -15,7 +15,7 @@ export function bindRunePublicReadPort(adapter){
 }
 export async function selectRows(table,query){
   if(!ALLOWED_TABLES.has(table))throw new Error('Unsupported LRS public table: '+table);
-  if(!readRows)throw new Error('LRS 原版符文資料讀取尚未連接 loc:dialect；不能使用展示資料替代。');
+  if(!readRows)throw new Error('LRS 原版符文資料讀取尚未連接 LRS Worker；不能使用展示資料替代。');
   return readRows(table,query);
 }
 export async function readPublicRuneHero(){
