@@ -19,17 +19,17 @@ function randomIndex(max){
 function directionNo(direction){return RUNE_DIRECTIONS.indexOf(direction)+1;}
 
 /**
- * lrs:card data port. LOC loc:dialect supplies readRows and ZModel projection.
- * The card module does not know SQL engines, connection credentials, RLS,
- * database routing or backup failover; those remain strictly in LOC.
+ * lrs:card business read port. The LRS runtime supplies readRows and an
+ * explicit LRS Rune field projection; no SQL engine, credential, schema
+ * selection, authentication or failover is performed in the card algorithm.
  */
 export function createCardModule({readRows,projectColumns}={}){
   if(typeof readRows!=='function'||typeof projectColumns!=='function')
-    throw new TypeError('lrs:card requires loc:dialect readRows and projectColumns');
+    throw new TypeError('lrs:card requires explicit LRS readRows and projectColumns');
   const selectRows=readRows;
   const RUNE_COLUMNS=projectColumns(...RUNE_FIELDS);
   if(typeof RUNE_COLUMNS!=='string'||!RUNE_COLUMNS.trim()||RUNE_COLUMNS==='*')
-    throw new TypeError('loc:dialect must provide explicit LRunes66 fields');
+    throw new TypeError('LRS read port must provide explicit LRunes66 fields');
 // Multi-card draws read exactly one sit_q for each drawn rune, in draw order.
 async function loadVerseOnlyCards(pairs,currentMoon){
   if(!currentMoon||currentMoon==='未知')throw new Error('真實月相無法辨識，無法查詢組合籤詩。');

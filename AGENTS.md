@@ -33,7 +33,7 @@
 ## LRS 與另外兩個 Repository 的界線
 
 - **只修改 `EsotericVerse/lunarunes`。** 不擅改 LOC、LAS 的原始碼、路由、Cloudflare、SSO、資料庫、Hero 或 IPA 工作流程。
-- LOC 自有 Galaxy、Z-Model、`loc:dialect`、語言分析及 Hero。LRS 若需要 SQL，只用既定可版本化的 `loc:dialect` 接口；不複製／建置整個 LOC。
+- **LRS 自行持有符文資料所有權與資料存取契約**；只透過自己的 Worker／程式端口存取自己的資料，不借用 LOC／LAS 的資料庫 URL 或授權。SQL 引擎／Dialect 的設計或測試不屬於遊戲本次任務，嚴禁藉資料切割改動其他 Repo。
 - LOC 擁有完整 App／IPA 打包流程；LRS 交付固定 Git SHA 的真實 iOS 素材，由 LOC 現有 IPA 工程整合。LAS 只負責 Auth／SSO／OAuth／MCP／Plugins／Tunnel，**不負責 IPA**；LRS 不開第二套 IPA。
 - **LRS Web 素材由 LRS 獨立部署**；其他 Web 使用者以資產 URL 引用，iOS 是實體檔案交付，不混同。LRS `main` 合併後自動部署**唯一既有** `lunarunes` Production Worker；不部署 dev／Preview，不因日常 LRS 更新觸發 LOC。緊急及由作者裁定的大版本，才走既有 LOC 特殊通道與限時授權，禁止自行 Grant／Renew。不得擅改正式 Trigger。
 - 不因跨模組的需求就在其他 Repo 建相似實作；介面有問題，查來源與當前契約，不能自行代另一邊決策。

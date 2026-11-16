@@ -1,0 +1,94 @@
+{
+  "schema": "lrs.data-ownership.v1",
+  "owner": "lrs",
+  "sourceSchema": "silver",
+  "description": "LRS data handoff only. Physical database URL, engine, migration execution and activation are owner-controlled and never recorded here.",
+  "tables": [
+    {
+      "name": "runes",
+      "key": [
+        "rune_id"
+      ],
+      "class": "public-reference",
+      "required": true,
+      "expectedRows": 67
+    },
+    {
+      "name": "runes_etc",
+      "key": [
+        "rune_id",
+        "dir",
+        "type",
+        "current_moon"
+      ],
+      "class": "public-reference",
+      "required": true
+    },
+    {
+      "name": "runes_group",
+      "key": [
+        "group_id"
+      ],
+      "class": "public-reference",
+      "required": true,
+      "expectedRows": 9
+    },
+    {
+      "name": "lrunes_blocks",
+      "key": [
+        "uid"
+      ],
+      "class": "managed-content",
+      "required": true,
+      "publicRead": "hero-only"
+    },
+    {
+      "name": "lrunes_daily",
+      "key": [
+        "record_id"
+      ],
+      "class": "private-user-records",
+      "required": true,
+      "publicRead": "never"
+    },
+    {
+      "name": "lrunes_anchor",
+      "key": [
+        "uid"
+      ],
+      "class": "private-content",
+      "required": true,
+      "publicRead": "never"
+    },
+    {
+      "name": "lrunes_galaxy",
+      "key": [
+        "uid"
+      ],
+      "class": "private-content",
+      "required": true,
+      "publicRead": "never"
+    }
+  ],
+  "publicReadAllowlist": [
+    "runes",
+    "runes_etc",
+    "runes_group",
+    "lrunes_blocks"
+  ],
+  "restrictedReads": {
+    "lrunes_blocks": "hero-only"
+  },
+  "privateByDefault": [
+    "lrunes_daily",
+    "lrunes_anchor",
+    "lrunes_galaxy"
+  ],
+  "nonOwners": [
+    "loc",
+    "las"
+  ],
+  "activation": "operator-explicit-only",
+  "sourceAndTargetConnections": "operator-provided-out-of-band",
+  "notes": "Source data can reside in legacy schemas before migration. This contract does not move rows, grant access, create a schema or change a live connection."
+}
