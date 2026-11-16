@@ -3,7 +3,7 @@
   "version": "0.1.0-migration",
   "private": true,
   "type": "module",
-  "description": "LunaRunes: independent lrs:rune, lrs:card, lrs:boardgame",
+  "description": "lo3r@lrs LunaRunes: rune, boardgame, card, daily independently exported modules",
   "scripts": {
     "art:verify": "node scripts/build-rune-artifacts.mjs --target=web --art-only --verify-only",
     "artifacts:web:art": "node scripts/build-rune-artifacts.mjs --target=web --art-only",
@@ -32,7 +32,8 @@
     ".": "./modules/lrs/index.mjs",
     "./rune": "./modules/lrs/rune/index.mjs",
     "./card": "./modules/lrs/card/index.mjs",
-    "./boardgame": "./modules/lrs/boardgame/index.mjs"
+    "./boardgame": "./modules/lrs/boardgame/index.mjs",
+    "./daily": "./modules/lrs/daily/index.mjs"
   },
   "files": [
     "modules/lrs/**",

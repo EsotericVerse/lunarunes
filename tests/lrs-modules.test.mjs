@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {LRS_MODULE,rune,card,boardgame} from '../modules/lrs/index.mjs';
+import {LRS_MODULE,rune,card,boardgame,daily} from '../modules/lrs/index.mjs';
 test('canonical lrs module IDs and URL contract',()=>{
-  assert.deepEqual(LRS_MODULE.modules,{rune:'lrs:rune',boardgame:'lrs:boardgame',card:'lrs:card'});
+  assert.deepEqual(LRS_MODULE.modules,{rune:'lrs:rune',boardgame:'lrs:boardgame',card:'lrs:card',daily:'lrs:daily'});
   assert.equal(LRS_MODULE.repository,'EsotericVerse/lunarunes');
   assert.equal(rune.runeAssetUrl('assets/lunarunes/cards/00.png'),'/assets/lunarunes/cards/00.png');
   assert.throws(()=>rune.runeAssetUrl('../secrets'));
@@ -62,4 +62,26 @@ test('lrs:card preserves single-card static and moon-conditioned data reads',asy
   assert.equal(cards[0].rune_etc.sit_q[1],'今日狀況');
   assert.equal(calls.length,3);
   await assert.rejects(()=>runtime.loadDrawCards([{runeNumber:1,dir:1}],{moonTypes:['sit_q'],currentMoon:'未知'}),/月相/);
+});
+
+test('lrs:daily requires explicit host SQL and lunar time ports',async()=>{
+  assert.equal(LRS_MODULE.identity,'lo3r@lrs');
+  assert.throws(()=>daily.createDailyModule(),/loc:dialect/);
+  assert.throws(()=>daily.createDailyModule({readDailyMonth:async()=>[],readDailyRange:async()=>[]}),/loc:time/);
+  const calls=[];
+  const runtime=daily.createDailyModule({
+    readDailyMonth:async query=>{calls.push(['month',query]);return [{record_date:'2026-11-01'}];},
+    readDailyRange:async query=>{calls.push(['range',query]);return [];},
+    phaseAtDate:()=> '新月'
+  });
+  const month={year:2026,month:11};
+  assert.equal((await runtime.readMonth(month))[0].record_date,'2026-11-01');
+  await runtime.readRange({start:'2026-11-01',end:'2026-11-03'});
+  assert.deepEqual(calls[0],['month',month]);
+  const lanes=[{source:'daily:rune',scopeId:'lrunes'}];
+  const moon=runtime.moonRiver('2026-11-01','2026-11-03',lanes,1);
+  assert.equal(moon.length,1);
+  assert.equal(moon[0].moon_phase,'新月');
+  assert.equal(runtime.moonRiver('2026-11-01','2026-11-03',lanes,0).length,0);
+  assert.equal(daily.DAILY_MOON_PHASES.length,5);
 });

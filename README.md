@@ -1,12 +1,13 @@
 # LunaRunes — modular Rune and game engine
 
-This repository owns the **LunaRunes (lrs)** modules. The canonical, user-selected logical identifiers are:
+This repository owns the **lo3r@lrs · LunaRunes (lrs)** modules. The canonical, user-selected logical identifiers are:
 
 | Module | Responsibility | Code |
 | --- | --- | --- |
 | `lrs:rune` | 66 Rune foundation, groups, canonical image identity, source artwork, Three.js/Effekseer/WASM resources | `modules/lrs/rune/` |
 | `lrs:boardgame` | Existing local tabletop rules and gameplay | `modules/lrs/boardgame/` |
 | `lrs:card` | Card draw algorithms, directions, spreads, moon-phase readings and card text composition | `modules/lrs/card/` |
+| `lrs:daily` | Daily Rune records, moon calendar and daily-data contract | `modules/lrs/daily/` |
 
 **SQL is not owned by LRS.** LOC's `loc:dialect` supplies `readRows` and the ZModel-backed column projector to `lrs:card`. The card module does not import database drivers, credentials, LOC authorization or SQL transports.
 
@@ -20,6 +21,7 @@ The published **logical module IDs** contain a colon; portable JavaScript module
 import {runeImage} from 'lrs/rune';                 // lrs:rune
 import {createLunaRunesGame} from 'lrs/boardgame'; // lrs:boardgame
 import {createCardModule} from 'lrs/card';         // lrs:card
+import {createDailyModule} from 'lrs/daily';       // lrs:daily
 // LOC-side:
 // import {createLocRuneCardDialect} from './modules/loc/dialect/lrs-card.mjs';
 // const draw = createCardModule(createLocRuneCardDialect());
@@ -64,3 +66,5 @@ LRS `lrs:card` and the LOC `loc:dialect` adapter exist in separate work branches
 The future Rune-life simulation and election-strategy games remain planned; they are not yet implemented.
 
 [Engineering handoff](docs/MIGRATION-HANDOFF.md) · [Asset integrity/hand-off contract](docs/ARTIFACT-CONTRACT.md)
+
+The canonical three-way architecture and precise IDs `lo3r@loc`, `lo3r@lrs`, `lo3r@las` are documented in [Luna Module Architecture](docs/LUNA-MODULE-ARCHITECTURE.md).

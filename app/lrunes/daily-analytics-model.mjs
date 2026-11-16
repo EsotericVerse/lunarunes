@@ -1,4 +1,6 @@
 import {statisticsWeekKey} from '../modular/modules/statistics/statistics-time-zoom.mjs';
+import {DAILY_MOON_PHASES} from '../../modules/lrs/daily/phases.mjs';
+export {DAILY_MOON_PHASES};
 
 // LunaRunes-only daily-draw analytics. No other Scope consumes this module.
 export const DAILY_RUNE_PAGE_SIZE=8;
@@ -6,7 +8,7 @@ export const DAILY_RUNE_MODES=Object.freeze([
   {value:'rune',label:'符文出現次數'},
   {value:'direction',label:'位向趨勢'}
 ]);
-export const DAILY_MOON_PHASES=Object.freeze(['新月','上弦','滿月','下弦','空亡']);
+
 export const DAILY_DIRECTIONS=Object.freeze(['正位','半正位','半逆位','逆位']);
 
 // Experimental culture scoring only. The four intrinsic phases come directly
