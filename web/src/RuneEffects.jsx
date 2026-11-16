@@ -1,6 +1,6 @@
 import {useState} from 'react';
-import EffekseerStage from '../../app/lrunes/effekseer/EffekseerStage.jsx';
-import '../../app/lrunes/effekseer/effekseer-stage.css';
+import EffekseerStage from '../../modules/lrs/rune/vfx/EffekseerStage.jsx';
+import '../../modules/lrs/rune/vfx/effekseer-stage.css';
 
 // Engine smoke test: one authored scene, NOT a replacement for the full
 // database-backed draw, moon phase, or 66-rune effect regression suite.

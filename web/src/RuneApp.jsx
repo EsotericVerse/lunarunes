@@ -1,7 +1,7 @@
 import {lazy,Suspense,useEffect,useState} from 'react';
 import RunesClient from '../../app/lrunes/RunesClient.jsx';
 import {pageFromPath} from './runtime/rune-routes.mjs';
-import GameBoard from '../../app/lrunes/game/GameBoard.jsx';
+import GameBoard from '../../modules/lrs/boardgame/GameBoard.jsx';
 // These are LOC's original 2D/3D presentation components, not a new gallery.
 const RuneUnifiedView=lazy(()=>import('../../app/lrunes/RuneUnifiedView.jsx'));
 const RuneArtNav=lazy(()=>import('../../app/lrunes/Rune3DNav.jsx'));

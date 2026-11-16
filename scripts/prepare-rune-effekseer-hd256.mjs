@@ -11,7 +11,7 @@ import {copyFile,mkdir,rename,rm,writeFile} from 'node:fs/promises';
 import {dirname,resolve,sep} from 'node:path';
 import sharp from 'sharp';
 import {EFFECT_ASSET_BLOBS} from './rune-effekseer-asset-manifest.mjs';
-import {HD256_SPRITE_EDGE,redirectHd256ParticleTexture} from '../app/lrunes/effekseer/hd256-particle-paths.mjs';
+import {HD256_SPRITE_EDGE,redirectHd256ParticleTexture} from '../modules/lrs/rune/vfx/hd256-particle-paths.mjs';
 
 const ROOT=resolve('public/vendor/effekseer/Collections');
 const REPORT=resolve('public/vendor/effekseer/hd256-report.json');

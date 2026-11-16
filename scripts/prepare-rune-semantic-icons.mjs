@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {mkdir,readFile,rename,rm,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {RUNE_SEMANTIC_ICONS,SEMANTIC_ICON_REVISION} from '../app/lrunes/effekseer/rune-semantic-icons.mjs';
+import {RUNE_SEMANTIC_ICONS,SEMANTIC_ICON_REVISION} from '../modules/lrs/rune/vfx/rune-semantic-icons.mjs';
 
 // Game-Icons.net: pre-authored, meaning-specific icons, not generated VFX.
 // CC BY 3.0 attribution and original author paths are retained in NOTICE.txt.

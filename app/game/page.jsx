@@ -1,4 +1,4 @@
-import GameBoard from '../lrunes/game/GameBoard';
+import GameBoard from '../../modules/lrs/boardgame/GameBoard.jsx';
 import {lunarunesMetadata} from '../seo/metadata';
 
 export const metadata=lunarunesMetadata({
