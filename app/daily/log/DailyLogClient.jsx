@@ -2,12 +2,12 @@
 
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import DailyRuneCalendar from '../../lrunes/DailyRuneCalendar';
-import {dailyRecordSlots,availableDailyRuneKind} from './daily-record-slots.mjs';
+import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/daily/record-slots.mjs';
 import {Capacitor} from '@capacitor/core';
 import DailyRuneTransfer from '../../lrunes/DailyRuneTransfer';
 import ContextReturnNav from '../../modular/ContextReturnNav';
 import RuneCardInfo from '../../lrunes/RuneCardInfo';
-import {runeImage} from '../../lrunes/rune-directory.mjs';
+import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {
   deleteDailyRuneRecord,
   insertDailyRuneRecord,
@@ -21,7 +21,7 @@ import {selectRows} from '../../loc/db/db-query.mjs';
 import {lRunes66ColumnString} from '../../../packages/zenstack/lrunes-read-model.mjs';
 import {useAccount} from '../../loc/auth/use-account';
 import {useResourceCache} from '../../../packages/zenstack/client-queries';
-import {listLocalDailyRunes,importLocalDailyTransfer,updateLocalDailyRune,deleteLocalDailyRune} from '../../lrunes/local-rune-records.mjs';
+import {listLocalDailyRunes,importLocalDailyTransfer,updateLocalDailyRune,deleteLocalDailyRune} from '../../../modules/lrs/daily/local-records.mjs';
 
 const FIRST_MONTH=2026*12+7;
 const EMPTY_ROWS=Object.freeze([]);

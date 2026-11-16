@@ -5,7 +5,7 @@ import {Capacitor} from '@capacitor/core';
 import {dbAuthRelation} from '../loc/db/db-client.mjs';
 import {selectAllRows} from '../loc/db/db-query.mjs';
 import {writeImportBatches} from '../loc/import/batch.mjs';
-import {listLocalDailyRunes,importLocalDailyTransfer} from './local-rune-records.mjs';
+import {listLocalDailyRunes,importLocalDailyTransfer} from '../../modules/lrs/daily/local-records.mjs';
 import {
   DAILY_TRANSFER_MAX_BYTES,DAILY_TRANSFER_BATCH,analyzeDailyImport,parseDailyCsv,makeDailyTransfer,planDailyTransfer
 } from './daily-transfer-contract.mjs';
