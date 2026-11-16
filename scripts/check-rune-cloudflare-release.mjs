@@ -15,7 +15,7 @@ for (const required of [
   'index.html','assets/lunarunes/cards/00.png',
   'assets/lunarunes/cards/66.png','assets/site/icons/lrunes-favicon.png',
   'vendor/effekseer/effekseer.js','vendor/effekseer/effekseer.wasm',
-  'pics/01.soul.jpg','pics/09_specia.jpg','pics/LunaRunesGame.jpg'
+  'LunarRunesCardCut.pdf','pics/01.soul.jpg','pics/09_specia.jpg','pics/LunaRunesGame.jpg'
 ])assert(records.has(required),'Missing LRS Worker asset '+required);
 const effects=[...records.keys()].filter(p=>p.endsWith('.efkefc'));
 const icons=[...records.keys()].filter(p=>p.startsWith('vendor/rune-semantic-icons/')&&p.endsWith('.svg'));
