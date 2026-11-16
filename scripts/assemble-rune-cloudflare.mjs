@@ -59,6 +59,8 @@ try{
     const published=entry.path.startsWith('assets/pics/')?entry.path.slice('assets/'.length):entry.path;
     await install(path.join(art,...entry.path.split('/')),published,entry);
   }
+  // The original Rune card-cut download is LRS-owned, not a LOC build input.
+  await install(path.join(root,'assets','lunarunes','source','LunarRunesCardCut.pdf'),'LunarRunesCardCut.pdf');
   for(const name of [
     'LunaRunes-hero.jpg','LunaRunes-hero_s.webp','LunaRunesGame.jpg',
     'LunaRunes.webp','lrunes66_overview.jpg','lrunes66_overview_s.jpg'
