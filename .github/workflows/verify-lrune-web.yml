@@ -8,6 +8,8 @@ on:
       - 'modules/lrune/**'
       - 'modules/lrs/**'
       - 'web/**'
+      - 'worker/**'
+      - 'tests/lrs-original-pages.test.mjs'
       - 'tests/lrune-core.test.mjs'
       - 'package.json'
       - 'cloudflare.config.ts'
@@ -41,6 +43,8 @@ jobs:
         run: npm run check:lrs:consumer
       - name: Verify portable lrs package excludes art binaries and build files
         run: npm run check:lrs:package
+      - name: Verify read-only original-page transport and real upstream response contract
+        run: node --test tests/lrs-original-pages.test.mjs
       - name: Build standalone Rune Web (LOC and LunArcus are not required)
         run: npm run build:web
       - name: Verify independent build has no bundled original art/WASM
