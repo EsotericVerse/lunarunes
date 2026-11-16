@@ -2,8 +2,8 @@ import {bindCardDialect} from '../../../app/lrunes/rune-draw-core.mjs';
 import {lrsCardRune66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 
 // Public-read port. LRS sends only bounded, anonymous read requests to its
-// own existing Worker. LOC still validates the request using its current
-// Kysely + ZenStack + Zod contract and owns the actual SQL connection.
+// own existing Worker. The LRS Worker owns the LRS_DATABASE_URL secret, while
+// the existing LOC language/keyword modules remain unchanged.
 let readRows=null;
 const ALLOWED_TABLES=new Set([
   'silver.runes','silver.runes_etc','silver.runes_group','silver.lrunes_blocks'
