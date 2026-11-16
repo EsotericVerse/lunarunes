@@ -1,13 +1,13 @@
 ## Current release policy (2026-11-17) — supersedes historical migration notes below
 
 - **LRS first release:** owner-designated `1.0R` in `release/version.json`, embedded in generated `rune-release.json`. This is a product/release label, not an npm package publish. The immutable deployed source is still identified by its 40-character Git commit SHA; the separate `mediaVersion` remains a content checksum.
-- **LRS PR updates:** build/verify an isolated Preview, never Production. No cross-repo Preview triggers.
+- **LRS PR updates:** source-only GitHub CI checks. No Cloudflare Preview, no dev Worker or preview deployment. Only the existing `lunarunes` production Worker may be deployed from `main`.
 - **LRS merge into `main`:** Cloudflare Workers Builds automatically builds and deploys only the existing `lunarunes` Worker, using the existing GitHub connection, build token and deploy command. A regular LRS merge does not trigger LOC or LAS.
 - **LOC coordinated deployment:** LOC controls integration and compares pinned versions. It does not gain permission to publish LRS on every LRS change.
 - **Exceptional LOC dispatch:** existing `loc-lrs-emergency` path is reserved for verified security cases and an explicitly owner-approved major release at an exact SHA. All signed requests remain TTL-bound. No automatic grant, refresh, token creation, or fallback permission escalation. The exceptional path does not replace LRS's normal main auto-deploy.
 - **Manual source-pinned release:** the explicit `LRS_RELEASE_APPROVED=1` / `LRS_RELEASE_SHA=<40-character SHA>` path stays available with an operator-supplied existing valid credential; do not persist credentials in source.
 - **iOS:** LOC owns the complete IPA. LRS provides pinned real-file assets, rather than Web URLs; LAS owns Auth, SSO, MCP, Plugins and Tunnel, not IPA packaging.
-- **Cloudflare live configuration:** previously read from the connected account: repository `EsotericVerse/lunarunes`, branch `main`, build `npm run build:cloudflare`, deploy `npm run deploy:cloudflare`, `auto_build_enabled:true`, Preview enabled and existing `LOC_EMERGENCY_KEY` secret binding. This repository change does not alter those settings.
+- **Cloudflare live configuration:** previously read from the connected account: repository `EsotericVerse/lunarunes`, branch `main`, build `npm run build:cloudflare`, deploy `npm run deploy:cloudflare`, `auto_build_enabled:true`, Preview disabled and existing `LOC_EMERGENCY_KEY` secret binding. This repository change does not alter those settings.
 - **Release gates:** review PR checks, confirm build output and live 2D/3D/daily/API smoke after merge. A passed build is not evidence of complete user-facing parity.
 
 ### Manual pinned release procedure
