@@ -310,6 +310,10 @@
     "public/vendor/effekseer/NOTICE.txt": {
       "sha": "c68aa803d3d789c0828f1ec353afaf941bf8269b",
       "size": 3724
+    },
+    "assets/site/icons/lrunes-favicon.png": {
+      "sha": "124b7bf5e81ec544a0d04a9e97205cd0214ce2ae",
+      "size": 1673
     }
   }
 }
