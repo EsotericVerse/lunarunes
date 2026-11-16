@@ -1,23 +1,34 @@
 import {spawnSync} from 'node:child_process';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 
+// Inspect the LOCAL private package rather than packaging the LRS website.
+// This intentionally never publishes to npm or a package registry.
+const pkg=JSON.parse(readFileSync('modules/lrs/package.json','utf8'));
+assert.equal(pkg.name,'@lo3r/lrs');
+assert.equal(pkg.private,true,'LRS modules must remain private; never publish');
+assert.match(pkg.version,/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/,'LRS modules require independent SemVer');
+assert.deepEqual(Object.keys(pkg.dependencies||{}),[],
+  'LRS module package must not depend on SQL drivers, LOC, LAS or Web build tools');
 const npm=process.platform==='win32'?'npm.cmd':'npm';
-const child=spawnSync(npm,['pack','--dry-run','--ignore-scripts','--json'],{encoding:'utf8',windowsHide:true});
-if(child.status!==0)throw Error('npm pack failed: '+(child.stderr||child.stdout));
-const pack=JSON.parse(child.stdout)[0];
-const paths=(pack.files||[]).map(file=>file.path);
-for(const required of [
-  'modules/lrs/card/index.mjs',
-  'modules/lrs/card/draw-core.mjs',
-  'modules/lrs/boardgame/index.mjs',
-  'modules/lrs/rune/index.mjs',
-  'modules/lrs/rune/asset-url.mjs',
-  'modules/lrs/daily/index.mjs',
-  'modules/lrs/daily/runtime.mjs'
-])assert(paths.includes(required),'Missing LRS package export: '+required);
+const run=spawnSync(npm,['pack','./modules/lrs','--dry-run','--ignore-scripts','--json'],
+  {encoding:'utf8',windowsHide:true});
+if(run.status!==0)throw Error('Private LRS npm pack failed: '+(run.stderr||run.stdout));
+const pack=JSON.parse(run.stdout)[0];
+assert.equal(pack.name,pkg.name);
+assert.equal(pack.version,pkg.version);
+const paths=(pack.files||[]).map(x=>x.path);
+for(const expected of [
+  'package.json','LICENSE','index.mjs','manifest.mjs',
+  'rune/index.mjs','rune/asset-url.mjs','card/index.mjs',
+  'card/draw-core.mjs','daily/index.mjs','daily/runtime.mjs',
+  'boardgame/index.mjs','boardgame/life-engine.mjs'
+])assert(paths.includes(expected),'Missing private LRS module file: '+expected);
 const banned=paths.filter(p=>
-  /^(?:app\/|assets\/|public\/|scripts\/|tests\/|modules\/lrune\/|dist\/)/.test(p)||
-  /\.(?:png|jpe?g|webp|wasm|efkefc|efkmat|efkmodel|pdf|sqlite)$/i.test(p));
-assert.deepEqual(banned,[],'LRS module package must never include heavy Rune originals or effect binaries');
-assert((pack.size||0)<2*1024*1024,'The code-only LRS module package is unexpectedly heavy');
-console.log('[lrs-package] SQL-free submodules='+4+' code files='+paths.length+' tarball bytes='+pack.size);
+  /^(?:app\/|assets\/|public\/|scripts\/|tests\/|packages\/|dist\/|node_modules\/)/.test(p)||
+  /\.(?:png|jpe?g|webp|gif|wasm|efkefc|efkmat|efkmodel|pdf|sqlite|db)$/i.test(p));
+assert.deepEqual(banned,[],'Private LRS module cannot contain large media or non-LRS source');
+assert((pack.size||0)<2*1024*1024,
+  'Private LRS code tarball must remain below 2 MB');
+console.log('Private code-only '+pkg.name+'@'+pkg.version+
+  ': '+paths.length+' files, tarball '+pack.size+' bytes; no registry publish');
