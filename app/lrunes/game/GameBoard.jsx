@@ -1,11 +1,9 @@
 'use client';
 
-import {useEffect,useMemo,useState} from 'react';
+import {useMemo,useState} from 'react';
 import {createLunaRunesGame} from './boardgame-rules.js';
 import {localTabletopRules} from './game-data.js';
 import {runeImage} from '../rune-directory.mjs';
-import {prepareTransientResourceAction} from '../../../packages/zenstack/client-queries';
-import ScopeLink from '../../modular/ScopeLink';
 import './game-board.css';
 
 const LETTERS=['A','B','C','D'];
@@ -19,14 +17,7 @@ export default function GameBoard(){
   const [game,setGame]=useState(null);
   const [viewer,setViewer]=useState(0);
   const [notice,setNotice]=useState('');
-  const [ready,setReady]=useState(false);
   const engine=useMemo(()=>createLunaRunesGame(rules,count),[rules,count]);
-  useEffect(()=>{
-    // /game is an expensive, independent interactive workspace. Dispose old
-    // public reads BEFORE the playable board is mounted, exactly once.
-    prepareTransientResourceAction('navigation');
-    setReady(true);
-  },[]);
 
   function startGame(){
     setGame(engine.setup());setViewer(0);setNotice('');
@@ -41,9 +32,6 @@ export default function GameBoard(){
       if(name==='resolveEvent')setViewer(0);
     }catch(error){setNotice(String(error?.message||error));}
   }
-  if(!ready)return <main className="scope-main"><section className="scope-page">
-    <p role="status" className="scope-status">正在釋放前一頁資源，準備牌桌…</p>
-  </section></main>;
 
   const stage=game?.stage||'idle';
   const active=stage==='opening'||stage==='resonance'||stage==='duel'?game.active:viewer;
@@ -61,7 +49,7 @@ export default function GameBoard(){
           <h1>月之符文 · 桌遊</h1>
           <p>本機輪流操作 · 二至四名玩家 · 八回合事件與共振</p>
         </div>
-        <ScopeLink className="loc-button" href="/lrunes/">返回月之符文</ScopeLink>
+        <a className="loc-button" href="/lrunes/">返回月之符文</a>
       </header>
       {!game?<section className="lrg-panel lrg-launch">
         <h2>建立牌局</h2>

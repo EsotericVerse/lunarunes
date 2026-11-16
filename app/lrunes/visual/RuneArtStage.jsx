@@ -1,6 +1,7 @@
 'use client';
 
 import {motion,AnimatePresence,useReducedMotion} from 'motion/react';
+import {runeAssetUrl} from '../../../modules/lrune/asset-url.mjs';
 import {groupImage,runeImage,runeName} from '../rune-directory.mjs';
 import RuneCardInfo from '../RuneCardInfo';
 import './rune-art-stage.css';
@@ -88,7 +89,7 @@ function DrawStage({items,onSelect,onBackgroundClick,reduced,daily=false,chargin
   const active=last?.card||last;
   const previous=items.slice(0,-1);
   return <div className={'rune-art-ritual '+(last?'rune-art-ritual--revealed':'rune-art-ritual--waiting')}>
-    <img className="rune-art-ritual-backdrop" src="/pics/LunaRunes-hero.jpg" alt="" aria-hidden="true" {...imageProps}/>
+    <img className="rune-art-ritual-backdrop" src={runeAssetUrl("pics/LunaRunes-hero.jpg")} alt="" aria-hidden="true" {...imageProps}/>
     <div className="rune-art-ritual-aura" aria-hidden="true"/>
     <div className="rune-art-ritual-heading">
       <span className="rune-art-kicker">MOONLIGHT · RUNE REVELATION</span>
