@@ -31,13 +31,14 @@ export function createCardModule({readRows,projectColumns}={}){
   if(typeof RUNE_COLUMNS!=='string'||!RUNE_COLUMNS.trim()||RUNE_COLUMNS==='*')
     throw new TypeError('LRS read port must provide explicit LRunes66 fields');
 // Multi-card draws read exactly one sit_q for each drawn rune, in draw order.
-async function loadVerseOnlyCards(pairs,currentMoon){
+async function loadVerseOnlyCards(pairs,currentMoon,signal){
+  const requestSignal=signal?{signal}:{};
   if(!currentMoon||currentMoon==='未知')throw new Error('真實月相無法辨識，無法查詢組合籤詩。');
   const ids=pairs.map(pair=>Number(pair.runeNumber));
   const base=await selectRows('silver.runes',{
     columns:RUNE_COLUMNS,
     filters:[{column:'rune_id',operator:'in',value:ids}],
-    limit:ids.length,offset:0
+    limit:ids.length,offset:0,...requestSignal
   });
   const cardsById=new Map((base.rows||[]).map(card=>[Number(card.rune_id),card]));
   const cards=[];
@@ -53,7 +54,7 @@ async function loadVerseOnlyCards(pairs,currentMoon){
         {column:'type',operator:'eq',value:'sit_q'},
         {column:'current_moon',operator:'eq',value:currentMoon}
       ],
-      limit:1,offset:0,source:base.dataSource||'auto'
+      limit:1,offset:0,source:base.dataSource||'auto',...requestSignal
     });
     const verse=String(rows?.[0]?.desc||'').trim();
     if(!verse)throw new Error('組合籤詩缺少 sit_q：符文 '+runeId+'、位向 '+dir+'、月相 '+currentMoon);
@@ -63,12 +64,13 @@ async function loadVerseOnlyCards(pairs,currentMoon){
 }
 
 // One drawn rune: fetch only its exact direction and current moon (no OR list).
-async function loadSingleDrawCard(pair,{staticTypes=[],moonTypes=[],currentMoon=''}) {
+async function loadSingleDrawCard(pair,{staticTypes=[],moonTypes=[],currentMoon='',signal=null}={}) {
+  const requestSignal=signal?{signal}:{};
   const runeId=Number(pair.runeNumber),dir=Number(pair.dir);
   const base=await selectRows('silver.runes',{
     columns:RUNE_COLUMNS,
     filters:[{column:'rune_id',operator:'eq',value:runeId}],
-    limit:1,offset:0
+    limit:1,offset:0,...requestSignal
   });
   const card=base.rows?.[0];
   if(!card)throw new Error('抽中的符文資料不完整：'+runeId);
@@ -84,7 +86,7 @@ async function loadSingleDrawCard(pair,{staticTypes=[],moonTypes=[],currentMoon=
     ];
     if(moon)filters.push({column:'current_moon',operator:'eq',value:moon});
     const {rows}=await selectRows('silver.runes_etc',{
-      columns:'type,desc',filters,limit:types.length,offset:0,source
+      columns:'type,desc',filters,limit:types.length,offset:0,source,...requestSignal
     });
     const found=new Map((rows||[]).map(row=>[String(row.type),String(row.desc||'').trim()]));
     for(const type of types){
@@ -103,10 +105,10 @@ async function loadSingleDrawCard(pair,{staticTypes=[],moonTypes=[],currentMoon=
   return [rune];
 }
 
-async function loadDrawCards(pairs,{staticTypes=[],moonTypes=[],currentMoon=''}) {
-  if(pairs.length===1)return loadSingleDrawCard(pairs[0],{staticTypes,moonTypes,currentMoon});
+async function loadDrawCards(pairs,{staticTypes=[],moonTypes=[],currentMoon='',signal=null}={}) {
+  if(pairs.length===1)return loadSingleDrawCard(pairs[0],{staticTypes,moonTypes,currentMoon,signal});
   if(!staticTypes.length&&moonTypes.length===1&&moonTypes[0]==='sit_q')
-    return loadVerseOnlyCards(pairs,currentMoon);
+    return loadVerseOnlyCards(pairs,currentMoon,signal);
   throw new Error('不支援的抽牌查詢組合。');
 }
 
