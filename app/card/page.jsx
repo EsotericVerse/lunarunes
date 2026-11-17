@@ -1,5 +1,6 @@
 import {lunarunesMetadata} from '../seo/metadata';
 import RuneArtNav from '../lrunes/Rune3DNav';
+import RuneCardHub from '../lrunes/RuneCardHub';
 
 export const metadata=lunarunesMetadata({
   title:'符文美術場域｜月之符文',
@@ -7,13 +8,6 @@ export const metadata=lunarunesMetadata({
   path:'/card/',noIndex:true
 });
 
-export default function RuneCardHub(){
-  return <main className="loc-next-main"><section className="loc-view">
-    <header className="loc-hero loc-hero-feature">
-      <p className="loc-eyebrow">LunaRunes · Living Artwork</p>
-      <h1>符文美術場域</h1>
-      <p>以符韻原創美術為主角，選擇月光抽牌、群組畫廊或每日符文。</p>
-    </header>
-    <RuneArtNav/>
-  </section></main>;
+export default function RuneCardPage(){
+  return <RuneCardHub Navigation={RuneArtNav}/>;
 }
