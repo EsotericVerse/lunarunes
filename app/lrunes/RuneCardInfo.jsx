@@ -41,6 +41,7 @@ export default function RuneCardInfo({
   card,
   imageSrc,
   imageClassName='loc-rune-card-image',
+  imageLoading='eager',
   onOpen,
   openLabel='',
   positionLabel='',
@@ -68,8 +69,8 @@ export default function RuneCardInfo({
       {positionLabel?<p className="loc-eyebrow">{positionLabel}</p>:null}
       {onOpen?<button type="button" className="rune-gallery-image-open"
         onClick={onOpen} aria-label={openLabel||'查看'+runeTitle(card)}>
-        <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card}/>
-      </button>:<RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card}/>}
+        <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card} loading={imageLoading} decoding="async"/>
+      </button>:<RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card} loading={imageLoading} decoding="async"/>}
       <div className="home-rune-card-data">
         <div className="home-rune-card-title">
           <strong>{runeTitle(card)}</strong>
@@ -96,7 +97,7 @@ export default function RuneCardInfo({
   if(layout==='profile'){
     return <>
       <div className="runes-rune-profile">
-        <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card}/>
+        <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card} loading={imageLoading} decoding="async"/>
         <div className="runes-rune-profile-copy">
           <h2>{String(Number(card.rune_id)).padStart(2,'0')} · {runeTitle(card)}{glyph?' '+glyph:''}{english?' ('+english+')':''}</h2>
           <p>{description||'—'}{archetype?' / '+archetype:''}</p>
@@ -120,7 +121,7 @@ export default function RuneCardInfo({
     data-draw-position={dataDrawPosition||undefined}
   >
     {positionLabel?<small>{positionLabel}</small>:null}
-    <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card}/>
+    <RuneImage className={imageClassName} src={imageSrc} alt={runeTitle(card)} card={card} loading={imageLoading} decoding="async"/>
     <b>{runeTitle(card)}{glyph?' '+glyph:''}{english?' ('+english+')':''}</b>
     <span>{description||'—'}{archetype?' / '+archetype:''}</span>
     <div className="runes-draw-keywords">
