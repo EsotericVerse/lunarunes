@@ -10,6 +10,8 @@ export function pageFromPath(pathname='/'){
   if(path==='/card/duel')return 'duel';
   if(path==='/card/daily')return 'daily';
   if(path==='/card/list')return 'list';
+  if(path==='/daily/log')return 'daily-log';
+  if(path==='/daily/trend')return 'daily-trend';
   if(path==='/game'||path==='/game/room')return 'game';
   return 'unmatched';
 }
