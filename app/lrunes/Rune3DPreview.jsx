@@ -4,6 +4,7 @@ import {useEffect,useRef,useState} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
 import {createPortal} from 'react-dom';
 import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from '../../modules/lrs/rune/vfx/EffekseerStage';
+import {shouldMountRuneMist,shouldPlayRunePrelude} from '../../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
 import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
@@ -120,9 +121,14 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
   const reducedMotion=useReducedMotion();
   const lock=useRef(false);
   const live=useRef(true);
+  const drawRequest=useRef(null);
   const cards=useRef([]);
 
-  useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
+  useEffect(()=>{live.current=true;return()=>{
+    live.current=false;
+    drawRequest.current?.abort();
+    drawRequest.current=null;
+  };},[]);
   useEffect(()=>{
     if(phase!=='transfer'||!pending)return;
     const frame=requestAnimationFrame(()=>{
@@ -147,8 +153,9 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
   useEffect(()=>{
     if(mode!=='list')return;
     let active=true;
+    const controller=new AbortController();
     setBusy(true);
-    selectRows('silver.runes_group',{columns:GROUP_COLUMNS,limit:9,offset:0})
+    selectRows('silver.runes_group',{columns:GROUP_COLUMNS,limit:9,offset:0,signal:controller.signal})
       .then(({rows})=>{
         if(!active)return;
         const mapped=(rows||[]).map(row=>{
@@ -161,27 +168,31 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       })
       .catch(e=>{if(active)setError('群組載入失敗：'+String(e?.message||e));})
       .finally(()=>{if(active)setBusy(false);});
-    return()=>{active=false;};
+    return()=>{active=false;controller.abort();};
   },[mode]);
   useEffect(()=>{
     if(mode!=='list'||!group){setRunes([]);return;}
     let active=true;
+    const controller=new AbortController();
     setBusy(true);setError('');
     const ids=[...new Set(group.runeslist)].filter(Number.isInteger);
-    if(!ids.length){setBusy(false);return;}
+    if(!ids.length){setBusy(false);return()=>controller.abort();}
     selectRows('silver.runes',{columns:RUNE_COLUMNS,
       filters:[{column:'rune_id',operator:'in',value:ids}],
-      orders:[{column:'rune_id',ascending:true}],limit:ids.length,offset:0})
+      orders:[{column:'rune_id',ascending:true}],limit:ids.length,offset:0,signal:controller.signal})
       .then(({rows})=>{if(active)setRunes(rows||[]);})
       .catch(e=>{if(active)setError('符文讀取失敗：'+String(e?.message||e));})
       .finally(()=>{if(active)setBusy(false);});
-    return()=>{active=false;};
+    return()=>{active=false;controller.abort();};
   },[mode,group]);
 
   async function drawOne(){
     if(lock.current||busy||phase==='waiting'||phase==='drawing'||phase==='revealing'||phase==='transfer'||finished||
       (mode==='daily'&&cards.current.length)||(mode==='duel'&&cards.current.length>=11))return;
     lock.current=true;setBusy(true);setError('');
+    const controller=new AbortController();
+    drawRequest.current?.abort();
+    drawRequest.current=controller;
     const bounds=stageRef.current?.getBoundingClientRect();
     if(bounds?.width>0&&bounds?.height>0)drawStageSize.current={width:bounds.width,height:bounds.height};
     // Daily is one draw, one direct result; ritual waiting belongs to multi-card duel.
@@ -202,12 +213,12 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       const rows=await loadDrawCards([{runeNumber,dir:directionIndex+1}],{
         staticTypes:mode==='daily'?['direction']:[],
         moonTypes:mode==='daily'?DAILY_FIELDS.map(([key])=>key):['sit_q'],
-        currentMoon
+        currentMoon,signal:controller.signal
       });
       const card=rows.find(row=>Number(row.rune_id)===runeNumber);
       if(!card)throw Error('符文資料無法讀取。');
       const item={card,direction:DIRECTIONS[directionIndex],directionIndex,moon:currentMoon,birth:Date.now()};
-      if(live.current){
+      if(live.current&&!controller.signal.aborted){
         if(mode==='daily'){
           // No one-second waiting, ceremonial reveal, transfer, or second button.
           cards.current=[item];
@@ -220,14 +231,18 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
         }else{
           const remainingWait=Math.max(0,380-(Date.now()-started));
           if(remainingWait)await new Promise(resolve=>setTimeout(resolve,remainingWait));
-          if(live.current){setPending(item);setPhase('drawing');}
+          if(live.current&&!controller.signal.aborted){setPending(item);setPhase('drawing');}
         }
       }
-    }catch(e){if(live.current){
+    }catch(e){if(live.current&&!controller.signal.aborted){
       setError('抽牌失敗：'+String(e?.message||e));
       setPhase(cards.current.length?'ready':'idle');
     }}
-    finally{lock.current=false;if(live.current)setBusy(false);}
+    finally{
+      if(drawRequest.current===controller)drawRequest.current=null;
+      lock.current=false;
+      if(live.current)setBusy(false);
+    }
   }
   function reset(){
     if(lock.current||busy)return;
@@ -287,7 +302,10 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
         <span className="rune-skin-moon rune-3d-night-moon"/>
       </div>:null}
       {!isList?<div className="rune-3d-group-light" aria-hidden="true"/>:null}
-      {!isList?<RuneMistBackdrop phase={phase} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>:null}
+      {/* No GPU fog while waiting for a user action or after a draw finishes.
+          Only an active summoning owns the short-lived authored mist contexts. */}
+      {shouldMountRuneMist(mode,phase)?
+        <RuneMistBackdrop phase={phase} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>:null}
       {mode==='duel'&&['idle','waiting','ready'].includes(phase)?
         <div className="rune-3d-draw-deck" aria-hidden="true">
           <div className="rune-3d-draw-deck-card">
@@ -305,7 +323,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       {isList?(presented?<EffekseerStage rune={presented} textureQuality={textureQuality}
         onGlyphClick={()=>choose(presented)}/>:<div className="rune-3d-awaiting">請選擇符文</div>):
         <>
-          {(phase==='waiting'||phase==='drawing')&&summonRuneId?
+          {shouldPlayRunePrelude(mode,phase,summonRuneId)?
             <WaitingEffekseerStage runeId={summonRuneId} textureQuality={textureQuality}/>:null}
           {phase==='waiting'?<div className="rune-3d-ritual-status" role="status">
             <span>月光正在挑選符文……</span>

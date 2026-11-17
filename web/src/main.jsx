@@ -15,11 +15,14 @@ import './style.css';
 // LRS_DATABASE_URL secret. Never send cookies, SQL, connection strings or
 // credentials from a standalone Rune browser.
 bindRunePublicReadPort(async(table,query)=>{
+  // AbortSignal belongs to this browser request, never to the public-read
+  // JSON payload or Worker query contract.
+  const {signal,...publicQuery}=query||{};
   const response=await fetch('/api/lrs/public-read',{
     method:'POST',credentials:'omit',cache:'no-store',redirect:'error',
     headers:{accept:'application/json','content-type':'application/json'},
-    body:JSON.stringify({table,query}),
-    ...(query?.signal?{signal:query.signal}:{})
+    body:JSON.stringify({table,query:publicQuery}),
+    ...(signal?{signal}:{})
   });
   const payload=await response.json().catch(()=>null);
   if(!response.ok||!Array.isArray(payload?.rows))

@@ -2,6 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {runeAssetUrl} from '../asset-url.mjs';
+import {createRuneGpuLifecycle} from './gpu-lifecycle.mjs';
 import {AnimatePresence,motion,useReducedMotion} from 'motion/react';
 import * as THREE from 'three';
 import {runeGlyphProfile} from './rune-glyph-library.mjs';
@@ -156,12 +157,36 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
   const ambientPauseRef=useRef(ambientPaused);
   ambientPauseRef.current=ambientPaused;
   const [status,setStatus]=useState('正在啟動 Effekseer…');
+  // New canvas backing for a changed quality/effect; don't reuse a lost context.
+  const canvasIdentity=[effect?.path||'',runeId||'',ceremony,waiting,ambient,
+    ambientDepth,quality,textureQuality].join('|');
   useEffect(()=>{
     let active=true,frame=0,observer;
     let renderer,context,clock;
+    let loadWatchdog=0,playbackStarted=false;
+    const gpu=createRuneGpuLifecycle({cancelFrame:cancelAnimationFrame});
+    let resumeOnVisible=null;
+    // One-shot VFX may finish while the card/result component stays visible.
+    // Releasing only on React unmount leaves live WebGL contexts behind in the atlas.
+    const retire=()=>{
+      if(!active)return false;
+      active=false;
+      if(resumeOnVisible)document.removeEventListener('visibilitychange',resumeOnVisible);
+      if(loadWatchdog)clearTimeout(loadWatchdog);
+      gpu.release();
+      renderer=null;context=null;clock=null;
+      return true;
+    };
     const target=canvas.current;
     if(reduced){setStatus('');onReady?.();onPlaybackCompleteRef.current?.();return;}
     if(!effect){setStatus('');onReady?.();onPlaybackCompleteRef.current?.();return;}
+    // A slow/failed WASM download must not pin a blank WebGL context forever.
+    loadWatchdog=window.setTimeout(()=>{
+      if(!active||playbackStarted)return;
+      setStatus('特效載入逾時，已釋放舞台資源');
+      onReady?.();
+      if(retire()&&!ceremony&&!waiting&&!ambient)onPlaybackCompleteRef.current?.();
+    },20000);
     (async()=>{
       try{
         const api=await readyRuntime();
@@ -171,6 +196,7 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
         // match WebGL canvas composition to the corresponding Effekseer output.
         renderer=new THREE.WebGLRenderer({canvas:target,alpha:true,premultipliedAlpha:ambient,
           antialias:quality==='high'&&!ambient,powerPreference:'high-performance'});
+        gpu.trackRenderer(renderer);
         renderer.setClearColor(0,0);
         const camera=new THREE.PerspectiveCamera(35,1,1,1000);
         camera.position.set(0,0,24);
@@ -178,19 +204,20 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
         const resize=()=>{
           const r=target.getBoundingClientRect();
           if(!r.width||!r.height)return;
-          const maxDpr=ambient?(quality==='high'?1.5:1):quality==='high'?3:1.2;
+          const maxDpr=ambient?(quality==='high'?1.25:1):quality==='high'?2:1.2;
           const deviceDpr=window.devicePixelRatio||1;
-          const renderDpr=!ambient&&quality==='high'
-            ?Math.min(Math.max(deviceDpr,2),maxDpr)
-            :Math.min(deviceDpr,maxDpr);
+          // Avoid 3× retina renderbuffers and forced 2× DPR on 1× screens.
+          const renderDpr=Math.min(Math.max(1,deviceDpr),maxDpr);
           renderer.setPixelRatio(renderDpr);
           renderer.setSize(Math.round(r.width),Math.round(r.height),false);
           camera.aspect=r.width/r.height;camera.updateProjectionMatrix();camera.updateMatrixWorld();
         };
         resize();
         observer=new ResizeObserver(resize);
+        gpu.trackObserver(observer);
         observer.observe(target);
         context=api.createContext();
+        gpu.trackContext(context);
         // EffekseerForWebGL defaults to unpremultiplied output, whereas
         // Three.WebGLRenderer defaults to a premultiplied-alpha canvas.
         // The mismatch makes transparent particle billboards composite poorly.
@@ -254,6 +281,8 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
              if(tuning?.speed)handle.setSpeed(tuning.speed);
              if(tuning?.color)handle.setAllColor(...tuning.color);
              started=true;
+             playbackStarted=true;
+             if(loadWatchdog){clearTimeout(loadWatchdog);loadWatchdog=0;}
              ambientLastSpawn=0;
              if(ambient&&ambientDepth==='rear'&&quality==='high'){
                try{
@@ -331,11 +360,20 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
              started=true;
            }catch(error){setStatus('特效無法播放：'+String(error?.message||error));}
           onReady?.();
-        },(message,url)=>{if(active){setStatus('特效素材載入失敗：'+String(message||url));onReady?.();onPlaybackCompleteRef.current?.();}},textureRedirect);
+        },(message,url)=>{
+          if(active){
+            setStatus('特效素材載入失敗：'+String(message||url));
+            onReady?.();
+            const completed=!ceremony&&!waiting&&!ambient;
+            if(retire()&&completed)onPlaybackCompleteRef.current?.();
+          }
+        },textureRedirect);
         clock=new THREE.Clock();
         let elapsed=0;
         const draw=()=>{
-          if(!active)return;
+          frame=0;
+          gpu.trackFrame(0);
+          if(!active||document.hidden)return;
           const delta=Math.min(clock.getDelta(),.05);
           if(started&&!document.hidden&&!ambientPauseRef.current){
             elapsed+=delta;
@@ -395,10 +433,10 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
               }
             }
             if(!ambient&&elapsed>=(ceremony?8.7:waiting?(effect.key?2.8:1.4):4.8)){
-              // One finite reveal, without a persistent blank WebGL animation loop.
-              context.stopAll();
-              renderer.clear();
-              if(!ceremony&&!waiting&&!ambient)onPlaybackCompleteRef.current?.();
+              // Dispose the actual context, textures, shaders, observer, renderer
+              // and canvas GPU backing immediately at the end of this one shot.
+              // The React glyph/card stays mounted; only the VFX is retired.
+              if(retire()&&!ceremony&&!waiting)onPlaybackCompleteRef.current?.();
               return;
             }
             // Move the actual licensed Effekseer effect handle, not a decorative SVG.
@@ -550,28 +588,31 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
             renderer.resetState();
           }
           frame=requestAnimationFrame(draw);
+          gpu.trackFrame(frame);
         };
+        // Background tabs must not retain a spinning animation loop.
+        // A returning tab resumes only an active, unfinished scene.
+        resumeOnVisible=()=>{
+          if(!active||document.hidden||frame)return;
+          clock?.getDelta();
+          frame=requestAnimationFrame(draw);
+          gpu.trackFrame(frame);
+        };
+        document.addEventListener('visibilitychange',resumeOnVisible);
         draw();
-      }catch(error){if(active){setStatus('Effekseer 無法啟動：'+String(error?.message||error));onReady?.();onPlaybackCompleteRef.current?.();}}
+      }catch(error){
+        if(active){
+          setStatus('Effekseer 無法啟動：'+String(error?.message||error));
+          onReady?.();
+          const completed=!ceremony&&!waiting&&!ambient;
+          if(retire()&&completed)onPlaybackCompleteRef.current?.();
+        }
+      }
     })();
-    return()=>{
-      active=false;
-      cancelAnimationFrame(frame);
-      observer?.disconnect();
-      try{context?.stopAll();}catch{}
-      try{context?.release();}catch{}
-      try{renderer?.dispose();}catch{}
-      // dispose() frees GPU resources (textures/geometry/program) but does
-      // NOT guarantee the browser reclaims the underlying WebGL context.
-      // Every draw mounts a fresh renderer on a fresh canvas; without this,
-      // live contexts accumulate across a drawing session and the browser
-      // eventually force-loses the oldest ones, which commonly paints as a
-      // flat white (or black) stage after several consecutive draws.
-      try{renderer?.forceContextLoss();}catch{}
-    };
+    return()=>{retire();};
   },[effect,runeId,reduced,ceremony,groupEffect,groupStage,waiting,ambient,ambientDepth,quality,textureQuality,diagnoseAmbient]);
   return <div className="rune-effekseer-canvas-wrap">
-    <canvas ref={canvas} className="rune-effekseer-canvas" aria-hidden="true"/>
+    <canvas key={canvasIdentity} ref={canvas} className="rune-effekseer-canvas" aria-hidden="true"/>
     {(!ambient||diagnoseAmbient)&&status?<p className={'rune-effekseer-status'+(diagnoseAmbient?' rune-effekseer-fog-diagnostic':'')} role="status">{status}</p>:null}
   </div>;
 }

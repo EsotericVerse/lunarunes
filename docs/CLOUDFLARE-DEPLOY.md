@@ -1,3 +1,12 @@
+## LRS 1.01R — browser resource lifecycle release test (owner-designated)
+
+- `release/version.json` is now `1.01R` with `release-test` status. It is a release label, not an npm package version or an automatic LOC update.
+- Existing `lunarunes` Worker receives a normal production release on an approved LRS `main` merge. This does **not** grant, dispatch, or modify LOC; LOC remains pinned to its separately selected source SHA until LOC explicitly changes it.
+- One-shot Rune VFX releases WebGL contexts, GPU allocations, render loops, and observers at completion; waiting/drawing/reveal/ready resources are no longer simultaneously held. Atlas offscreen images decode lazily; stale Rune fetches abort on navigation.
+- After the LRS release, compare production Worker deployment identity and LOC Pages deployment history. A new LOC Pages release is not expected under the current isolation policy.
+
+---
+
 ## Current release policy (2026-11-17) — supersedes historical migration notes below
 
 - **LRS first release:** owner-designated `1.0R` in `release/version.json`, embedded in generated `rune-release.json`. This is a product/release label, not an npm package publish. The immutable deployed source is still identified by its 40-character Git commit SHA; the separate `mediaVersion` remains a content checksum.

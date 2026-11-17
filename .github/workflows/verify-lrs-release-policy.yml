@@ -17,6 +17,7 @@ on:
       - 'tests/lrs-cloudflare-deploy.test.mjs'
       - 'scripts/rune-media-version.mjs'
       - 'tests/lrs-media-version.test.mjs'
+      - 'release/version.json'
   workflow_dispatch:
 
 permissions:
