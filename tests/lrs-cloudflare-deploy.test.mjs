@@ -34,9 +34,9 @@ test('Wrangler native SPA stays on the single existing Worker',async()=>{
   assert.equal(cfg.main,'index.mjs');
 });
 
-test('the current LRS product release baseline is owner-designated 1.0R, not an npm publication',async()=>{
+test('the owner-designated 1.01R resource release is not an npm publication',async()=>{
   const version=JSON.parse(await readFile('release/version.json','utf8'));
   assert.equal(version.schema,'lunarunes.release-version.v1');
-  assert.equal(version.version,'1.0R');
-  assert.equal(version.status,'initial-release');
+  assert.equal(version.version,'1.01R');
+  assert.equal(version.status,'release-test');
 });
