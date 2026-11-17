@@ -47,6 +47,7 @@ function Gallery({mode,items,onSelect,reduced,galleryTitle=null,galleryDescripti
             animate={{opacity:1,y:0}}
             transition={{...stepTransition,delay:reduced?0:Math.min(index,10)*.065}}>
             <RuneCardInfo card={item} imageSrc={url} layout="home"
+              imageLoading={index<2?'eager':'lazy'}
               onOpen={()=>onSelect?.(item)}
               openLabel={runeActionLabel+'：'+runeName(item)+'之符文'}/>
             <button type="button" className="rune-art-rune-open-action"
