@@ -4,6 +4,7 @@ import {useEffect,useRef,useState} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
 import {createPortal} from 'react-dom';
 import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from '../../modules/lrs/rune/vfx/EffekseerStage';
+import {shouldMountRuneMist,shouldPlayRunePrelude} from '../../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
 import {navigationHref} from '../modular/routing/scope-registry.js';
 import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
@@ -289,7 +290,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       {!isList?<div className="rune-3d-group-light" aria-hidden="true"/>:null}
       {/* No GPU fog while waiting for a user action or after a draw finishes.
           Only an active summoning owns the short-lived authored mist contexts. */}
-      {!isList&&['waiting','drawing','revealing'].includes(phase)?
+      {shouldMountRuneMist(mode,phase)?
         <RuneMistBackdrop phase={phase} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>:null}
       {mode==='duel'&&['idle','waiting','ready'].includes(phase)?
         <div className="rune-3d-draw-deck" aria-hidden="true">
@@ -308,7 +309,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       {isList?(presented?<EffekseerStage rune={presented} textureQuality={textureQuality}
         onGlyphClick={()=>choose(presented)}/>:<div className="rune-3d-awaiting">請選擇符文</div>):
         <>
-          {(phase==='waiting'||phase==='drawing')&&summonRuneId?
+          {shouldPlayRunePrelude(mode,phase,summonRuneId)?
             <WaitingEffekseerStage runeId={summonRuneId} textureQuality={textureQuality}/>:null}
           {phase==='waiting'?<div className="rune-3d-ritual-status" role="status">
             <span>月光正在挑選符文……</span>
