@@ -5,10 +5,10 @@ import {fileURLToPath} from 'node:url';
 const webRoot=fileURLToPath(new URL('.',import.meta.url));
 const repositoryRoot=fileURLToPath(new URL('..',import.meta.url));
 const local=path=>fileURLToPath(new URL(path,import.meta.url));
-const runeNav=local('./src/runtime/loc-navigation.jsx');
+const runeNav=local('./src/runtime/rune-navigation.jsx');
 const scopeLink=local('./src/runtime/scope-link.jsx');
-const home=local('./src/runtime/loc-home-public.jsx');
-const read=local('./src/runtime/rune-dialect.mjs');
+const home=local('./src/runtime/rune-home-public.jsx');
+const read=local('./src/runtime/rune-public-port.mjs');
 const queries=local('./src/runtime/rune-query-hooks.jsx');
 // Keep LOC's canonical Routing Table untouched. These Vite aliases adapt
 // copied component imports to the isolated LRS browser runtime only.

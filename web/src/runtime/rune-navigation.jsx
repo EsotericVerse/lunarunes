@@ -9,7 +9,7 @@ export function navigationHref(scope,path='',native=false){
 }
 export default function useNativeNavigation(){
   // The standalone Vite/Worker site is the Web build; native packaging
-  // continues through LunArcus instead of this entrypoint.
+  // is owned by LOC, not by this LRS Web entrypoint or LAS.
   const [native]=useState(false);
   return native;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import RuneApp from './RuneApp.jsx';
-import {bindRunePublicReadPort} from './runtime/rune-dialect.mjs';
+import {bindRunePublicReadPort} from './runtime/rune-public-port.mjs';
 import '../../app/styles/tokens.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';

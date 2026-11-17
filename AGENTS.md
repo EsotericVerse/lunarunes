@@ -38,6 +38,14 @@
 - **LRS Web 素材由 LRS 獨立部署**；其他 Web 使用者以資產 URL 引用，iOS 是實體檔案交付，不混同。LRS `main` 合併後自動部署**唯一既有** `lunarunes` Production Worker；不部署 dev／Preview，不因日常 LRS 更新觸發 LOC。緊急及由作者裁定的大版本，才走既有 LOC 特殊通道與限時授權，禁止自行 Grant／Renew。不得擅改正式 Trigger。
 - 不因跨模組的需求就在其他 Repo 建相似實作；介面有問題，查來源與當前契約，不能自行代另一邊決策。
 
+## 目錄責任（Web、原生與模組不可混用）
+
+- `modules/lrs/`：符文業務規則、資料存取契約、特效／遊戲真正實作，不是另一套 Web UI。
+- `app/`：原始符文畫面與 LOC **既有 IPA** 取用的原生頁面來源；只保留必要的頁面與互動 UI，不承接 Web 啟動器。
+- `web/`：LRS 唯一 Production Worker 上的 Vite 網站入口、路由及瀏覽器相容層；不得把 App／IPA 打包職責寫成 LAS。
+- `content/lrunes/`：唯讀的符文公開區塊快照（Hero／Index／Game），不是功能模組，禁止放回 `app/modular/`。
+- `assets/` 與 `public/vendor/`：原始圖片及特效素材；Web 依部署網址引用，原生由 **LOC** 用固定 LRS Commit 取得實體檔案。
+
 ## 唯一程式來源與歸屬（防止再次重疊）
 
 - **符文原畫、Hero 呈現、Effekseer／3D**：`modules/lrs/rune/`，其中 `hero/`、`vfx/`、`art/` 各自維護原始實作；不要復活 `modules/lrune/` 或 `app/lrunes/effekseer/` 中介副本。

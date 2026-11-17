@@ -1,2 +1,2 @@
-import {ScopeLink} from './loc-navigation.jsx';
+import {ScopeLink} from './rune-navigation.jsx';
 export default ScopeLink;
