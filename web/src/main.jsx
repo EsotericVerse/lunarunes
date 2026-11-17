@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import RuneApp from './RuneApp.jsx';
-import {bindRunePublicReadPort} from './runtime/rune-public-port.mjs';
+import {bindRunePublicReadPort,warmRuneBaseSession} from './runtime/rune-public-port.mjs';
 import '../../app/styles/tokens.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';
@@ -29,6 +29,10 @@ bindRunePublicReadPort(async(table,query)=>{
     throw new Error('符文公開資料讀取失敗（HTTP '+response.status+'）。');
   return {rows:payload.rows,dataSource:payload.dataSource||'lrs-database'};
 });
+
+// Catalogue prefetch is non-blocking: just 67 public single-rune entries and
+// nine public groups. SessionStorage has no time TTL and stores nothing else.
+void warmRuneBaseSession();
 
 // Vite Web only: LOC's native IPA never imports this entry or registers this SW.
 // Only content-hashed JS/CSS/fonts may be cached; photos, WASM, API and daily
