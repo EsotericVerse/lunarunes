@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createRuneGpuLifecycle} from '../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
+import {createRuneGpuLifecycle,shouldMountRuneMist,shouldPlayRunePrelude} from '../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
 
 test('finished Rune VFX releases one WebGL context, renderer, observer and frame exactly once',()=>{
  const events=[];
@@ -32,4 +32,17 @@ test('context loss or one cleanup exception never prevents remaining releases',(
  state.trackRenderer({dispose:()=>{throw Error('renderer failed')},forceContextLoss:()=>events.push('renderer:lose')});
  assert.equal(state.release(),true);
  assert.deepEqual(events,['context:release','renderer:lose']);
+});
+
+test('one-card VFX is isolated from mist during reveal; all fog is gone at result',()=>{
+ const phases=['idle','waiting','drawing','revealing','transfer','ready'];
+ assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('duel',phase)),['waiting','drawing']);
+ assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('daily',phase)),['waiting','drawing']);
+ assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('list',phase)),[]);
+ for(const phase of ['idle','revealing','transfer','ready'])
+   assert.equal(shouldMountRuneMist('duel',phase),false,phase);
+ assert.equal(shouldPlayRunePrelude('duel','waiting',23),true);
+ assert.equal(shouldPlayRunePrelude('duel','drawing',23),false);
+ assert.equal(shouldPlayRunePrelude('daily','waiting',23),false);
+ assert.equal(shouldPlayRunePrelude('duel','waiting',null),false);
 });
