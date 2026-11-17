@@ -57,7 +57,9 @@ export function createRuneGpuLifecycle({cancelFrame=()=>{}}={}){
  * and MUST unmount before the one-shot Rune reveal starts (one GPU stage at a time).
  */
 export function shouldMountRuneMist(mode,phase){
-  return mode!=='list'&&(phase==='waiting'||phase==='drawing');
+  // Waiting plays a single authored prelude; drawing uses a short mist layer.
+  // They never consume multiple background contexts at the same time.
+  return mode!=='list'&&phase==='drawing';
 }
 export function shouldPlayRunePrelude(mode,phase,subject){
   return mode==='duel'&&phase==='waiting'&&Number.isInteger(Number(subject))&&Number(subject)>0;
