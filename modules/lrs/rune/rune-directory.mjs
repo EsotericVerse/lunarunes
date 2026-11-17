@@ -1,7 +1,7 @@
 import {runeAssetUrl} from './asset-url.mjs';
 
 // Web assets are independently served by the Rune origin; iOS consumes real
-// files from LunArcus' existing app-bundle workflow, not browser-only links.
+// files through LunaCodex's existing App/IPA build, not browser-only links.
 const GROUP_IMAGE_BY_ID=Object.freeze({
   '01':runeAssetUrl('pics/01.soul.jpg'),'02':runeAssetUrl('pics/02_connection.jpg'),'03':runeAssetUrl('pics/03_life.jpg'),
   '04':runeAssetUrl('pics/04_nature.jpg'),'05':runeAssetUrl('pics/05_mineral.jpg'),'06':runeAssetUrl('pics/06_element.jpg'),

@@ -109,10 +109,13 @@ function LocalDailyLog({rows}){
   async function add(event){
     event.preventDefault();
     if(occupied){setNotice('該日期與類別已有紀錄，不會覆寫。');return;}
-    const added=await mutate(()=>importLocalDailyTransfer([{
-      record_date:form.record_date,draw_kind:form.draw_kind,
-      rune_number:Number(form.rune_number),direction:form.direction,recorded_phase:''
-    }]),'本機紀錄已新增，並未同步到 LOC 雲端。');
+    const added=await mutate(async()=>{
+      const result=await importLocalDailyTransfer([{
+        record_date:form.record_date,draw_kind:form.draw_kind,
+        rune_number:Number(form.rune_number),direction:form.direction,recorded_phase:''
+      }]);
+      if(result.newCount!==1)throw new Error('該日期與類別已有紀錄，不會覆寫。');
+    },'本機紀錄已新增，並未同步到 LOC 雲端。');
     if(!added)return;
     const date=form.record_date;
     if(/^\d{4}-\d{2}-\d{2}$/.test(date)){
