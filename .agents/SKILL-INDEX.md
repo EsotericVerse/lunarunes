@@ -21,6 +21,9 @@
 - [effekseer-vfx](skills/effekseer-vfx/SKILL.md) — Effekseer 正式素材與 WASM 播放：原版授權特效、語意鏡頭、載入回退、渲染與釋放。
 - [motion-direction](skills/motion-direction/SKILL.md) — 符文遊戲動態導演：分鏡、節拍、翻牌、過場、鏡頭、動作節制與可跳過。
 
+## 台灣繁體中文顯示與說明文字
+- [zh-tw-writing](skills/zh-tw-writing/SKILL.md) — 日常說明、玩法指引、遊戲 UI、測試與交付的基本台灣中文寫作 Skill；原創敘事仍依遊戲專業技能。
+
 ## 表現、品質與生產
 - [game-performance](skills/game-performance/SKILL.md) — 遊戲效能與流暢度：畫面幀率、輸入延遲、GPU/CPU/記憶體、場景與素材載入、行動裝置。
 - [playtesting](skills/playtesting/SKILL.md) — 遊戲 QA 與實機測試：真的看畫面、真的玩完整回合、跨尺寸、記錄視覺與效能故障。
