@@ -82,3 +82,21 @@ test('the result stage never retains waiting fog after one-shot playback',()=>{
  assert.match(effect,/const gpu=createRuneGpuLifecycle/);
  assert.match(effect,/if\(retire\(\)&&!ceremony&&!waiting\)/);
 });
+
+test('100 consecutive one-shot Rune draws never retain a tracked frame, renderer or context',()=>{
+ let created=0,disposed=0,stopped=0,cancelled=0,disconnected=0,contextLost=0;
+ for(let i=0;i<100;i++){
+   const state=createRuneGpuLifecycle({cancelFrame:()=>{cancelled++;}});
+   created++;
+   state.trackContext({stopAll:()=>{stopped++;},release:()=>{}});
+   state.trackRenderer({dispose:()=>{disposed++;},forceContextLoss:()=>{contextLost++;}});
+   state.trackObserver({disconnect:()=>{disconnected++;}});
+   state.trackFrame(i+1);
+   assert.equal(state.retired,false);
+   assert.equal(state.release(),true);
+   assert.equal(state.release(),false);
+   assert.equal(state.retired,true);
+ }
+ assert.equal(created,100);
+ assert.deepEqual([disposed,stopped,cancelled,disconnected,contextLost],[100,100,100,100,100]);
+});
