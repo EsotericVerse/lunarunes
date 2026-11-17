@@ -21,7 +21,7 @@ assert.equal(release.mediaVersion,runeMediaVersion(release.files),
 const records=new Map(release.files.map(e=>[e.path,e]));
 assert(!records.has('_redirects'),'Worker must use SPA not_found_handling instead of legacy _redirects');
 for (const required of [
-  'index.html','assets/lunarunes/cards/00.png',
+  'index.html','sw.js','assets/lunarunes/cards/00.png',
   'assets/lunarunes/cards/66.png','assets/site/icons/lrunes-favicon.png',
   'vendor/effekseer/effekseer.js','vendor/effekseer/effekseer.wasm',
   'LunarRunesCardCut.pdf','pics/01.soul.jpg','pics/09_specia.jpg','pics/LunaRunesGame.jpg'
