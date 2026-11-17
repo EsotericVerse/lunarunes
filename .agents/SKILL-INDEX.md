@@ -1,5 +1,12 @@
 # LRS Skills — Game Design / Visual First
 
+## Awesome Open-Source AI Cheat Sheets（外部完整總目錄；按需參考）
+
+- [專案總目錄／完整速查表索引](https://github.com/sraodev/awesome-opensource-ai-cheat-sheets/blob/c8275b4bfad40f431cd22b616c74728c18e2b29f/README.md)
+- [全部 Cheatsheets 目錄（10 份）](https://github.com/sraodev/awesome-opensource-ai-cheat-sheets/tree/c8275b4bfad40f431cd22b616c74728c18e2b29f/cheatsheets)
+
+來源快照：`sraodev/awesome-opensource-ai-cheat-sheets@c8275b4bfad40f431cd22b616c74728c18e2b29f`（MIT）。這是**完整來源索引，不是按 LOC／LRS／LAS 預先分配的清單**；本 Repo 的 Agent 依當前任務與本地 `AGENTS.md`、現有 Skills 自行選擇必要章節。只按需讀取，不一次載入十份；連結不代表已安裝 Skill、增加依賴、創建 Workflow，亦不自動授權跨 Repo 或外部平台操作。
+
 **所有技能只適用 LunaRunes（`EsotericVerse/lunarunes`）。** 在任何工作中先讀根目錄 `AGENTS.md`；以**實際玩家畫面／操作體驗**選技能，**禁止 Superpowers**。Skills 是工作判斷與驗收方式，不是安裝所有 npm 包或每次執行一套網站工程。
 
 ## 風格、畫面與玩法（依任務自由選擇）
