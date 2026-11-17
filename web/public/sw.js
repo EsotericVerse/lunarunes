@@ -22,7 +22,9 @@ function isVersionedAsset(request){
   if(url.origin!==self.location.origin||url.search||url.hash)return false;
   // Vite emits immutable /assets/name-<content-hash>.<extension>.
   // No media, efkefc, wasm, JSON, arbitrary APIs, or unversioned assets.
-  return /^\/assets\/[^/]+-[a-zA-Z0-9_-]{8,}\.(?:js|css|woff2?)$/.test(url.pathname);
+  // Vite's configured assetFileNames use an 8-character content hash.
+  // A variable-length tail could misclassify rune-art-layout.css as hashed.
+  return /^\/assets\/[^/]+-[a-zA-Z0-9_-]{8}\.(?:js|css|woff2?)$/.test(url.pathname);
 }
 function mayStore(request,response){
   if(!response.ok||response.type!=='basic'||response.redirected)return false;
