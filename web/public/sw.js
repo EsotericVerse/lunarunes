@@ -6,6 +6,10 @@
 const CACHE='lrs-vite-static-v1';
 const PREFIX='lrs-vite-static-';
 const MAX_ENTRIES=96;
+const MAX_IN_FLIGHT=32;
+// Coalesce only overlapping immutable code fetches. Nothing is retained after
+// settle; SQL, art, Effekseer, HTML and device data never use this map.
+const pendingAssets=new Map();
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
   try{
@@ -43,22 +47,35 @@ function mayStore(request,response){
 self.addEventListener('fetch',event=>{
   const request=event.request;
   if(!isVersionedAsset(request))return;
-  event.respondWith((async()=>{
-    let cache=null;
-    try{
-      cache=await caches.open(CACHE);
-      const hit=await cache.match(request);
-      if(hit)return hit;
-    }catch{cache=null;}
-    const response=await fetch(request);
-    if(cache&&mayStore(request,response)){
+  // A cache miss is often requested simultaneously by multiple components.
+  // Share one fetch, clone its Response for each consumer, and free the
+  // in-flight promise immediately on completion or failure.
+  const key=request.url;
+  let task=pendingAssets.get(key);
+  if(!task){
+    task=(async()=>{
+      let cache=null;
       try{
-        await cache.put(request,response.clone());
-        const keys=await cache.keys();
-        const extra=keys.length-MAX_ENTRIES;
-        if(extra>0)await Promise.all(keys.slice(0,extra).map(key=>cache.delete(key)));
-      }catch{/* quota denial must never break a valid network response */}
+        cache=await caches.open(CACHE);
+        const hit=await cache.match(request);
+        if(hit)return hit;
+      }catch{cache=null;}
+      const response=await fetch(request);
+      if(cache&&mayStore(request,response)){
+        try{
+          await cache.put(request,response.clone());
+          const keys=await cache.keys();
+          const extra=keys.length-MAX_ENTRIES;
+          if(extra>0)await Promise.all(keys.slice(0,extra).map(item=>cache.delete(item)));
+        }catch{/* quota denial must never break a valid network response */}
+      }
+      return response;
+    })();
+    if(pendingAssets.size<MAX_IN_FLIGHT){
+      pendingAssets.set(key,task);
+      const forget=()=>{if(pendingAssets.get(key)===task)pendingAssets.delete(key);};
+      void task.then(forget,forget);
     }
-    return response;
-  })());
+  }
+  event.respondWith(task.then(response=>response.clone()));
 });

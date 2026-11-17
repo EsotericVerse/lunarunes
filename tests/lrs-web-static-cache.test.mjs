@@ -10,7 +10,7 @@ function request(path,{base=origin,method='GET',mode='cors',destination='script'
   return {url:base+path,method,mode,destination};
 }
 function harness({type='application/javascript',policy='public,max-age=31536000',redirected=false,
-  failCache=false,setCookie=false}={}){
+  failCache=false,setCookie=false,networkGate=null}={}){
   const handlers=new Map(),stored=new Map(),names=new Set(['lrs-vite-static-v0','third-party-cache']);
   let calls=0;
   const cache={
@@ -33,7 +33,7 @@ function harness({type='application/javascript',policy='public,max-age=31536000'
   const self={location:{origin},skipWaiting:async()=>{},clients:{claim:async()=>{}},
     addEventListener:(event,handler)=>handlers.set(event,handler)};
   runInNewContext(script+'\nself.__eligible=isVersionedAsset;',{
-    URL,Promise,self,caches:mockCaches,fetch:async()=>{calls++;return mockResponse();}
+    URL,Promise,self,caches:mockCaches,fetch:async()=>{calls++;if(networkGate)await networkGate;return mockResponse();}
   });
   async function send(r){
     let result;
@@ -105,4 +105,30 @@ test('LRS entry registers only its own Web SW and bypasses all private SQL/brows
   assert.match(entry,/cache:'no-store'/);
   assert.doesNotMatch(script,/indexedDB|localStorage|sessionStorage|\/api\/lrs|caches\.addAll/);
   assert.match(api,/MAX_PENDING_PUBLIC_READS=32/);
+});
+
+test('simultaneous immutable code fetches share one transfer and free the in-flight slot',async()=>{
+ let release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ const h=harness({networkGate:gate});
+ const a=h.send(request('/assets/index-C8RSowqh.js'));
+ const b=h.send(request('/assets/index-C8RSowqh.js'));
+ await Promise.resolve();
+ await Promise.resolve();
+ release();
+ await Promise.all([a,b]);
+ assert.equal(h.calls(),1);
+ assert.equal(h.stored.size,1);
+ await h.send(request('/assets/index-C8RSowqh.js'));
+ assert.equal(h.calls(),1);
+});
+test('coalescing does not ever intercept private API, Rune art or VFX',async()=>{
+ const h=harness();
+ const result=await Promise.all([
+   h.send(request('/api/lrs/public-read',{method:'POST'})),
+   h.send(request('/pics/01.soul.jpg',{destination:'image'})),
+   h.send(request('/vendor/effekseer/effekseer.wasm',{destination:'fetch'}))
+ ]);
+ assert.deepEqual(result,[null,null,null]);
+ assert.equal(h.calls(),0);
 });

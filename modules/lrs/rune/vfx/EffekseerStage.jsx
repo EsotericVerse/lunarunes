@@ -26,8 +26,17 @@ function loadRuntime(){
   runtimePromise ||=new Promise((resolve,reject)=>{
     const script=document.createElement('script');
     script.src=SOURCE+'effekseer.js';script.async=true;
-    script.onload=()=>window.effekseer?resolve(window.effekseer):reject(Error('Effekseer 播放器未啟動'));
-    script.onerror=()=>reject(Error('無法載入 Effekseer 播放器'));
+    // The loaded runtime lives on window; its temporary loader node does not
+    // need to remain in the document. Clean it up on BOTH success and failure,
+    // so offline retries cannot accumulate detached/failed script elements.
+    const finish=error=>{
+      script.onload=null;script.onerror=null;
+      script.remove();
+      if(error)reject(error);
+      else resolve(window.effekseer);
+    };
+    script.onload=()=>finish(window.effekseer?null:Error('Effekseer 播放器未啟動'));
+    script.onerror=()=>finish(Error('無法載入 Effekseer 播放器'));
     document.head.appendChild(script);
   }).catch(error=>{runtimePromise=null;throw error;});
   return runtimePromise;
