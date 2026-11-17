@@ -2,8 +2,8 @@
 
 **所有技能只適用 LunaRunes（`EsotericVerse/lunarunes`）。** 在任何工作中先讀根目錄 `AGENTS.md`；以**實際玩家畫面／操作體驗**選技能，**禁止 Superpowers**。Skills 是工作判斷與驗收方式，不是安裝所有 npm 包或每次執行一套網站工程。
 
-## 優先：設計圖、畫面與玩法（先選這一區）
-- [scene-blueprint](skills/scene-blueprint/SKILL.md) — 首要規格：畫面構圖、玩家操作、狀態流轉、鏡頭節奏、桌面／手機差異；先定設計圖與行為再選工程手段。
+## 風格、畫面與玩法（依任務自由選擇）
+- [scene-blueprint](skills/scene-blueprint/SKILL.md) — 適合新場景與大幅互動調整：構圖、玩家操作、狀態流轉、鏡頭節奏及裝置差異；不是所有風格微調的前置條件。
 - [game-ui-ux](skills/game-ui-ux/SKILL.md) — LunaRunes 遊戲 UI/UX 首要技能：畫面佈局、操作動線、卡牌手勢、桌面與手機遊戲體驗；優先於一般工程流程。
 - [art-direction](skills/art-direction/SKILL.md) — 符韻原創遊戲美術總監：卡面、八群組、材質、色彩層次、場景風格與一致性，杜絕塑膠感和制式網頁。
 - [game-feel](skills/game-feel/SKILL.md) — 遊戲手感與回饋：選牌、翻牌、確認、相機、觸控時序、命中回饋與心流節奏。
@@ -25,4 +25,4 @@
 - [audio-feedback](skills/audio-feedback/SKILL.md) — 遊戲聲音設計：原創音效、操作確認、儀式聲景、動作節奏與靜音／無聲可玩。
 - [game-delivery](skills/game-delivery/SKILL.md) — LRS 遊戲作品驗收與獨立交付：可玩的 Web、資產完整性、原生素材契約及部署結果。
 
-**使用方式**：設計／畫面／互動任務優先使用 `scene-blueprint`，再以 `game-ui-ux` 或最貼近場景的一份技能補充；若本次確實涉及特效、性能、規則，再按需補相應技能。技能數多是專業覆蓋，不是每次全部預載。每份技能可獨立使用，不強制串成流程。禁止把 LOC 的 Next.js SaaS、MCP／SSO、SQL Portable、Hero 或 LAS IPA 管線當遊戲開發流程。
+**使用方式**：以風格設計為出發點，根據本次目標直接選 `art-direction`、`game-ui-ux`、`game-feel`、`scene-blueprint` 或相關專長；需要時可組合多項技能、隨工作自然延伸，沒有固定先後或數量上限。細節微調也是設計工作，不強制先做整份場景圖；大幅場景調整再採合適規格。技能數多代表專業覆蓋，不需要每次全部預載。禁止把 LOC 的 Next.js SaaS、MCP／SSO、SQL Portable、Hero 或 LAS IPA 管線當遊戲開發流程。
