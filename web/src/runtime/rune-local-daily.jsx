@@ -71,7 +71,7 @@ function DailyLinks(){
   </nav>;
 }
 
-function LocalDailyLog({rows,reload}){
+function LocalDailyLog({rows}){
   const [monthValue,setMonthValue]=useState(()=>Math.max(MIN_MONTH,monthOf(todayInTaipei())));
   const [selectedDate,setSelectedDate]=useState(todayInTaipei);
   const [form,setForm]=useState(newForm);
@@ -86,19 +86,16 @@ function LocalDailyLog({rows,reload}){
   const slots=dailyRecordSlots(rows,form.record_date);
   const occupied=slots[form.draw_kind];
   const moveMonth=offset=>{
-    setMonthValue(value=>{
-      const next=Math.max(MIN_MONTH,value+offset);
-      const {year:nextYear,month:nextMonth}=monthParts(next);
-      setSelectedDate(String(nextYear)+'-'+String(nextMonth).padStart(2,'0')+'-01');
-      return next;
-    });
+    const next=Math.max(MIN_MONTH,monthValue+offset);
+    const {year:nextYear,month:nextMonth}=monthParts(next);
+    setMonthValue(next);
+    setSelectedDate(String(nextYear)+'-'+String(nextMonth).padStart(2,'0')+'-01');
     setEditing(null);
   };
   async function mutate(action,message){
     setBusy(true);setNotice('');
     try{
       await action();
-      await reload();
       window.dispatchEvent(new CustomEvent('loc-rune-local-changed'));
       setNotice(message);
       setEditing(null);setEditForm(null);
@@ -269,7 +266,7 @@ function LocalDailyTrend({rows}){
 }
 
 export default function RuneLocalDailyPage({view='log'}){
-  const {rows,loading,error,reload}=useDeviceDaily();
+  const {rows,loading,error}=useDeviceDaily();
   const isTrend=view==='trend';
   return <main className="loc-next-main">
     <div className="loc-view lrs-local-daily-page">
@@ -281,7 +278,7 @@ export default function RuneLocalDailyPage({view='log'}){
       </header>
       {loading?<p className="scope-status" role="status">讀取本機每日符文紀錄…</p>:null}
       {error?<p className="scope-status scope-error" role="alert">{error}</p>:null}
-      {!loading&&!error?(isTrend?<LocalDailyTrend rows={rows}/>:<LocalDailyLog rows={rows} reload={reload}/>):null}
+      {!loading&&!error?(isTrend?<LocalDailyTrend rows={rows}/>:<LocalDailyLog rows={rows}/>):null}
     </div>
   </main>;
 }
