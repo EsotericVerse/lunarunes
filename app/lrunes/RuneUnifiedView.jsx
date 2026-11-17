@@ -28,7 +28,7 @@ function canonicalView(queryValue,defaultView,allowed){
   return allowed.includes(queryValue)?queryValue:defaultView;
 }
 
-export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
+export default function RuneUnifiedView({feature='duel',defaultView='3d',onViewChange=null}){
   const selectedFeature=Object.hasOwn(VISUALS,feature)?feature:'duel';
   const allowedViews=Object.keys(VISUALS[selectedFeature]);
   const fallback=canonicalView(defaultView,'3d',allowedViews);
@@ -60,6 +60,9 @@ export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
     const url=new URL(window.location.href);
     url.searchParams.set('d',next);
     window.history.replaceState(window.history.state,'',url.pathname+url.search+url.hash);
+    // Standalone LRS may retain this tiny UI preference for the current tab.
+    // LOC/native callers do not pass a callback; draws and GPU stay transient.
+    onViewChange?.(selectedFeature,next);
   };
   const modeControl=<div className="rune-presentation-switch" role="group"
     aria-label={TITLES[selectedFeature]+'的顯示方式'}>

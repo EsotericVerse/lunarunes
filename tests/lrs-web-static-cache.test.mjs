@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
+import {readRuneUiSession,rememberRuneUiSession} from '../web/src/runtime/rune-ui-session.mjs';
 
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const script=read('web/public/sw.js');
@@ -105,4 +106,64 @@ test('LRS entry registers only its own Web SW and bypasses all private SQL/brows
   assert.match(entry,/cache:'no-store'/);
   assert.doesNotMatch(script,/indexedDB|localStorage|sessionStorage|\/api\/lrs|caches\.addAll/);
   assert.match(api,/MAX_PENDING_PUBLIC_READS=32/);
+});
+
+test('tab Session saves only six fixed, non-sensitive Rune UI preferences',()=>{
+  const values=new Map(),writes=[];
+  const storage={
+    getItem:key=>values.get(key)??null,
+    setItem:(key,val)=>{values.set(key,val);writes.push(key);}
+  };
+  assert.equal(readRuneUiSession('display:duel','3d',storage),'3d');
+  assert.equal(rememberRuneUiSession('display:duel','2d',storage),true);
+  assert.equal(rememberRuneUiSession('display:duel','2d',storage),true);
+  assert.equal(readRuneUiSession('display:duel','3d',storage),'2d');
+  assert.equal(readRuneUiSession('display:list','3d',storage),'3d');
+  assert.equal(writes.length,1,'unchanged display state should not rewrite Session');
+  for(const [key,value,defaultValue] of [
+    ['display:daily','2d','3d'],['display:list','2d','3d'],
+    ['trend:range','all','year'],['trend:bucket','week','month'],
+    ['trend:mode','direction','rune']
+  ]){
+    assert.equal(rememberRuneUiSession(key,value,storage),true);
+    assert.equal(readRuneUiSession(key,defaultValue,storage),value);
+  }
+  assert.equal(values.size,6);
+  assert([...values.keys()].every(key=>key.startsWith('lrs:rune-ui:v1:')));
+});
+test('no card draws, secrets, SQL or arbitrary keys can be stored in UI Session',()=>{
+  const values=new Map(),storage={
+    getItem:key=>values.get(key)??null,setItem:(key,val)=>values.set(key,val)
+  };
+  for(const key of ['token','session','db','draw','card','hero','effect','trend:records'])
+    assert.equal(rememberRuneUiSession(key,'2d',storage),false,key);
+  for(const value of ['66','{"rune_id":66}','select','password','0',''])
+    assert.equal(rememberRuneUiSession('display:duel',value,storage),false,value);
+  values.set('lrs:rune-ui:v1:display:duel','invalid');
+  assert.equal(readRuneUiSession('display:duel','3d',storage),'3d');
+  assert.equal(values.size,1);
+});
+test('blocked Session storage leaves all Rune UI functions operational',()=>{
+  const denied={
+    getItem(){throw Error('SecurityError');},
+    setItem(){throw Error('SecurityError');}
+  };
+  assert.equal(readRuneUiSession('display:duel','3d',denied),'3d');
+  assert.equal(rememberRuneUiSession('display:duel','2d',denied),false);
+  assert.equal(readRuneUiSession('trend:bucket','month',null),'month');
+  assert.equal(rememberRuneUiSession('trend:mode','rune',null),false);
+});
+test('standalone LRS Web UI uses Session only for displays and trend controls',()=>{
+  const app=read('web/src/RuneApp.jsx');
+  const unified=read('app/lrunes/RuneUnifiedView.jsx');
+  const daily=read('web/src/runtime/rune-local-daily.jsx');
+  assert.match(app,/readRuneUiSession\('display:'\+page,'3d'\)/);
+  assert.match(app,/onViewChange=.*rememberRuneUiSession/);
+  assert.match(unified,/onViewChange\?\.\(selectedFeature,next\)/);
+  for(const key of ['range','bucket','mode']){
+    assert.match(daily,new RegExp("readRuneUiSession\\('trend:"+key+"'"));
+    assert.match(daily,new RegExp("rememberRuneUiSession\\('trend:"+key+"'"));
+  }
+  assert.doesNotMatch(read('web/public/sw.js'),/sessionStorage|indexedDB|localStorage/);
+  assert.match(read('web/src/main.jsx'),/cache:'no-store'/);
 });

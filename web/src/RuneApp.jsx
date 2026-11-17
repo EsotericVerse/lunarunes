@@ -3,6 +3,7 @@ import RunesClient from '../../app/lrunes/RunesClient.jsx';
 import RuneCardHub from '../../app/lrunes/RuneCardHub.jsx';
 import {ScopeLink} from './runtime/rune-navigation.jsx';
 import {pageFromPath} from './runtime/rune-routes.mjs';
+import {readRuneUiSession,rememberRuneUiSession} from './runtime/rune-ui-session.mjs';
 import GameBoard from '../../modules/lrs/boardgame/GameBoard.jsx';
 // These are LOC's original 2D/3D presentation components, not a new gallery.
 const RuneUnifiedView=lazy(()=>import('../../app/lrunes/RuneUnifiedView.jsx'));
@@ -29,7 +30,9 @@ export default function RuneApp(){
         :page==='daily-log'||page==='daily-trend'?<RuneLocalDailyPage view={page==='daily-log'?'log':'trend'}/>
         :page==='game'?<GameBoard/>
         :['duel','daily','list'].includes(page)
-          ?<RuneUnifiedView feature={page} defaultView="3d"/>
+          ?<RuneUnifiedView feature={page}
+            defaultView={readRuneUiSession('display:'+page,'3d')}
+            onViewChange={(feature,next)=>rememberRuneUiSession('display:'+feature,next)}/>
           :<main className="loc-next-main"><p className="scope-status" role="status">找不到此符文頁面。</p></main>}
     </Suspense>
   </div>;

@@ -1,6 +1,7 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import DailyRuneCalendar from '../../../app/lrunes/DailyRuneCalendar.jsx';
 import {ScopeLink} from './rune-navigation.jsx';
+import {readRuneUiSession,rememberRuneUiSession} from './rune-ui-session.mjs';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {
   listLocalDailyRunes,importLocalDailyTransfer,updateLocalDailyRune,deleteLocalDailyRune
@@ -256,9 +257,11 @@ function LocalDailyLog({rows}){
 }
 
 function LocalDailyTrend({rows}){
-  const [range,setRange]=useState('year');
-  const [bucket,setBucket]=useState('month');
-  const [mode,setMode]=useState('rune');
+  // Only display filters persist in this tab; actual Rune records remain in
+  // IndexedDB and are always read fresh on page entry.
+  const [range,setRange]=useState(()=>readRuneUiSession('trend:range','year'));
+  const [bucket,setBucket]=useState(()=>readRuneUiSession('trend:bucket','month'));
+  const [mode,setMode]=useState(()=>readRuneUiSession('trend:mode','rune'));
   const [page,setPage]=useState(1);
   const normalized=useMemo(()=>normalizeDailyDraws(rows,phaseOn),[rows]);
   const periodRows=useMemo(()=>{
@@ -277,15 +280,18 @@ function LocalDailyTrend({rows}){
     <h2>本機每日符文統計</h2>
     <div className="scope-stat-controls">
       <label><span>統計範圍</span><select className="scope-select" value={range}
-        onChange={event=>{setRange(event.target.value);setPage(1);}}>
+        onChange={event=>{setRange(event.target.value);setPage(1);
+          rememberRuneUiSession('trend:range',event.target.value);}}>
         <option value="year">最近一年</option><option value="all">本裝置全部紀錄</option>
       </select></label>
       <label><span>趨勢週期</span><select className="scope-select" value={bucket}
-        onChange={event=>setBucket(event.target.value)}>
+        onChange={event=>{setBucket(event.target.value);
+          rememberRuneUiSession('trend:bucket',event.target.value);}}>
         <option value="week">每週</option><option value="month">每月</option>
       </select></label>
       <label><span>排名方式</span><select className="scope-select" value={mode}
-        onChange={event=>{setMode(event.target.value);setPage(1);}}>
+        onChange={event=>{setMode(event.target.value);setPage(1);
+          rememberRuneUiSession('trend:mode',event.target.value);}}>
         <option value="rune">符文出現次數</option><option value="direction">方向位</option>
       </select></label>
     </div>
