@@ -33,9 +33,11 @@ function useDeviceDaily(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState('');
   const request=useRef(0);
+  const hasLoaded=useRef(false);
   const reload=useCallback(async()=>{
     const generation=++request.current;
-    setLoading(true);setError('');
+    if(!hasLoaded.current)setLoading(true);
+    setError('');
     try{
       const records=await listLocalDailyRunes();
       if(request.current===generation)setRows(records);
@@ -44,7 +46,7 @@ function useDeviceDaily(){
         setRows([]);
         setError(String(reason?.message||reason||'本機紀錄無法讀取。'));
       }
-    }finally{if(request.current===generation)setLoading(false);}
+    }finally{if(request.current===generation){hasLoaded.current=true;setLoading(false);}}
   },[]);
   useEffect(()=>{
     void reload();
@@ -100,16 +102,18 @@ function LocalDailyLog({rows,reload}){
       window.dispatchEvent(new CustomEvent('loc-rune-local-changed'));
       setNotice(message);
       setEditing(null);setEditForm(null);
-    }catch(reason){setNotice('操作失敗：'+String(reason?.message||reason));}
+      return true;
+    }catch(reason){setNotice('操作失敗：'+String(reason?.message||reason));return false;}
     finally{setBusy(false);}
   }
   async function add(event){
     event.preventDefault();
     if(occupied){setNotice('該日期與類別已有紀錄，不會覆寫。');return;}
-    await mutate(()=>importLocalDailyTransfer([{
+    const added=await mutate(()=>importLocalDailyTransfer([{
       record_date:form.record_date,draw_kind:form.draw_kind,
       rune_number:Number(form.rune_number),direction:form.direction,recorded_phase:''
     }]),'本機紀錄已新增，並未同步到 LOC 雲端。');
+    if(!added)return;
     const date=form.record_date;
     if(/^\d{4}-\d{2}-\d{2}$/.test(date)){
       setSelectedDate(date);
