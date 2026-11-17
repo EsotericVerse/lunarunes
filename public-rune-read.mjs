@@ -1,7 +1,7 @@
 // LRS owns its standalone public Rune read endpoint; LOC keyword analysis,
 // Z-Model Galaxy/Anchor and existing tables are NOT moved or modified.
 // This validates the narrow loc:dialect read port before direct LRS DB access.
-import {LRS_CARD_RUNE66_FIELDS} from '../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import {LRS_CARD_RUNE66_FIELDS} from './modules/lrs/card/zmodel/lrs-card-model.mjs';
 import {readLrsPublicRows} from './lrs-database.mjs';
 
 const TABLE_FIELDS=Object.freeze({

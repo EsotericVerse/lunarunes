@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const contract=JSON.parse(read('contracts/lrs-data-ownership.json'));
 test('Worker public Rune endpoint never automatically exposes migrated private records',()=>{
- const code=read('worker/public-rune-read.mjs');
+ const code=read('public-rune-read.mjs');
  const publicPart=code.split('const TABLE_FIELDS=Object.freeze(')[1].split('const FILTER_FIELDS=')[0];
  const tables=[...publicPart.matchAll(/'silver\.([a-z_]+)'/g)].map(x=>x[1]);
  assert.deepEqual(tables,contract.publicReadAllowlist);
@@ -17,9 +17,9 @@ test('Worker public Rune endpoint never automatically exposes migrated private r
  assert.match(code,/mapped\[0\]\.value!=='hero'/);
 });
 test('LRS controls only its own connection binding; no LOC/LAS credential fallback',()=>{
- const worker=read('worker/index.mjs');
- const readEndpoint=read('worker/public-rune-read.mjs');
- const backend=read('worker/lrs-database.mjs');
+ const worker=read('index.mjs');
+ const readEndpoint=read('public-rune-read.mjs');
+ const backend=read('lrs-database.mjs');
  const web=read('web/src/main.jsx');
  assert.match(worker,/handlePublicRuneRead/);
  assert.match(readEndpoint,/env\?\.LRS_DATABASE_URL/);

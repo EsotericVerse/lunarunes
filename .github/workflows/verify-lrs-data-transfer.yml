@@ -10,7 +10,9 @@ on:
       - 'modules/lrs/card/**'
       - 'modules/lrs/daily/**'
       - 'web/src/runtime/rune-dialect.mjs'
-      - 'worker/**'
+      - 'index.mjs'
+      - 'lrs-database.mjs'
+      - 'public-rune-read.mjs'
       - '.github/workflows/verify-lrs-data-transfer.yml'
   workflow_dispatch:
 permissions:
