@@ -38,8 +38,8 @@ test('context loss or one cleanup exception never prevents remaining releases',(
 
 test('one-card VFX is isolated from mist during reveal; all fog is gone at result',()=>{
  const phases=['idle','waiting','drawing','revealing','transfer','ready'];
- assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('duel',phase)),['waiting','drawing']);
- assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('daily',phase)),['waiting','drawing']);
+ assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('duel',phase)),['drawing']);
+ assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('daily',phase)),['drawing']);
  assert.deepEqual(phases.filter(phase=>shouldMountRuneMist('list',phase)),[]);
  for(const phase of ['idle','revealing','transfer','ready'])
    assert.equal(shouldMountRuneMist('duel',phase),false,phase);
