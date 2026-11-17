@@ -1,7 +1,7 @@
 {
   "schema": "lunarunes.release-version.v1",
-  "version": "1.0R",
-  "status": "initial-release",
+  "version": "1.01R",
+  "status": "release-test",
   "owner": "LRS",
-  "notes": "Owner-designated first LRS release; exact Git SHA remains the immutable release identity."
+  "notes": "Owner-designated Rune Web one-shot VFX and memory lifecycle release test. Only existing LRS Worker auto-deploys; observe but do not force LOC deployment."
 }
