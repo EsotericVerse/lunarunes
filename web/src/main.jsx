@@ -30,6 +30,14 @@ bindRunePublicReadPort(async(table,query)=>{
   return {rows:payload.rows,dataSource:payload.dataSource||'lrs-database'};
 });
 
+// Vite Web only: LOC's native IPA never imports this entry or registers this SW.
+// Only content-hashed JS/CSS/fonts may be cached; photos, WASM, API and daily
+// IndexedDB records remain outside Cache Storage. Preview origins are isolated.
+if(import.meta.env.PROD&&'serviceWorker' in navigator&&
+   (location.protocol==='https:'||location.hostname==='localhost')){
+  void navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{});
+}
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode><RuneApp/></React.StrictMode>
 );

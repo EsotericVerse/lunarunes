@@ -8,6 +8,8 @@ on:
       - 'modules/lrune/**'
       - 'modules/lrs/**'
       - 'web/**'
+      - 'tests/lrs-web-static-cache.test.mjs'
+      - 'tests/lrs-public-read-dedupe.test.mjs'
       - 'index.mjs'
       - 'lrs-database.mjs'
       - 'public-rune-read.mjs'
@@ -59,6 +61,8 @@ jobs:
         run: npm run check:lrs:package
       - name: Regress 3D one-shot GPU release and aborted Rune reads
         run: node --test tests/lrs-gpu-lifecycle.test.mjs
+      - name: Verify bounded Web-only static cache and transient anonymous public read coalescing
+        run: node --test tests/lrs-web-static-cache.test.mjs tests/lrs-public-read-dedupe.test.mjs
       - name: Verify original LRS Web routes and native LOC card hub entry
         run: node --test tests/lrs-web-routes.test.mjs
       - name: Verify original Rune screen parity and private daily boundaries
@@ -77,6 +81,7 @@ jobs:
       - name: Verify independent build has no bundled original art/WASM
         run: |
           test -s dist/web-app/index.html
+          test -s dist/web-app/sw.js
           test -s dist/web-app/_redirects
           test ! -e dist/web-app/vendor/effekseer/effekseer.wasm
           test ! -e dist/web-app/assets/lunarunes/cards/00.png
