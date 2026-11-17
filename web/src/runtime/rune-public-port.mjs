@@ -14,6 +14,9 @@ const ALLOWED_TABLES=new Set([
 ]);
 export function bindRunePublicReadPort(adapter){
   if(typeof adapter!=='function')throw new TypeError('LRS requires an actual public Rune read port');
+  // A newly bound transport must never borrow an outstanding promise from an
+  // old connection/adapter. The old caller still owns its promise lifetime.
+  pendingPublicReads.clear();
   readRows=adapter;
   bindCardDialect({readRows:selectRows,projectColumns:lrsCardRune66ColumnString});
 }

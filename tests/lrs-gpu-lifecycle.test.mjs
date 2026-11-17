@@ -130,3 +130,13 @@ test('GPU ownership replacement retires superseded frames, observers, contexts a
  assert.deepEqual(events,['cancel:1','obs:1','stop:1','release:1','dispose:1','lose:1',
    'cancel:2','obs:2','stop:2','release:2','dispose:2','lose:2']);
 });
+
+test('Effekseer JS loader removes its temporary script node on success and failure',()=>{
+ const source=readFileSync(new URL('../modules/lrs/rune/vfx/EffekseerStage.jsx',import.meta.url),'utf8');
+ assert.match(source,/const finish=error=>\{/);
+ assert.match(source,/script\.onload=null;script\.onerror=null;/);
+ assert.match(source,/script\.remove\(\)/);
+ assert.match(source,/script\.onload=\(\)=>finish\(/);
+ assert.match(source,/script\.onerror=\(\)=>finish\(/);
+ assert.match(source,/\.catch\(error=>\{runtimePromise=null;throw error;\}\)/);
+});
