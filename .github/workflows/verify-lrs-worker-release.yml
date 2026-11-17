@@ -16,6 +16,7 @@ on:
       - 'scripts/rune-media-version.mjs'
       - 'tests/lrs-media-version.test.mjs'
       - 'scripts/check-rune-cloudflare-release.mjs'
+      - 'release/version.json'
       - 'scripts/prepare-rune-**'
       - 'scripts/build-rune-artifacts.mjs'
       - 'scripts/prepare-lrs-release-assets.mjs'
