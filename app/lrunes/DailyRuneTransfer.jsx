@@ -8,7 +8,7 @@ import {writeImportBatches} from '../loc/import/batch.mjs';
 import {listLocalDailyRunes,importLocalDailyTransfer} from '../../modules/lrs/daily/local-records.mjs';
 import {
   DAILY_TRANSFER_MAX_BYTES,DAILY_TRANSFER_BATCH,analyzeDailyImport,parseDailyCsv,makeDailyTransfer,planDailyTransfer
-} from './daily-transfer-contract.mjs';
+} from '../../modules/lrs/daily/transfer-contract.mjs';
 
 const FIELDS='record_date,draw_kind,rune_number,direction,recorded_phase';
 const bytesOf=source=>new TextEncoder().encode(source);

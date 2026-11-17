@@ -63,3 +63,8 @@
 - 最後回報只寫**可玩的畫面與流程、實測結果、修改範圍、尚未通過的項目**。不以 PR 數量、套件數、部署成功假裝遊戲已完成。
 
 **重點：LRS 的 Agent 是遊戲視覺與玩法的製作者，不是把網站工程流程搬來管理遊戲的人。**
+
+## 每日符文資料模型歸屬（1.01R 後）
+- `modules/lrs/daily/analytics.mjs` 是每日排名、趨勢、月相互動的唯一計算來源；舊 `app/lrunes/daily-analytics-model.mjs` 只保留對 LOC 原生呼叫端的 re-export，不得複製實作。
+- `modules/lrs/daily/transfer-contract.mjs` 是 CSV/JSON 備份格式、批次上限的唯一來源；保留既有 `loc.lrunes.daily.v1` 資料格式作向後相容，不讓 LRS 的純邏輯依賴 LOC Query 模組。
+- `app/lrunes/` 僅持有畫面與必要的原生相容入口；`web/` 僅持有網站入口。禁止跨 Repo 自動更新或部署。
