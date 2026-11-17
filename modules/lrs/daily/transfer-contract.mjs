@@ -120,6 +120,23 @@ export function analyzeDailyImport(list,fieldMap={}){
   return {valid,invalid};
 }
 
+
+export const DAILY_CSV_COLUMNS=Object.freeze([
+  'record_date','draw_kind','rune_number','direction','recorded_phase'
+]);
+function dailyCsvCell(value){
+  const text=String(value??'');
+  return /[",\r\n]/.test(text)?'"'+text.replace(/"/g,'""')+'"':text;
+}
+// A single strict CSV encoder is shared by native LOC handoff and standalone
+// LRS Web. Always retain the original five-field 1.01R backup format.
+export function makeDailyCsv(records){
+  const list=makeDailyTransfer(records).records;
+  return [DAILY_CSV_COLUMNS.join(','),
+    ...list.map(row=>DAILY_CSV_COLUMNS.map(key=>dailyCsvCell(row[key])).join(','))
+  ].join('\r\n')+'\r\n';
+}
+
 // Daily-rune CSV is our own fixed format, so it has its own tiny RFC 4180 reader
 // (quoted cells, doubled quotes, CRLF) -- no document parser module involved.
 export function parseDailyCsv(text){

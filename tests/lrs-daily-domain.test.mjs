@@ -5,7 +5,8 @@ import * as daily from '../modules/lrs/daily/analytics.mjs';
 import * as oldEntry from '../app/lrunes/daily-analytics-model.mjs';
 import {
  DAILY_TRANSFER_FORMAT,DAILY_TRANSFER_MAX_BYTES,DAILY_TRANSFER_BATCH,
- makeDailyTransfer,parseDailyTransfer,planDailyTransfer,parseDailyCsv
+ makeDailyTransfer,parseDailyTransfer,planDailyTransfer,parseDailyCsv,
+ DAILY_CSV_COLUMNS,makeDailyCsv,analyzeDailyImport
 } from '../modules/lrs/daily/transfer-contract.mjs';
 
 test('canonical daily analytics owns native legacy entry without duplicating its logic',()=>{
@@ -43,4 +44,25 @@ test('old backup format, byte/row limits and duplicate policy remain identical',
  {record_date:'2026-11-17',draw_kind:'main',rune_number:'1',direction:'正位',recorded_phase:'新月'});
  const transfer=readFileSync(new URL('../modules/lrs/daily/transfer-contract.mjs',import.meta.url),'utf8');
  assert.doesNotMatch(transfer,/(?:app\/loc|app\/modular|query-batch-size)/);
+});
+
+test('one CSV serializer is used by native and independent Web; strict export roundtrips',()=>{
+ const records=[
+  {record_date:'2026-11-17',draw_kind:'main',rune_number:65,direction:'半正位',recorded_phase:'新月'},
+  {record_date:'2026-11-17',draw_kind:'supplement',rune_number:66,direction:'逆位',recorded_phase:''}
+ ];
+ assert.deepEqual(DAILY_CSV_COLUMNS,['record_date','draw_kind','rune_number','direction','recorded_phase']);
+ const csv=makeDailyCsv(records);
+ assert(csv.startsWith('record_date,draw_kind,rune_number,direction,recorded_phase\r\n'));
+ const parsed=parseDailyCsv('\uFEFF'+csv);
+ assert.deepEqual(parsed.header,DAILY_CSV_COLUMNS);
+ const {valid,invalid}=analyzeDailyImport(parsed.records);
+ assert.equal(invalid.length,0);
+ assert.deepEqual(valid,records);
+ const native=readFileSync(new URL('../app/lrunes/DailyRuneTransfer.jsx',import.meta.url),'utf8');
+ const web=readFileSync(new URL('../web/src/runtime/rune-local-daily.jsx',import.meta.url),'utf8');
+ assert.match(native,/makeDailyCsv\(list\)/);
+ assert.doesNotMatch(native,/const csvCell=/);
+ assert.match(web,/makeDailyCsv\(rows\)/);
+ assert.match(web,/planDailyTransfer\(valid,rows\)/);
 });

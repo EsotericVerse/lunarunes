@@ -7,7 +7,8 @@ import {selectAllRows} from '../loc/db/db-query.mjs';
 import {writeImportBatches} from '../loc/import/batch.mjs';
 import {listLocalDailyRunes,importLocalDailyTransfer} from '../../modules/lrs/daily/local-records.mjs';
 import {
-  DAILY_TRANSFER_MAX_BYTES,DAILY_TRANSFER_BATCH,analyzeDailyImport,parseDailyCsv,makeDailyTransfer,planDailyTransfer
+  DAILY_TRANSFER_MAX_BYTES,DAILY_TRANSFER_BATCH,DAILY_CSV_COLUMNS,makeDailyCsv,
+  analyzeDailyImport,parseDailyCsv,makeDailyTransfer,planDailyTransfer
 } from '../../modules/lrs/daily/transfer-contract.mjs';
 
 const FIELDS='record_date,draw_kind,rune_number,direction,recorded_phase';
@@ -43,12 +44,7 @@ async function downloadFile(content,filename,native,mime='text/csv;charset=utf-8
   setTimeout(()=>URL.revokeObjectURL(url),30000);
   return '已交給瀏覽器下載。';
 }
-const CSV_COLUMNS=['record_date','draw_kind','rune_number','direction','recorded_phase'];
-const csvCell=value=>{
-  const text=String(value??'');
-  return /[",\r\n]/.test(text)?'"'+text.replace(/"/g,'""')+'"':text;
-};
-const toCsv=records=>[CSV_COLUMNS.join(','),...records.map(row=>CSV_COLUMNS.map(key=>csvCell(row[key])).join(','))].join('\r\n')+'\r\n';
+const CSV_COLUMNS=DAILY_CSV_COLUMNS;
 
 // Personal-settings import/export for daily runes: export is a CSV, import takes
 // that same CSV back. Existing (date, kind) records are never overwritten.
@@ -67,7 +63,7 @@ export default function DailyRuneTransfer({cloudCanManage=false,onImported}={}){
     setBusy(true);setStatus('');setError('');
     try{
       const list=makeDailyTransfer(await dailyRows(native)).records;
-      const result=await downloadFile(toCsv(list),'LunaRunes-Daily-'+today()+'.csv',native);
+      const result=await downloadFile(makeDailyCsv(list),'LunaRunes-Daily-'+today()+'.csv',native);
       setStatus(result+' 共 '+list.length+' 筆。');
     }catch(e){setError('匯出失敗：'+String(e?.message||e));}
     finally{setBusy(false);}

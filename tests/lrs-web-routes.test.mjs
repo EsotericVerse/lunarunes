@@ -54,6 +54,9 @@ test('independent daily Web pages use real device IndexedDB; no fake account or 
   assert.match(device,/importLocalDailyTransfer/);
   assert.match(device,/updateLocalDailyRune/);
   assert.match(device,/deleteLocalDailyRune/);
+  assert.match(device,/parseDailyCsv/);
+  assert.match(device,/makeDailyCsv/);
+  assert.match(device,/DAILY_TRANSFER_MAX_BYTES/);
   assert.match(device,/dailyTrend\(periodRows,bucket\)/);
   assert.match(device,/DailyRuneCalendar/);
   assert.match(device,/不會自動同步雲端/);

@@ -9,6 +9,8 @@ import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/dail
 import {normalizeDailyDraws,summarizeDailyDraws,rankDailyDraws,
   pageDailyRanking,dailyTrend,DAILY_DIRECTIONS} from '../../../modules/lrs/daily/analytics.mjs';
 import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
+import {DAILY_TRANSFER_MAX_BYTES,DAILY_CSV_COLUMNS,makeDailyCsv,parseDailyCsv,
+  analyzeDailyImport,planDailyTransfer} from '../../../modules/lrs/daily/transfer-contract.mjs';
 
 // Standalone LRS Web: local device records only. No LOC session, private table,
 // shared database URL or pretend account is available in this runtime.
@@ -79,6 +81,7 @@ function LocalDailyLog({rows}){
   const [editForm,setEditForm]=useState(null);
   const [busy,setBusy]=useState(false);
   const [notice,setNotice]=useState('');
+  const csvInput=useRef(null);
   const {year,month}=monthParts(monthValue);
   const currentMonth=String(year)+'-'+String(month).padStart(2,'0');
   const visible=useMemo(()=>rows.filter(row=>String(row.record_date).slice(0,7)===currentMonth),[rows,currentMonth]);
@@ -130,6 +133,44 @@ function LocalDailyLog({rows}){
     await mutate(()=>deleteLocalDailyRune({
       recordDate:row.record_date,drawKind:row.draw_kind
     }),'本機紀錄已刪除。');
+  }
+  async function exportCsv(){
+    if(busy)return;
+    setBusy(true);setNotice('');
+    try{
+      const csv=makeDailyCsv(rows);
+      const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+      const link=document.createElement('a');
+      link.href=url;
+      link.download='LunaRunes-Daily-'+todayInTaipei()+'.csv';
+      document.body.appendChild(link);
+      try{link.click();}finally{link.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1000);}
+      setNotice('已交由瀏覽器下載 '+rows.length+' 筆本機紀錄。');
+    }catch(reason){setNotice('匯出失敗：'+String(reason?.message||reason));}
+    finally{setBusy(false);}
+  }
+  async function importCsv(event){
+    const file=event.target.files?.[0];
+    event.target.value='';
+    if(!file||busy)return;
+    setBusy(true);setNotice('');
+    try{
+      if(!/\.csv$/i.test(file.name))throw new Error('只接受每日符文 CSV 格式。');
+      if(file.size>DAILY_TRANSFER_MAX_BYTES)throw new Error('CSV 檔案超過 24 MB。');
+      const source=new TextDecoder('utf-8',{fatal:true}).decode(await file.arrayBuffer());
+      const {header,records}=parseDailyCsv(source);
+      if(header.length!==DAILY_CSV_COLUMNS.length||
+         DAILY_CSV_COLUMNS.some((column,index)=>header[index]!==column))
+        throw new Error('CSV 欄位與原始每日符文備份格式不符。');
+      const {valid,invalid}=analyzeDailyImport(records);
+      if(invalid.length)throw new Error('有 '+invalid.length+' 列不合法，整份取消匯入：'+invalid[0].error);
+      const plan=planDailyTransfer(valid,rows);
+      const result=await importLocalDailyTransfer(plan.fresh);
+      window.dispatchEvent(new CustomEvent('loc-rune-local-changed'));
+      setNotice('本機匯入完成：新增 '+result.newCount+' 筆，原有 '+plan.duplicateCount+
+        ' 筆，衝突 '+plan.conflictCount+' 筆維持原值。');
+    }catch(reason){setNotice('匯入失敗：'+String(reason?.message||reason));}
+    finally{setBusy(false);}
   }
   const chooseForm=setter=>event=>setter(current=>({...current,[event.target.name]:event.target.value}));
   return <>
@@ -196,6 +237,16 @@ function LocalDailyLog({rows}){
         <button className="loc-button" type="submit" disabled={busy||occupied}>
           {occupied?'該類別已有紀錄':'新增本機紀錄'}</button>
       </form>
+    </section>
+    <section className="loc-card" aria-label="每日符文本機匯入與匯出">
+      <h2>每日紀錄 · CSV 搬移</h2>
+      <p className="scope-status">可以從原網站匯出 CSV，再在 LRS 網站手動匯入。沿用相同五欄格式；錯誤資料整份拒絕，相同日期／類別的既有紀錄絕不覆寫。</p>
+      <div className="lrs-local-daily-actions">
+        <button className="loc-button" type="button" disabled={busy} onClick={()=>void exportCsv()}>匯出本機 CSV</button>
+        <button className="loc-button" type="button" disabled={busy} onClick={()=>csvInput.current?.click()}>匯入本機 CSV</button>
+        <input ref={csvInput} type="file" accept=".csv,text/csv" hidden
+          onChange={event=>void importCsv(event)} aria-label="選擇每日符文 CSV"/>
+      </div>
       {notice?<p role="status" className="scope-status">{notice}</p>:null}
     </section>
   </>;
