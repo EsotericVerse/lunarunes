@@ -157,9 +157,13 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
   const ambientPauseRef=useRef(ambientPaused);
   ambientPauseRef.current=ambientPaused;
   const [status,setStatus]=useState('正在啟動 Effekseer…');
+  // New canvas backing for a changed quality/effect; don't reuse a lost context.
+  const canvasIdentity=[effect?.path||'',runeId||'',ceremony,waiting,ambient,
+    ambientDepth,quality,textureQuality].join('|');
   useEffect(()=>{
     let active=true,frame=0,observer;
     let renderer,context,clock;
+    let loadWatchdog=0,playbackStarted=false;
     const gpu=createRuneGpuLifecycle({cancelFrame:cancelAnimationFrame});
     let resumeOnVisible=null;
     // One-shot VFX may finish while the card/result component stays visible.
@@ -168,6 +172,7 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
       if(!active)return false;
       active=false;
       if(resumeOnVisible)document.removeEventListener('visibilitychange',resumeOnVisible);
+      if(loadWatchdog)clearTimeout(loadWatchdog);
       gpu.release();
       renderer=null;context=null;clock=null;
       return true;
@@ -175,6 +180,13 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
     const target=canvas.current;
     if(reduced){setStatus('');onReady?.();onPlaybackCompleteRef.current?.();return;}
     if(!effect){setStatus('');onReady?.();onPlaybackCompleteRef.current?.();return;}
+    // A slow/failed WASM download must not pin a blank WebGL context forever.
+    loadWatchdog=window.setTimeout(()=>{
+      if(!active||playbackStarted)return;
+      setStatus('特效載入逾時，已釋放舞台資源');
+      onReady?.();
+      if(retire()&&!ceremony&&!waiting&&!ambient)onPlaybackCompleteRef.current?.();
+    },20000);
     (async()=>{
       try{
         const api=await readyRuntime();
@@ -192,11 +204,10 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
         const resize=()=>{
           const r=target.getBoundingClientRect();
           if(!r.width||!r.height)return;
-          const maxDpr=ambient?(quality==='high'?1.5:1):quality==='high'?3:1.2;
+          const maxDpr=ambient?(quality==='high'?1.25:1):quality==='high'?2:1.2;
           const deviceDpr=window.devicePixelRatio||1;
-          const renderDpr=!ambient&&quality==='high'
-            ?Math.min(Math.max(deviceDpr,2),maxDpr)
-            :Math.min(deviceDpr,maxDpr);
+          // Avoid 3× retina renderbuffers and forced 2× DPR on 1× screens.
+          const renderDpr=Math.min(Math.max(1,deviceDpr),maxDpr);
           renderer.setPixelRatio(renderDpr);
           renderer.setSize(Math.round(r.width),Math.round(r.height),false);
           camera.aspect=r.width/r.height;camera.updateProjectionMatrix();camera.updateMatrixWorld();
@@ -270,6 +281,8 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
              if(tuning?.speed)handle.setSpeed(tuning.speed);
              if(tuning?.color)handle.setAllColor(...tuning.color);
              started=true;
+             playbackStarted=true;
+             if(loadWatchdog){clearTimeout(loadWatchdog);loadWatchdog=0;}
              ambientLastSpawn=0;
              if(ambient&&ambientDepth==='rear'&&quality==='high'){
                try{
@@ -599,7 +612,7 @@ function EffekseerCanvas({effect,runeId,reduced,onReady,onPlaybackComplete,cerem
     return()=>{retire();};
   },[effect,runeId,reduced,ceremony,groupEffect,groupStage,waiting,ambient,ambientDepth,quality,textureQuality,diagnoseAmbient]);
   return <div className="rune-effekseer-canvas-wrap">
-    <canvas ref={canvas} className="rune-effekseer-canvas" aria-hidden="true"/>
+    <canvas key={canvasIdentity} ref={canvas} className="rune-effekseer-canvas" aria-hidden="true"/>
     {(!ambient||diagnoseAmbient)&&status?<p className={'rune-effekseer-status'+(diagnoseAmbient?' rune-effekseer-fog-diagnostic':'')} role="status">{status}</p>:null}
   </div>;
 }
