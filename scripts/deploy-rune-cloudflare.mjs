@@ -6,10 +6,20 @@
  * No LRS merge triggers LOC production.
  */
 import {spawnSync} from 'node:child_process';
+import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const COMMIT_SHA=/^[0-9a-f]{40}$/;
+// Fail closed before *any* Wrangler deploy: Dashboard disables are not durable
+// unless the checked-in config independently prohibits the workers.dev route.
+export function verifyWorkerBoundary(config){
+  if(config?.name!=='lunarunes'||config.workers_dev!==false||
+    config.observability?.enabled!==true||
+    config.observability?.logs?.enabled!==true)
+    throw new Error('LRS Worker boundary: workers_dev must be false and Observability enabled');
+}
+
 export function deploymentMode(env=process.env){
   if(env.WORKERS_CI){
     if(!env.WORKERS_CI_BRANCH)
@@ -48,6 +58,7 @@ function main(){
     if(!process.env.CLOUDFLARE_API_TOKEN)
       throw new Error('Supply a one-time CLOUDFLARE_API_TOKEN for the approved release');
   }
+  verifyWorkerBoundary(JSON.parse(readFileSync('wrangler.jsonc','utf8')));
   const cli=process.platform==='win32'?'wrangler.cmd':'wrangler';
   const args=deploymentArgs();
   if(args.length!==1||args[0]!=='deploy')throw new Error('Only the existing lunarunes production deployment is permitted');
