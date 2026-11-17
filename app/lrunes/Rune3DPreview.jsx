@@ -287,7 +287,10 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
         <span className="rune-skin-moon rune-3d-night-moon"/>
       </div>:null}
       {!isList?<div className="rune-3d-group-light" aria-hidden="true"/>:null}
-      {!isList?<RuneMistBackdrop phase={phase} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>:null}
+      {/* No GPU fog while waiting for a user action or after a draw finishes.
+          Only an active summoning owns the short-lived authored mist contexts. */}
+      {!isList&&['waiting','drawing','revealing'].includes(phase)?
+        <RuneMistBackdrop phase={phase} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>:null}
       {mode==='duel'&&['idle','waiting','ready'].includes(phase)?
         <div className="rune-3d-draw-deck" aria-hidden="true">
           <div className="rune-3d-draw-deck-card">
