@@ -1,6 +1,6 @@
 # LunaRunes independent artifact contract (migration stage)
 
-Ownership: **LunaRunes** owns Rune images, drawing, 2D/3D modules, Effekseer, WASM, and future Rune game engines. **LunaCodex** owns the public Scope routing contract and the existing LOC Web integration. **LunArcus** owns Luna Protocol orchestration and the existing unified IPA build/deployment. This repository does not own an IPA pipeline, Auth, SSO, or MCP.
+Ownership: **LunaRunes** owns Rune images, drawing, 2D/3D modules, Effekseer, WASM, and future Rune game engines. **LunaCodex** owns the public Scope routing contract and the existing LOC Web integration. **LunaCodex** owns the complete existing App/IPA build and native packaging; **LunArcus** owns Auth/SSO/MCP communication, not IPA. This repository does not own an IPA pipeline, Auth, SSO, or MCP.
 
 ## Pinned originals
 
@@ -11,7 +11,7 @@ Ownership: **LunaRunes** owns Rune images, drawing, 2D/3D modules, Effekseer, WA
 ## Separate products, one canonical Rune source
 
 - `npm run artifacts:web:art` creates `dist/web/` with real original art only. It is for the separately served **Rune** Web asset origin. LOC Web must link to published Rune URLs, **not** copy these files at LOC build/deployment time.
-- `npm run artifacts:ios:art` creates `dist/ios/` with the real original files. This is a file handoff to the **LunArcus** build/orchestration process; it is **not an IPA**, an independent native application, or a URL-only substitution.
+- `npm run artifacts:ios:art` creates `dist/ios/` with the real original files. This is a file handoff to the **LOC** App/IPA build process; it is **not an IPA**, an independent native application, or a URL-only substitution.
 - `npm run effects:prepare` explicitly performs pinned upstream runtime/effect preparation. It is intentionally never run by normal LOC predev/prebuild, and should be run only when the Rune effect pack needs to be produced/refreshed.
 - After preparation, `npm run artifacts:web` and `npm run artifacts:ios` produce full file trees including prepared Effekseer assets and semantic icon files. They fail closed if the required runtime, effect collection, or icons are missing. No network access is performed in either artifact-export command.
 
@@ -19,6 +19,6 @@ Every `dist/{web,ios}/rune-artifacts.json` records the logical file paths, SHA-2
 
 ## Not yet certified or switched
 
-This first contract does **not** declare the copied `app/lrunes/**` UI independent. It still references LOC internals such as Scope navigation, authorization, DB querying, and shared UI modules. The Rune standalone Web app build, independent Cloudflare Pages publishing, real MIME/CORS checks, integrated drawing/3D/game regression, canonical LOC Routing Table cutover, and LunArcus IPA consumption are **pending**.
+This first contract does **not** declare the copied `app/lrunes/**` UI independent. It still references LOC internals such as Scope navigation, authorization, DB querying, and shared UI modules. The Rune standalone Web app build, independent Cloudflare Pages publishing, real MIME/CORS checks, integrated drawing/3D/game regression, canonical LOC Routing Table cutover, and LOC IPA consumption are **pending**.
 
 Do not remove LOC's existing Rune resources or `prebuild`/ `predev` hooks until the separately published Rune runtime, canonical URLs, and iOS real-file handoff have passed functional validation. The existing site must stay operational during migration.

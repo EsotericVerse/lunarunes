@@ -34,4 +34,4 @@ The module has **no SQL driver** dependencies. PostgreSQL access remains the
 separate LRS Worker concern; LOC owns its own portable SQL dialect modules.
 
 Images, Effekseer, WASM and the card PDF stay in LRS's separately built assets,
-not this package. LAS retains its real-file IPA artifact handoff.
+not this package. **LOC** owns full App/IPA packaging and consumes LRS's real-file native artifacts; LAS is only the Auth/SSO/MCP communication bridge.
