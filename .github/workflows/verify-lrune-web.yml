@@ -46,6 +46,8 @@ jobs:
         run: npm run build:lrs:modules
       - name: Verify all lrs modules, loc:dialect port and real local board-game rules
         run: npm run check:lrs:modules
+      - name: Verify LRS daily data ownership and legacy App/IPA model bridge
+        run: node --test tests/lrs-daily-domain.test.mjs
       - name: Regression-check legacy module test
         run: npm run check:lrune:core
       - name: Verify importable module subpaths (rune/card/boardgame)
