@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {readFile} from 'node:fs/promises';
-import {deploymentMode,deploymentArgs} from '../scripts/deploy-rune-cloudflare.mjs';
+import {deploymentMode,deploymentArgs,verifyWorkerBoundary} from '../scripts/deploy-rune-cloudflare.mjs';
 
 const sha='a'.repeat(40);
 test('LRS main merge deploys LRS itself, independently of LOC',()=>{
@@ -39,4 +39,23 @@ test('the owner-designated 1.01R resource release is not an npm publication',asy
   assert.equal(version.schema,'lunarunes.release-version.v1');
   assert.equal(version.version,'1.01R');
   assert.equal(version.status,'release-test');
+});
+
+test('Worker configuration permanently blocks the workers.dev hostname while keeping Observability on',async()=>{
+ const cfg=JSON.parse(await readFile('wrangler.jsonc','utf8'));
+ assert.equal(cfg.workers_dev,false,'A Dashboard-only disable is reverted by the next Wrangler deploy');
+ assert.equal(cfg.name,'lunarunes');
+ assert.equal(cfg.observability.enabled,true);
+ assert.equal(cfg.observability.logs.enabled,true);
+ assert.equal(cfg.observability.logs.invocation_logs,true);
+ assert.equal(cfg.observability.logs.persist,true);
+ assert.equal(cfg.observability.redact_query_string,true);
+ assert.equal(cfg.observability.logs.head_sampling_rate,1);
+ assert.doesNotThrow(()=>verifyWorkerBoundary(cfg));
+ for(const invalid of [
+   {...cfg,workers_dev:true},
+   {...cfg,workers_dev:undefined},
+   {...cfg,observability:{enabled:false}},
+   {...cfg,name:'another-worker'}
+ ])assert.throws(()=>verifyWorkerBoundary(invalid),/LRS Worker boundary/);
 });
