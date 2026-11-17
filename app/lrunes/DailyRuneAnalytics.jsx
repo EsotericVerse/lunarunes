@@ -21,7 +21,7 @@ import {DEFAULT_YEAR_WINDOW} from '../loc/preferences/default-year-window.mjs';
 import {
   DAILY_RUNE_MODES,normalizeDailyDraws,rankDailyDraws,pageDailyRanking,
   summarizeDailyDraws,dailyCategoryTrend,dailyDirectionTrend
-} from './daily-analytics-model.mjs';
+} from '../../modules/lrs/daily/analytics.mjs';
 
 const PHASE_DATE_TIME='T12:00:00+08:00';
 const FOCUS=Object.freeze({});
