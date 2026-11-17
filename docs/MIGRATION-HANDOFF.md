@@ -1,6 +1,6 @@
 # LunaRunes independent project — engineering handoff
 Date: 2026-11-16
-Scope: **LunaRunes only**. Another agent owns **LunArcus** (Auth/SSO/MCP Gateway/Extension/IPA orchestration). Do not concurrently modify that repository or deploy its Worker.
+Scope: **LunaRunes only**. Another agent owns **LunArcus** (Auth/SSO/MCP Gateway/Extension). **LOC owns the complete App/IPA pipeline.** Do not concurrently modify that repository or deploy its Worker.
 
 ## Project boundary — settled
 - **LunaCodex** remains LOC Web and owner of the canonical Scope Routing Table, text/culture/statistics/trace/search, and current live site.
@@ -35,7 +35,7 @@ Scope: **LunaRunes only**. Another agent owns **LunArcus** (Auth/SSO/MCP Gateway
 3. Keep Rune cards/group art and third-party `public/vendor/effekseer/NOTICE.txt` attribution intact; produce verifiable artifact manifests with pinned checksums.
 4. Configure independently served Rune Web/static assets and selective deployment from Rune `main` **without branch previews**. Only publish changed output when needed; avoid routine regeneration of immutable assets.
 5. Adapt LOC Web reference paths and navigation to published Rune application/assets only **after** URL/effekseer regression checks. Keep the canonical Scope Routing Table owned by LunaCodex; no duplicates.
-6. Supply LunArcus agent with a versioned, immutable Rune Web/iOS artifacts contract; iOS requires actual source/artifact files included during its existing unified IPA process.
+6. Supply the **LOC App/IPA workflow** with a versioned, immutable Rune Web/iOS artifacts contract; iOS requires actual source/artifact files in the existing LOC IPA process.
 7. Verify card draw 2D/3D, daily draw, atlas/list, current board game, mobile navigation, Scope access, asset MIME/CORS, iOS bundle 67 cards. Only then remove redundant LOC Web Rune preparation and old code with narrow, reversible PRs.
 
 ## Safety / collaboration
@@ -67,13 +67,13 @@ baseline. The follow-on work is at `work/rune-artifact-contract`, PR #1
   `npm run art:verify` and both art-only deliveries passed GitHub CI.
 - Independent Web compilation + game-engine smoke test passed GitHub CI.
   Art/Effekseer **runtime playback**, HTTP asset MIME/CORS, a real browser,
-  full drawing/data/Scope parity, iOS IPA consumption, and Cloudflare live
+  full drawing/data/Scope parity, LOC iOS IPA consumption, and Cloudflare live
   deployment **are not yet verified**.
 - `app/lrunes` remains partially coupled to LOC for Silver table reads,
   daily log, Scope home block editing, navigation and charts. Do not remove
   LOC preparation, do not switch production routes, and do not merge this
   work to `main` until all functional acceptance checks are satisfied.
-- LunArcus Auth/SSO/MCP/IPA integration remains exclusively owned by its
+- LunArcus Auth/SSO/MCP integration remains exclusively owned by its
   separate Agent. The `lrune` module provides file artifacts; it does not
   create another IPA pipeline.
 

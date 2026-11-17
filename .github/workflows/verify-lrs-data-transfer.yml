@@ -9,7 +9,7 @@ on:
       - 'tests/lrs-data-boundary.test.mjs'
       - 'modules/lrs/card/**'
       - 'modules/lrs/daily/**'
-      - 'web/src/runtime/rune-dialect.mjs'
+      - 'web/src/runtime/rune-public-port.mjs'
       - 'index.mjs'
       - 'lrs-database.mjs'
       - 'public-rune-read.mjs'

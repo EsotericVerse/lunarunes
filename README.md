@@ -11,7 +11,7 @@ This repository owns the **lo3r@lrs · LunaRunes (lrs)** modules. The canonical,
 
 **SQL is not owned by LRS.** LOC's `loc:dialect` supplies `readRows` and the ZModel-backed column projector to `lrs:card`. The card module does not import database drivers, credentials, LOC authorization or SQL transports.
 
-`LunaCodex` retains the canonical `/lrunes/` Scope routing and Web integration. `LunArcus` owns Luna Protocol, Auth/SSO/MCP and the existing IPA orchestration. LRS provides actual local artifact files for LunArcus, but never builds another IPA.
+`LunaCodex` retains the canonical `/lrunes/` Scope routing and Web integration. `LunArcus` owns Auth/SSO/MCP and cross-system communication. **LunaCodex alone owns the existing complete App/IPA build.** LRS provides immutable source and real Rune files to LOC, but never builds an IPA.
 
 ## Package consumption
 
@@ -31,7 +31,7 @@ These are import contracts, not a claim that LOC already installs an independent
 
 The package `files` whitelist excludes generated Web output, immutable artwork, Effekseer effect binaries and WASM. 3D/React/Sharp dependencies are optional peers or project build-only dependencies, not required for a consumer of the pure `lrs/card` module.
 
-The historical `modules/lrune/**` and `app/lrunes/**` entry paths currently contain compatibility exports. They are not the primary implementation or new module IDs.
+`modules/lrs/**` owns Rune business implementation; `app/lrunes/**` contains the original Rune UI and LOC native handoff entries. The retired `modules/lrune/**` duplicate path must not be restored.
 
 ## Build and verification
 
@@ -53,7 +53,7 @@ npm run artifacts:web
 npm run artifacts:ios
 ```
 
-`dist/web-app` is the standalone Vite/React Web code output; it deliberately excludes original art and WASM. `dist/web` is independently publishable Web asset output, while `dist/ios` consists of the real files handed to LunArcus. Neither artifact exporter touches LOC's deployment.
+`dist/web-app` is the standalone Vite/React Web code output; it deliberately excludes original art and WASM. `dist/web` is independently publishable Web asset output, while `dist/ios` consists of real files consumed by **LOC's existing IPA build**. Neither artifact exporter touches LOC's deployment.
 
 `VITE_LRS_ASSET_ORIGIN` selects an independently published Rune Web asset origin; the earlier `VITE_LRUNE_ASSET_ORIGIN` is temporarily supported as a migration alias.
 

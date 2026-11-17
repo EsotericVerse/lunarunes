@@ -22,11 +22,11 @@ LOC owns SQL compilation, physical driver dialects, ZModel field projection, dat
 - `lrs:boardgame` owns its own game rules; planned Rune-life simulation and election-strategy games are future work.
 
 ## las — LunArcus
-`las:auth` · `las:plugins` (including extension) · `las:mcp` · `las:tunnel` (CMS integration/data mapping) · `las:ipa` (Apple) · `las:apk` (Android).
+`las:auth` · `las:plugins` (including extension) · `las:mcp` · `las:tunnel` (cross-system communication). **LOC exclusively owns the App/IPA packaging**, not LAS.
 
-LAS development is assigned to another Agent, and this migration does not alter that repository, SSO, MCP, mobile signing or packaging. The Rune repository exports actual source and asset files for LAS to consume.
+LAS development is assigned to another Agent; this migration does not alter LAS, its SSO or MCP. The Rune repository exports version-pinned source and real assets for **LOC** to consume during its existing App/IPA build.
 
 ## Delivery and migration constraints
-LOC Web links to separately deployed Rune art/VFX URLs; iOS gets actual files via LAS IPA orchestration. Existing LOC routing remains canonical, the existing `/lrunes/` Scope URL stays intact, and the legacy `lrune` namespace is only a temporary compatibility facade.
+LOC Web links to separately deployed Rune art/VFX URLs; LOC iOS packages actual Rune files from a pinned LRS revision through LOC's existing IPA workflow. Existing LOC routing remains canonical, the existing `/lrunes/` Scope URL stays intact, and the legacy `lrune` namespace is only a temporary compatibility facade.
 
 The LRS branch `work/rune-artifact-contract` is still a Draft PR against `migration/independent-deploy`, not production. The LOC `loc:dialect` adapter is in its own work branch. Do not remove LOC's current build preparation or switch production URLs until independent deployment and behavioral parity are verified.

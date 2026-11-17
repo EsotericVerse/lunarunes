@@ -25,7 +25,7 @@ const removedPaths=new Set([
 const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix))||
  ['app/loc/blocks/home-block-model.js','app/loc/blocks/hero-image.mjs',
   'app/loc/model/moon-phase.js'].includes(p);
-const forbidden=files.filter(p=>p.startsWith('app/loc/')||owns(p));
+const forbidden=files.filter(p=>p.startsWith('app/loc/')||p.startsWith('app/modular/')||owns(p));
 if(forbidden.length)throw Error('Legacy duplicate Rune implementation remains: '+forbidden.slice(0,10).join(', '));
 const expected=[
  'modules/lrs/rune/hero/home-presentation.mjs',
@@ -37,6 +37,10 @@ const expected=[
  'modules/lrs/daily/local-records.mjs',
  'modules/lrs/daily/record-slots.mjs',
  'modules/lrs/daily/real-moon-phase.mjs',
+ 'content/lrunes/hero.js',
+ 'content/lrunes/index.js',
+ 'content/lrunes/game.js',
+ 'web/src/runtime/rune-public-port.mjs',
  'app/lrunes/RunesClient.jsx',
  'app/lrunes/visual/RuneArtStage.jsx'
 ];
