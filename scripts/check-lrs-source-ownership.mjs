@@ -20,7 +20,8 @@ const removedPaths=new Set([
  'app/lrunes/visual/rune-art-layout.css',
  'app/lrunes/visual/rune-art-stage.css',
  'app/lrunes/local-rune-records.mjs','app/daily/log/daily-record-slots.mjs',
- 'packages/zenstack/lrunes-read-model.mjs'
+ 'packages/zenstack/lrunes-read-model.mjs',
+ 'app/lrunes/daily-transfer-contract.mjs'
 ]);
 const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix))||
  ['app/loc/blocks/home-block-model.js','app/loc/blocks/hero-image.mjs',
@@ -37,6 +38,8 @@ const expected=[
  'modules/lrs/daily/local-records.mjs',
  'modules/lrs/daily/record-slots.mjs',
  'modules/lrs/daily/real-moon-phase.mjs',
+ 'modules/lrs/daily/analytics.mjs',
+ 'modules/lrs/daily/transfer-contract.mjs',
  'content/lrunes/hero.js',
  'content/lrunes/index.js',
  'content/lrunes/game.js',
