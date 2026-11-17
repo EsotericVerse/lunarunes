@@ -1,6 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createRuneGpuLifecycle,shouldMountRuneMist,shouldPlayRunePrelude} from '../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
+import {createCardModule} from '../modules/lrs/card/draw-core.mjs';
+import {readFileSync} from 'node:fs';
 
 test('finished Rune VFX releases one WebGL context, renderer, observer and frame exactly once',()=>{
  const events=[];
@@ -45,4 +47,38 @@ test('one-card VFX is isolated from mist during reveal; all fog is gone at resul
  assert.equal(shouldPlayRunePrelude('duel','drawing',23),false);
  assert.equal(shouldPlayRunePrelude('daily','waiting',23),false);
  assert.equal(shouldPlayRunePrelude('duel','waiting',null),false);
+});
+
+test('all single-card query stages accept the same abort signal without changing Rune data',async()=>{
+ const controller=new AbortController(),calls=[];
+ const runtime=createCardModule({
+   projectColumns:(...fields)=>fields.join(','),
+   readRows:async(table,query)=>{
+     calls.push({table,signal:query.signal});
+     assert.equal(query.signal,controller.signal);
+     if(table==='silver.runes')return {rows:[{rune_id:3,rune_name:'生'}],dataSource:'primary'};
+     return {rows:[{type:'direction',desc:'正位指引'}]};
+   }
+ });
+ const rows=await runtime.loadDrawCards([{runeNumber:3,dir:1}],
+   {staticTypes:['direction'],signal:controller.signal});
+ assert.equal(rows[0].rune_etc.direction[1],'正位指引');
+ assert.deepEqual(calls.map(x=>x.table),['silver.runes','silver.runes_etc']);
+ controller.abort();
+ assert.equal(calls.every(x=>x.signal.aborted),true);
+});
+test('Rune Web strips browser AbortSignal before sending JSON to LRS public Worker',()=>{
+ const source=readFileSync(new URL('../web/src/main.jsx',import.meta.url),'utf8');
+ assert.match(source,/const \{signal,\.\.\.publicQuery\}=query\|\|\{\}/);
+ assert.match(source,/body:JSON\.stringify\(\{table,query:publicQuery\}\)/);
+ assert.match(source,/\.\.\.\(signal\?\{signal\}:\{\}\)/);
+});
+test('the result stage never retains waiting fog after one-shot playback',()=>{
+ const source=readFileSync(new URL('../app/lrunes/Rune3DPreview.jsx',import.meta.url),'utf8');
+ assert.match(source,/shouldMountRuneMist\(mode,phase\)/);
+ assert.match(source,/shouldPlayRunePrelude\(mode,phase,summonRuneId\)/);
+ assert.match(source,/drawRequest\.current\?\.abort\(\)/);
+ const effect=readFileSync(new URL('../modules/lrs/rune/vfx/EffekseerStage.jsx',import.meta.url),'utf8');
+ assert.match(effect,/const gpu=createRuneGpuLifecycle/);
+ assert.match(effect,/if\(retire\(\)&&!ceremony&&!waiting\)/);
 });
