@@ -52,3 +52,13 @@ export function createRuneGpuLifecycle({cancelFrame=()=>{}}={}){
     }
   };
 }
+
+/** Draw results are static. Licensed mist belongs only to the pending/flighting scene,
+ * and MUST unmount before the one-shot Rune reveal starts (one GPU stage at a time).
+ */
+export function shouldMountRuneMist(mode,phase){
+  return mode!=='list'&&(phase==='waiting'||phase==='drawing');
+}
+export function shouldPlayRunePrelude(mode,phase,subject){
+  return mode==='duel'&&phase==='waiting'&&Number.isInteger(Number(subject))&&Number(subject)>0;
+}
