@@ -44,6 +44,7 @@ test('the owner-designated 1.01R resource release is not an npm publication',asy
 test('Worker configuration permanently blocks the workers.dev hostname while keeping Observability on',async()=>{
  const cfg=JSON.parse(await readFile('wrangler.jsonc','utf8'));
  assert.equal(cfg.workers_dev,false,'A Dashboard-only disable is reverted by the next Wrangler deploy');
+ assert.equal(cfg.preview_urls,true,'Enable preview URLs without enabling the production workers.dev route');
  assert.equal(cfg.name,'lunarunes');
  assert.equal(cfg.observability.enabled,true);
  assert.equal(cfg.observability.logs.enabled,true);
