@@ -4,7 +4,9 @@ on:
     branches: [main]
     paths:
       - 'wrangler.jsonc'
-      - 'worker/**'
+      - 'index.mjs'
+      - 'lrs-database.mjs'
+      - 'public-rune-read.mjs'
       - 'vendor/loc-dialect/**'
       - 'tests/lrs-original-pages.test.mjs'
       - 'scripts/deploy-rune-cloudflare.mjs'

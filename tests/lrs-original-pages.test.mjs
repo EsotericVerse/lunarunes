@@ -4,8 +4,8 @@ import {Kysely,PostgresDialect} from 'kysely';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {dialect as locDialect} from '../vendor/loc-dialect/index.mjs';
-import {publicRuneQuery,handlePublicRuneRead} from '../worker/public-rune-read.mjs';
-import {lrsPublicSelect,readLrsPublicRows} from '../worker/lrs-database.mjs';
+import {publicRuneQuery,handlePublicRuneRead} from '../public-rune-read.mjs';
+import {lrsPublicSelect,readLrsPublicRows} from '../lrs-database.mjs';
 
 const hero={table:'silver.lrunes_blocks',query:{
   columns:'uid,page_name,block_title,block_text,block_image,block_order',

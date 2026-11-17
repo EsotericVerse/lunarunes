@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "lunarunes",
   "compatibility_date": "2026-11-16",
-  "main": "worker/index.mjs",
+  "main": "index.mjs",
   "assets": {
     "binding": "ASSETS",
     "run_worker_first": ["/api/lrs/public-read"],

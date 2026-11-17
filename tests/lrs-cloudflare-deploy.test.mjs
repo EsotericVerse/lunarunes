@@ -31,7 +31,7 @@ test('Wrangler native SPA stays on the single existing Worker',async()=>{
   const cfg=JSON.parse(await readFile('wrangler.jsonc','utf8'));
   assert.equal(cfg.name,'lunarunes');
   assert.equal(cfg.assets.not_found_handling,'single-page-application');
-  assert.equal(cfg.main,'worker/index.mjs');
+  assert.equal(cfg.main,'index.mjs');
 });
 
 test('the current LRS product release baseline is owner-designated 1.0R, not an npm publication',async()=>{
