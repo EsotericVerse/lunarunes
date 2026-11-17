@@ -13,6 +13,7 @@ on:
       - 'public-rune-read.mjs'
       - 'tests/lrs-original-pages.test.mjs'
       - 'tests/lrs-web-routes.test.mjs'
+      - 'tests/lrs-original-page-parity.test.mjs'
       - 'tests/lrs-life-engine.test.mjs'
       - 'tests/lrs-gpu-lifecycle.test.mjs'
       - 'scripts/build-lrs-modules.mjs'
@@ -60,6 +61,8 @@ jobs:
         run: node --test tests/lrs-gpu-lifecycle.test.mjs
       - name: Verify original LRS Web routes and native LOC card hub entry
         run: node --test tests/lrs-web-routes.test.mjs
+      - name: Verify original Rune screen parity and private daily boundaries
+        run: node --test tests/lrs-original-page-parity.test.mjs
       - name: Verify read-only original-page transport and real upstream response contract
         run: node --test tests/lrs-original-pages.test.mjs
       - name: Assert module artifacts are separate from Web and iOS release

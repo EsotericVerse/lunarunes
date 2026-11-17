@@ -11,3 +11,21 @@ button,a{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Standalone LRS device-only daily pages reuse LOC's original Rune visual tokens. */
+.lrs-daily-links{display:flex;flex-wrap:wrap;gap:.55rem;max-width:1100px;margin:0 auto;padding:.65rem 1rem}
+.lrs-local-daily-page{min-width:0}
+.lrs-local-daily-records{display:grid;gap:.8rem}
+.lrs-local-daily-record{display:grid;grid-template-columns:minmax(120px,220px) minmax(0,1fr);align-items:center;gap:1rem;padding:1rem;border:1px solid var(--loc-line);border-radius:var(--loc-ui-radius-md)}
+.lrs-local-daily-record .loc-rune-card-image{width:100%;max-width:200px}
+.lrs-local-daily-record-copy{min-width:0}
+.lrs-local-daily-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.65rem;margin-top:.85rem}
+.lrs-local-trend{display:grid;gap:.55rem;margin:1rem 0}
+.lrs-local-trend-row{display:grid;grid-template-columns:minmax(80px,130px) minmax(0,1fr) 3ch;align-items:center;gap:.7rem}
+.lrs-local-trend-track{display:block;height:.8rem;background:var(--loc-panel-2);border-radius:99px;overflow:hidden}
+.lrs-local-trend-fill{display:block;height:100%;background:var(--loc-accent);border-radius:99px}
+@media(max-width:620px){
+  .lrs-local-daily-record{grid-template-columns:1fr}
+  .lrs-local-daily-record .loc-rune-card-image{max-width:170px}
+  .lrs-local-trend-row{grid-template-columns:80px minmax(0,1fr) 3ch}
+}
