@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createRuneGpuLifecycle,shouldMountRuneMist,shouldPlayRunePrelude} from '../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
+import {createRuneGpuLifecycle,shouldMountRuneMist,shouldPlayRunePrelude,runeMistQualityForDevice} from '../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
 import {createCardModule} from '../modules/lrs/card/draw-core.mjs';
 import {readFileSync} from 'node:fs';
 
@@ -99,4 +99,34 @@ test('100 consecutive one-shot Rune draws never retain a tracked frame, renderer
  }
  assert.equal(created,100);
  assert.deepEqual([disposed,stopped,cancelled,disconnected,contextLost],[100,100,100,100,100]);
+});
+
+test('compact and touch devices mount one authored mist WebGL canvas, desktop keeps two',()=>{
+ assert.equal(runeMistQualityForDevice('high',{}),'high');
+ assert.equal(runeMistQualityForDevice('high',{coarsePointer:true}),'low');
+ assert.equal(runeMistQualityForDevice('high',{narrowViewport:true}),'low');
+ assert.equal(runeMistQualityForDevice('low',{coarsePointer:false}),'low');
+ assert.equal(runeMistQualityForDevice('low',{narrowViewport:true}),'low');
+ const component=readFileSync(new URL('../modules/lrs/rune/vfx/EffekseerStage.jsx',import.meta.url),'utf8');
+ assert.match(component,/const mistQuality=runeMistQualityForDevice\(quality,device\)/);
+ assert.match(component,/mistQuality==='high'&&!reduced\?<div className="rune-3d-foreground-mist"/);
+ assert.match(component,/ambientDepth="rear" ambientPaused=.*quality=\{mistQuality\}/);
+ assert.match(component,/window\.matchMedia\?\.\('\(pointer: coarse\)'\)/);
+});
+
+test('GPU ownership replacement retires superseded frames, observers, contexts and renderers',()=>{
+ const events=[];
+ const state=createRuneGpuLifecycle({cancelFrame:id=>events.push('cancel:'+id)});
+ const frame=id=>state.trackFrame(id);
+ const observer=id=>({disconnect:()=>events.push('obs:'+id)});
+ const context=id=>({stopAll:()=>events.push('stop:'+id),release:()=>events.push('release:'+id)});
+ const renderer=id=>({dispose:()=>events.push('dispose:'+id),forceContextLoss:()=>events.push('lose:'+id)});
+ frame(1);frame(2);
+ state.trackObserver(observer(1));state.trackObserver(observer(2));
+ state.trackContext(context(1));state.trackContext(context(2));
+ state.trackRenderer(renderer(1));state.trackRenderer(renderer(2));
+ assert.deepEqual(events,['cancel:1','obs:1','stop:1','release:1','dispose:1','lose:1']);
+ state.release();
+ assert.deepEqual(events,['cancel:1','obs:1','stop:1','release:1','dispose:1','lose:1',
+   'cancel:2','obs:2','stop:2','release:2','dispose:2','lose:2']);
 });

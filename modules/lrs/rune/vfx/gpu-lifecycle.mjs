@@ -23,19 +23,23 @@ export function createRuneGpuLifecycle({cancelFrame=()=>{}}={}){
     get retired(){return retired;},
     trackFrame(next){
       if(retired){if(next)cancelFrame(next);return;}
+      if(frame&&frame!==next)safely(()=>cancelFrame(frame));
       frame=next||0;
     },
     trackObserver(next){
-      if(retired)safely(()=>next?.disconnect?.());
-      else observer=next;
+      if(retired){safely(()=>next?.disconnect?.());return;}
+      if(observer&&observer!==next)safely(()=>observer.disconnect?.());
+      observer=next;
     },
     trackContext(next){
-      if(retired)retireContext(next);
-      else context=next;
+      if(retired){retireContext(next);return;}
+      if(context&&context!==next)retireContext(context);
+      context=next;
     },
     trackRenderer(next){
-      if(retired)retireRenderer(next);
-      else renderer=next;
+      if(retired){retireRenderer(next);return;}
+      if(renderer&&renderer!==next)retireRenderer(renderer);
+      renderer=next;
     },
     release(){
       if(retired)return false;
@@ -63,4 +67,13 @@ export function shouldMountRuneMist(mode,phase){
 }
 export function shouldPlayRunePrelude(mode,phase,subject){
   return mode==='duel'&&phase==='waiting'&&Number.isInteger(Number(subject))&&Number(subject)>0;
+}
+
+/**
+ * 3D Rune draws should never initialize two fog WebGL contexts on compact
+ * touch screens. Keep the authored rear mist, lower its DPR, and drop only the
+ * decorative foreground canvas. Desktop retains the original dual-layer art.
+ */
+export function runeMistQualityForDevice(requested='high',{coarsePointer=false,narrowViewport=false}={}){
+  return requested==='high'&&(coarsePointer||narrowViewport)?'low':requested;
 }

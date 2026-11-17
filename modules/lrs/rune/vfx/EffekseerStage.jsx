@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {runeAssetUrl} from '../asset-url.mjs';
-import {createRuneGpuLifecycle} from './gpu-lifecycle.mjs';
+import {createRuneGpuLifecycle,runeMistQualityForDevice} from './gpu-lifecycle.mjs';
 import {AnimatePresence,motion,useReducedMotion} from 'motion/react';
 import * as THREE from 'three';
 import {runeGlyphProfile} from './rune-glyph-library.mjs';
@@ -629,17 +629,24 @@ const AUTHORED_FOREGROUND_MIST=Object.freeze({
 });
 export function RuneMistBackdrop({phase='idle',quality='high',textureQuality='original',diagnoseAmbient=false}){
   const reduced=useReducedMotion();
+  // Evaluate once for this short-lived draw stage. Resizing mid-draw must not
+  // tear down a live WebGL context; the next draw will sample the new viewport.
+  const [device]=useState(()=>({
+    coarsePointer:typeof window!=='undefined'&&Boolean(window.matchMedia?.('(pointer: coarse)')?.matches),
+    narrowViewport:typeof window!=='undefined'&&Boolean(window.matchMedia?.('(max-width: 700px)')?.matches)
+  }));
+  const mistQuality=runeMistQualityForDevice(quality,device);
   const clearing=phase==='waiting'||phase==='revealing';
   return <>
     <div className="rune-3d-mist-backdrop" data-clearing={clearing?'true':'false'}
-      data-quality={quality} aria-hidden="true">
+      data-quality={mistQuality} aria-hidden="true">
       <EffekseerCanvas effect={AUTHORED_MOON_MIST} reduced={reduced}
-        ambient ambientDepth="rear" ambientPaused={phase==='revealing'} quality={quality} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>
+        ambient ambientDepth="rear" ambientPaused={phase==='revealing'} quality={mistQuality} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>
     </div>
-    {quality==='high'&&!reduced?<div className="rune-3d-foreground-mist"
+    {mistQuality==='high'&&!reduced?<div className="rune-3d-foreground-mist"
       data-ritual-mist={phase} aria-hidden="true">
       <EffekseerCanvas effect={AUTHORED_FOREGROUND_MIST} reduced={reduced}
-        ambient ambientDepth="foreground" ambientPaused={phase==='revealing'} quality={quality} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>
+        ambient ambientDepth="foreground" ambientPaused={phase==='revealing'} quality={mistQuality} textureQuality={textureQuality} diagnoseAmbient={diagnoseAmbient}/>
     </div>:null}
   </>;
 }
