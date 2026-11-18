@@ -1,0 +1,49 @@
+name: LRS Web
+run-name: LRS Web · ${{ github.event_name == 'pull_request' && 'Preview' || 'Production' }} · ${{ github.sha }}
+
+# One Web publisher: GitHub Actions builds once; Cloudflare only hosts the output.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lrs-web-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.5'
+          cache: npm
+      - name: Install LRS packages
+        run: npm ci --no-audit --no-fund
+      - name: Build LRS Web and source assets once
+        run: npm run build:cloudflare
+      - name: Publish LRS Worker production
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: f730f29a620a25bb047a69d542457fc0
+      - name: Publish LRS Worker PR Preview
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: f730f29a620a25bb047a69d542457fc0
+        run: |
+          npx wrangler preview --name "pr-${{ github.event.pull_request.number }}" --json
