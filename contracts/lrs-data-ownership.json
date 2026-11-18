@@ -40,7 +40,7 @@
       ],
       "class": "managed-content",
       "required": true,
-      "publicRead": "hero-only"
+      "publicRead": "never"
     },
     {
       "name": "lrunes_daily",
@@ -73,12 +73,9 @@
   "publicReadAllowlist": [
     "runes",
     "runes_etc",
-    "runes_group",
-    "lrunes_blocks"
+    "runes_group"
   ],
-  "restrictedReads": {
-    "lrunes_blocks": "hero-only"
-  },
+  "restrictedReads": {},
   "privateByDefault": [
     "lrunes_daily",
     "lrunes_anchor",
