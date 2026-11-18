@@ -64,8 +64,8 @@ export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublic
   if(!query)return invalid();
 
   // This is a server-side Cloudflare Worker Secret. The browser never sees
-  // LRS_DATABASE_URL; the API never accepts a database identifier or URL.
-  const connection=env?.LRS_DATABASE_URL;
+  // LRS_DB_URL; the API never accepts a database identifier or URL.
+  const connection=env?.LRS_DB_URL;
   if(typeof connection!=='string'||!connection.trim())
     return response({error:'LRS database connection is not configured'},503);
   try{
