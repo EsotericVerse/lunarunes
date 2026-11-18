@@ -56,6 +56,8 @@ jobs:
         run: node --test tests/lrs-gpu-lifecycle.test.mjs
       - name: Verify bounded Web-only static cache and transient anonymous public read coalescing
         run: node --test tests/lrs-web-static-cache.test.mjs tests/lrs-public-read-dedupe.test.mjs
+      - name: Verify all eight locally owned Rune theme CSS files and selector
+        run: node --test tests/lrs-theme-ownership.test.mjs
       - name: Verify independently served LRS card/game routes
         run: node --test tests/lrs-web-routes.test.mjs
       - name: Verify original Rune screen parity and private daily boundaries
