@@ -19,7 +19,7 @@ const dest=path.join(dist,'cloudflare');
 const stage=path.join(dist,'.cloudflare-stage-'+process.pid);
 const manifest=JSON.parse(await readFile(path.join(art,'rune-artifacts.json'),'utf8'));
 const version=JSON.parse(await readFile(path.join(root,'release','version.json'),'utf8'));
-if(version.schema!=='lunarunes.release-version.v1'||!/^\d+\.\d+R$/.test(version.version))
+if(version.schema!=='lunarunes.release-version.v1'||!/^(?:\d+\.\d+R|\d+\.\d+\.\d+)$/.test(version.version))
   throw Error('LRS release must have a valid owner-designated version');
 if(manifest.schema!=='lunarunes.artifacts.v1'||manifest.target!=='web'||!manifest.includesEffects)
   throw Error('LunaRunes Cloudflare release requires a validated Web runtime/artifact pack');
