@@ -57,16 +57,14 @@ npm run artifacts:ios
 
 `VITE_LRS_ASSET_ORIGIN` selects an independently published Rune Web asset origin; the earlier `VITE_LRUNE_ASSET_ORIGIN` is temporarily supported as a migration alias.
 
-## Migration status
+## Repository ownership and release
 
-Work is on `work/rune-artifact-contract` under PR #1 based on `migration/independent-deploy`. No standalone Rune Cloudflare publishing or LOC live cutover has yet occurred.
+LRS owns the rune, card, daily and board-game implementation and its original art, effects and Web assets. LOC owns the canonical Scope integration and the sole App/IPA pipeline; LAS owns Auth, OAuth, MCP and Plugins. The current working contract comes from the code, release manifest and tests, not dated migration notes.
 
-LRS `lrs:card` and the LOC `loc:dialect` adapter exist in separate work branches; an integrated LOC import must await a version-pinned LRS delivery and functional validation. Current production drawing, Scope data, daily log and database routing remain untouched. **Do not** remove LOC's heavy Rune prebuild until the full live Rune cutover is verified.
+Web release assets are assembled by `scripts/assemble-rune-cloudflare.mjs` from `dist/web-app` and `dist/web`; a standalone release must preserve image paths, Effekseer files, WASM and their checksums. Run `npm run build:cloudflare`, `npm run check:cloudflare:release` and `npm run deploy:cloudflare:dry-run` to validate without publishing. The existing `lunarunes` Worker is deployed independently; ordinary LRS releases do not trigger LOC deployment.
 
-The future Rune-life simulation and election-strategy games remain planned; they are not yet implemented.
+For the LOC iOS handoff, `npm run artifacts:ios` produces real files and an artifact manifest. LOC pins the LRS source revision and verifies checksums; iOS assets cannot be replaced with Web URLs. Web and iOS are separate deliveries from the same Rune source.
 
-[Engineering handoff](docs/MIGRATION-HANDOFF.md) · [Asset integrity/hand-off contract](docs/ARTIFACT-CONTRACT.md)
+The authoritative release label is `release/version.json`. It is distinct from the Git commit SHA and from the media checksum. Original artwork identity and attribution are pinned by `contracts/rune-original-art.json`. Migration-era details remain traceable via Git history and the private engineering archive rather than duplicated `docs/` files.
 
-The canonical three-way architecture and precise IDs `lo3r@loc`, `lo3r@lrs`, `lo3r@las` are documented in [Luna Module Architecture](docs/LUNA-MODULE-ARCHITECTURE.md).
-
-For the existing Cloudflare Worker `lunarunes`, the independent release commands are `npm run build:cloudflare`, `npm run check:cloudflare:release`, and `npm run deploy:cloudflare:dry-run` before enabling a real release. See [Cloudflare deploy](docs/CLOUDFLARE-DEPLOY.md).
+The board-game engine and future game features must be judged from their actual modules and runnable UI; a planned feature is not automatically playable just because its contract or engine exists.
