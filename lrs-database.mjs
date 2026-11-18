@@ -13,7 +13,7 @@ export function lrsPublicSelect(db,query){
   // Defense in depth: never accept an arbitrary schema/table here, even
   // though the HTTP edge already validates them.
   if(query?.schema!=='silver'||
-     !['runes','runes_etc','runes_group','lrunes_blocks'].includes(query?.table))
+     !['runes','runes_etc','runes_group'].includes(query?.table))
     throw new TypeError('Unsupported LRS table');
   if(!Array.isArray(query.columns)||query.columns.length===0)
     throw new TypeError('LRS columns are required');
