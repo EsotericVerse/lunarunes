@@ -43,19 +43,9 @@ test('LOC-native and LRS Web card hubs share one visual body',async()=>{
   assert.match(web,/<RuneCardHub Navigation=\{RuneArtNav\}\s*\/>/);
 });
 
-test('native daily record model stays available without being mounted on LRS Web',async()=>{
-  const source=async path=>readFile(new URL('../'+path,import.meta.url),'utf8');
-  const [device,local,calendar,localModel]=await Promise.all([
-    source('web/src/runtime/rune-local-daily.jsx'),
-    source('modules/lrs/daily/local-records.mjs'),
-    source('app/lrunes/DailyRuneCalendar.jsx'),
-    source('modules/lrs/daily/analytics.mjs')
-  ]);
-  assert.match(device,/listLocalDailyRunes/);
-  assert.match(device,/importLocalDailyTransfer/);
-  assert.match(device,/DAILY_TRANSFER_MAX_BYTES/);
-  assert.doesNotMatch(device,/(?:\/loc\/auth\/|\/loc\/db\/|dbAuthRelation|LRS_DATABASE_URL|sessionOnly|fakeUser)/);
-  assert.match(local,/indexedDB.open/);
-  assert.match(calendar,/realMoonPhase/);
-  assert.match(localModel,/rankDailyDraws/);
+test('LRS Web keeps no duplicate LOC Scope homepage or daily record view',async()=>{
+  const web=await readFile(new URL('../web/src/RuneApp.jsx',import.meta.url),'utf8');
+  assert.doesNotMatch(web,/rune-local-daily|rune-home-public|RunesClient/);
+  const routes=await readFile(new URL('../web/src/runtime/rune-routes.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(routes,/return 'daily-log'|return 'daily-trend'|return 'home'/);
 });
