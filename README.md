@@ -15,6 +15,8 @@ LRS（`lo3r@lrs`）獨立維護符文、抽牌、每日符文、桌遊引擎、�
 - **LOC** 自行維護月典網站、Galaxy／Anchor、Scope、SQL Portable，以及 LOC 自己的 App／IPA；需要時以明確的跨系統契約引用符文內容。
 - **LAS** 自行部署 Auth、MCP、Plugins 與通訊協定服務，不建置任何 IPA。
 
+三個 Repository **各自管理自己的 Routing Table 與部署**。LRS Web 的路由只由 LRS 自己維護；LOC 的 Scope 路由不等於 LRS 的 Web 路由，LAS 的 Auth／MCP 路由也不屬於 LRS。跨站入口以連結或明確的協定銜接，不複製也不共用路由表。
+
 ## 建置與檢查
 
 ```bash
