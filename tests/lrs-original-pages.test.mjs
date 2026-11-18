@@ -19,16 +19,8 @@ const requestFor=body=>new Request('https://lrunes.lo3rwang.cc/api/lrs/public-re
   method:'POST',headers:{'content-type':'application/json'},
   body:JSON.stringify(body)
 });
-test('the original Hero only reads the existing silver.lrunes_blocks hero rows',()=>{
-  assert.deepEqual(publicRuneQuery(hero),{
-    schema:'silver',table:'lrunes_blocks',
-    columns:['uid','page_name','block_title','block_text','block_image','block_order'],
-    filters:[{column:'page_name',op:'eq',value:'hero'}],
-    orFilters:[],orders:[{column:'block_order',ascending:true}],
-    limit:8,offset:0,head:false,count:null,cardinality:null
-  });
-  assert.equal(publicRuneQuery({...hero,query:{...hero.query,
-    filters:[{column:'page_name',operator:'eq',value:'manage'}]}}),null);
+test('LOC Scope Hero is never queryable through the LRS Worker',()=>{
+  assert.equal(publicRuneQuery(hero),null);
 });
 test('LRS public reads never allow arbitrary databases, tables, columns or writes',()=>{
   assert.equal(publicRuneQuery({table:'silver.loc_user',query:hero.query}),null);
@@ -56,17 +48,15 @@ test('daily and card data preserve exact Z-Model field and moon conditions',()=>
   assert.equal(query.filters.length,4);
   assert.equal(query.filters[2].op,'in');
 });
-test('loc:dialect read port compiles only bounded prepared SELECT on the fixed LRS table',()=>{
+test('loc:dialect read port compiles bounded SELECT only on LRS card tables',()=>{
   const db=new Kysely({dialect:new PostgresDialect({pool:{}})});
-  const query=publicRuneQuery(hero);
-  const sql=lrsPublicSelect(db,query).compile();
-  assert.match(sql.sql,/select/i);
-  assert.match(sql.sql,/"silver"\."lrunes_blocks"/);
-  assert.match(sql.sql,/"page_name" = \$1/);
-  assert.match(sql.sql,/order by "block_order" asc/i);
-  assert.deepEqual(sql.parameters,['hero',8,0]);
+  const query=publicRuneQuery(card);
+  const compiled=lrsPublicSelect(db,query).compile();
+  assert.match(compiled.sql,/select/i);
+  assert.match(compiled.sql,/"silver"\."runes"/);
+  assert.deepEqual(compiled.parameters,[66,1,0]);
   assert.throws(()=>lrsPublicSelect(db,{...query,schema:'private'}),/Unsupported LRS table/);
-  assert.throws(()=>lrsPublicSelect(db,{...query,table:'loc_user'}),/Unsupported LRS table/);
+  assert.throws(()=>lrsPublicSelect(db,{...query,table:'lrunes_blocks'}),/Unsupported LRS table/);
 });
 test('Worker calls its own LRS_DATABASE_URL once and never contacts LOC site',async()=>{
   let received;
@@ -94,7 +84,7 @@ test('missing Secret fails closed; original art/Web remains independent',async()
   await assert.rejects(readLrsPublicRows('',publicRuneQuery(card)),/LRS_DATABASE_URL/);
 });
 test('failed database connections never expose credentials or fake empty data',async()=>{
-  const resp=await handlePublicRuneRead(requestFor(hero),
+  const resp=await handlePublicRuneRead(requestFor(card),
     {LRS_DATABASE_URL:'postgresql://private:password@db.example/lrs'},async()=>{throw Error('password db.example');});
   assert.equal(resp.status,503);
   const result=await resp.text();
@@ -115,9 +105,9 @@ test('LRS consumes only pinned standalone loc:dialect, never the LOC framework',
   assert.deepEqual(Object.keys(pkg.dependencies).sort(),['kysely','pg']);
   const db=locDialect('pg','postgresql://localhost/lrs_test');
   try{
-    const compiled=lrsPublicSelect(db,publicRuneQuery(hero)).compile();
-    assert.match(compiled.sql,/"silver"\."lrunes_blocks"/);
-    assert.deepEqual(compiled.parameters,['hero',8,0]);
+    const compiled=lrsPublicSelect(db,publicRuneQuery(card)).compile();
+    assert.match(compiled.sql,/"silver"\."runes"/);
+    assert.deepEqual(compiled.parameters,[66,1,0]);
   }finally{await db.destroy();}
   assert.throws(()=>locDialect('pg','https://example.invalid'),/PostgreSQL URL/);
   assert.throws(()=>locDialect('mysql','postgresql://localhost/lrs_test'),/Unsupported SQL driver/);
