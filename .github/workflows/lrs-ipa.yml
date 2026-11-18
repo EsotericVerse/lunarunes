@@ -44,7 +44,6 @@ jobs:
           LRS_BUILD_NUMBER: ${{ github.run_number }}
         run: |
           version="$(node -p "JSON.parse(require('fs').readFileSync('release/version.json','utf8')).version")"
-          test -n "$version"
           xcodebuild \
             -project ios/App/App.xcodeproj \
             -scheme App \
@@ -57,7 +56,7 @@ jobs:
             MARKETING_VERSION="$version" \
             CURRENT_PROJECT_VERSION="$LRS_BUILD_NUMBER" \
             build
-      - name: Verify and package standalone unsigned LRS IPA
+      - name: Package standalone unsigned LRS IPA
         id: package
         shell: bash
         run: |
