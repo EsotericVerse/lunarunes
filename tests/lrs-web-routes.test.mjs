@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pageFromPath} from '../web/src/runtime/rune-routes.mjs';
 
-test('standalone LRS Web only resolves card and game routes',()=>{
+test('standalone LRS Web resolves card, daily draw and game routes',()=>{
   const expected={
     '/card':'card','/card/':'card',
     '/card/duel/':'duel','/card/daily/':'daily','/card/list/':'list',
+    '/daily':'daily','/daily/':'daily',
     '/game/':'game','/game/room/':'game'
   };
   for(const [pathname,page] of Object.entries(expected))
@@ -26,6 +27,8 @@ test('Web feature entry does not bundle LOC Scope homepage or LOC daily pages',a
   assert.doesNotMatch(web,/import RunesClient|RuneLocalDailyPage|readPublicRuneHero|page==='home'/);
   assert.match(web,/page==='card'/);
   assert.match(web,/page==='game'/);
+  const nav=await readFile(new URL('../app/lrunes/Rune3DNav.jsx',import.meta.url),'utf8');
+  assert.match(nav,/native\?navigationHref\('lrunes','card\/daily',native\):'\/daily\/'/);
 });
 
 test('LOC-native and LRS Web card hubs share one visual body',async()=>{
