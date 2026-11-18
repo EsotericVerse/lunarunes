@@ -7,7 +7,6 @@ const repositoryRoot=fileURLToPath(new URL('..',import.meta.url));
 const local=path=>fileURLToPath(new URL(path,import.meta.url));
 const runeNav=local('./src/runtime/rune-navigation.jsx');
 const scopeLink=local('./src/runtime/scope-link.jsx');
-const home=local('./src/runtime/rune-home-public.jsx');
 const read=local('./src/runtime/rune-public-port.mjs');
 const queries=local('./src/runtime/rune-query-hooks.jsx');
 // Keep LOC's canonical Routing Table untouched. These Vite aliases adapt
@@ -17,8 +16,6 @@ const runeAliases=[
   {find:/^(?:\.\.\/)+modular\/use-native-navigation(?:\.js)?$/,replacement:runeNav},
   {find:/^(?:\.\.\/)+modular\/ScopeLink(?:\.jsx)?$/,replacement:scopeLink},
   {find:/^(?:\.\.\/)+loc\/auth\/use-account(?:\.js)?$/,replacement:runeNav},
-  {find:/^(?:\.\.\/)+loc\/blocks\/LocHomeBlockDisplay(?:\.jsx)?$/,replacement:home},
-  {find:/^(?:\.\.\/)+loc\/blocks\/ScopeEditableBlocks(?:\.jsx)?$/,replacement:home},
   {find:/^(?:\.\.\/)+loc\/db\/db-query\.mjs$/,replacement:read},
   {find:/^(?:\.\.\/)+packages\/zenstack\/client-queries(?:\.mjs|\.js)?$/,replacement:queries},
   {find:'next/dynamic',replacement:local('./src/runtime/next-dynamic.jsx')}
