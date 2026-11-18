@@ -5,6 +5,7 @@ import {bindRunePublicReadPort,warmRuneBaseSession} from './runtime/rune-public-
 import {runePublicReadUrl} from './runtime/rune-public-url.mjs';
 import {applyRuneTheme,storedRuneTheme} from './runtime/rune-theme.mjs';
 import '../../app/styles/tokens.css';
+import '../../app/styles/theme-contract.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';
 import '../../app/styles/home-composition.css';
