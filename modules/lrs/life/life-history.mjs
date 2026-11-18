@@ -28,7 +28,7 @@ export function buildFixedLifeBaseline({placeId,startMonth,endMonth,articles}){
   const place=text(placeId);
   if(!place)throw new Error('請指定久居地');
   const begin=monthIndex(startMonth),end=monthIndex(endMonth);
-  if(end<begin||end-begin<24)throw new Error('久居區間需至少跨越完整兩年（24 個月）');
+  if(end<begin||end-begin+1<24)throw new Error('久居區間需至少跨越完整兩年（24 個月）');
   if(!Array.isArray(articles))throw new TypeError('歷史文章必須是陣列');
   const counts=Object.fromEntries(LIFE_ASPECTS.map(x=>[x.key,0]));
   const keywordCounts=new Map(),keywordsByAspect=Object.fromEntries(LIFE_ASPECTS.map(x=>[x.key,new Map()]));
@@ -55,7 +55,7 @@ export function buildFixedLifeBaseline({placeId,startMonth,endMonth,articles}){
     }
   }
   return {
-    kind:'lrs:boardgame/life-baseline',placeId:place,startMonth,endMonth,
+    kind:'lrs:life/baseline',placeId:place,startMonth,endMonth,
     firstTurnMonth:nextLifeMonth(endMonth),articleCount:accepted,unclassified,duplicates,
     counts,keywords:Object.fromEntries(keywordCounts),
     keywordsByAspect:Object.fromEntries(Object.entries(keywordsByAspect).map(([key,map])=>[key,Object.fromEntries(map)]))

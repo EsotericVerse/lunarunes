@@ -27,7 +27,10 @@
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
     "./daily": "./modules/lrs/daily/index.mjs",
-    "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs"
+    "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs",
+    "./life": "./modules/lrs/life/index.mjs",
+    "./life/ui": "./modules/lrs/life/ui.mjs",
+    "./election": "./modules/lrs/election/index.mjs"
   },
   "dependencies": {
     "kysely": "0.29.8",

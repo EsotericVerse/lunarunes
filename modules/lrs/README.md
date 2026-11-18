@@ -1,3 +1,9 @@
 # LunaRunes Modules
 
-`modules/lrs/` 是 LRS 的符文、抽牌、每日符文與桌遊程式模組。僅作為本專案內部使用，不獨立發布或觸發其他 Repository 建置。
+`lrs:boardgame`＝桌遊（既有機制保留，僅待畫面強化）。
+
+`lrs:life`＝模擬人生（單人單機，每回合一個月、66 抽 8 選 5）。
+
+`lrs:election`＝選戰（單機多人，獨立玩法，尚未實作）。
+
+三個模式獨立。`lrs:rune`、`lrs:card`、`lrs:daily` 仍為既有模組；不跨 Repo 修改或部署。

@@ -11,7 +11,7 @@ const increment=(dict,key)=>{dict[key]=(dict[key]||0)+1;};
 const safeWord=value=>String(value??'').trim().slice(0,80);
 
 export function createLifeProgress(baseline){
-  if(baseline?.kind!=='lrs:boardgame/life-baseline')
+  if(baseline?.kind!=='lrs:life/baseline')
     throw new TypeError('需先建立固定久居地歷史基準');
   return {
     baseline,counts:{...baseline.counts},keywordCounts:{...baseline.keywords},
@@ -21,7 +21,7 @@ export function createLifeProgress(baseline){
 
 export function recordLifeMonth(progress,completed,cardNames={}){
   if(!progress||!Array.isArray(progress.history))throw new TypeError('無效的模擬人生進度');
-  if(completed?.kind!=='lrs:boardgame/life'||completed.status!=='complete')
+  if(completed?.kind!=='lrs:life'||completed.status!=='complete')
     throw new Error('必須先完成當月五次選擇');
   const expected=progress.history.length?progress.history.at(-1).nextMonth:progress.baseline.firstTurnMonth;
   if(completed.month!==expected)throw new Error('不可重複結算或跳過月份');
@@ -34,12 +34,12 @@ export function recordLifeMonth(progress,completed,cardNames={}){
     increments[action.aspect]++;counts[action.aspect]++;
     const aspect=LIFE_ASPECTS.find(x=>x.key===action.aspect);
     const name=safeWord(cardNames[action.runeId])||'符文 '+action.runeId;
-    const direction=safeWord(action.direction)||'正';
+    const direction=safeWord(action.direction)||'未指定';
     const base=progress.baseline.keywordsByAspect?.[action.aspect]||{};
     const source=entries(base)[0]?.[0]||null;
     const combinations=[
       aspect.name+' × '+name,
-      direction+' × '+aspect.focus,
+      direction+' × '+aspect.decision,
       ...(source?[source+' × '+name]:[])
     ];
     for(const keyword of combinations){

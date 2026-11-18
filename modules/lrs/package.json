@@ -11,7 +11,10 @@
     "./card": "./card/index.mjs",
     "./daily": "./daily/index.mjs",
     "./boardgame": "./boardgame/index.mjs",
-    "./boardgame/ui": "./boardgame/ui.mjs"
+    "./boardgame/ui": "./boardgame/ui.mjs",
+    "./life": "./life/index.mjs",
+    "./life/ui": "./life/ui.mjs",
+    "./election": "./election/index.mjs"
   },
   "files": [
     "index.mjs",
@@ -21,7 +24,9 @@
     "daily",
     "boardgame",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "life",
+    "election"
   ],
   "peerDependencies": {
     "react": "^19.0.0"

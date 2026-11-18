@@ -9,18 +9,19 @@
  * No SQL, SSO, LOC UI, Worker, or native packaging dependency.
  */
 export const LIFE_ASPECTS=Object.freeze([
-  Object.freeze({key:'soul',name:'靈魂',focus:'出國'}),
-  Object.freeze({key:'connection',name:'連結',focus:'朋友'}),
-  Object.freeze({key:'life',name:'生命',focus:'愛情'}),
-  Object.freeze({key:'nature',name:'自然',focus:'寵物'}),
-  Object.freeze({key:'mineral',name:'礦物',focus:'經濟'}),
-  Object.freeze({key:'element',name:'元素',focus:'專精'}),
-  Object.freeze({key:'order',name:'秩序',focus:'學習'}),
-  Object.freeze({key:'disorder',name:'無序',focus:'娛樂'})
+  Object.freeze({key:'soul',name:'靈魂',focus:'心靈、潛意識、出國',decision:'自我成長'}),
+  Object.freeze({key:'connection',name:'連結',focus:'朋友、同事',decision:'外交'}),
+  Object.freeze({key:'life',name:'生命',focus:'愛情、家庭',decision:'醫療'}),
+  Object.freeze({key:'nature',name:'自然',focus:'大自然',decision:'自然資源'}),
+  Object.freeze({key:'mineral',name:'礦物',focus:'商業、工作、賺錢',decision:'經濟'}),
+  Object.freeze({key:'element',name:'元素',focus:'專業',decision:'專業'}),
+  Object.freeze({key:'order',name:'秩序',focus:'學習、進修',decision:'教育'}),
+  Object.freeze({key:'disorder',name:'無序',focus:'娛樂活動',decision:'計策'})
 ]);
 export const LIFE_TURN=Object.freeze({
   duration:'month',draw:8,play:5,unplayed:3,trendLimit:11
 });
+export const LIFE_DIRECTIONS=Object.freeze(['正','半正','半逆','逆']);
 const ALLOWED_ASPECTS=new Set(LIFE_ASPECTS.map(item=>item.key));
 const PLAYABLE_RUNES=Object.freeze(Array.from({length:66},(_,i)=>i+1));
 function ensureMonth(value){
@@ -62,22 +63,27 @@ export function createRuneLifeEngine({random=Math.random,applyAction,resolveEven
     ensureMonth(month);
     const context=allowedContext(options);
     return {
-      kind:'lrs:boardgame/life',month,status:'selecting',
+      kind:'lrs:life',month,status:'selecting',
       hand:sampleEight(random),actions:[],history:[],
       environment:context.environment,trendRunes:context.trendRunes
     };
   }
-  function select(state,runeId,aspect){
-    if(state?.kind!=='lrs:boardgame/life'||state.status!=='selecting')
+  function select(state,runeId,aspect,direction){
+    if(state?.kind!=='lrs:life'||state.status!=='selecting')
       throw new Error('Rune-life turn is not accepting actions');
     if(!state.hand.includes(runeId))throw new Error('Rune is not in the current hand');
     if(!ALLOWED_ASPECTS.has(aspect))throw new Error('Unknown Rune-life aspect');
+    if(!LIFE_DIRECTIONS.includes(direction))throw new Error('必須明確選擇四個符文方向之一');
     const prev=state.actions.filter(item=>item.runeId!==runeId);
     if(prev.length>=LIFE_TURN.play)throw new Error('Only five Rune-life actions per month');
-    return {...state,actions:[...prev,{runeId,aspect}]};
+    return {...state,actions:[...prev,{runeId,aspect,direction}]};
+  }
+  function deselect(state,runeId){
+    if(state?.kind!=='lrs:life'||state.status!=='selecting')throw new Error('Rune-life turn is not selecting');
+    return {...state,actions:state.actions.filter(action=>action.runeId!==runeId)};
   }
   async function finish(state,hostState){
-    if(state?.kind!=='lrs:boardgame/life'||state.status!=='selecting')
+    if(state?.kind!=='lrs:life'||state.status!=='selecting')
       throw new Error('Rune-life turn is not selecting');
     if(state.actions.length!==LIFE_TURN.play)
       throw new Error('Exactly five Rune-life actions must be selected');
@@ -103,10 +109,10 @@ export function createRuneLifeEngine({random=Math.random,applyAction,resolveEven
     };
   }
   function following(completed,options={}){
-    if(completed?.kind!=='lrs:boardgame/life'||completed.status!=='complete')
+    if(completed?.kind!=='lrs:life'||completed.status!=='complete')
       throw new Error('Finish the current Rune-life month first');
     return {...start(nextLifeMonth(completed.month),options),
       history:[...completed.history]};
   }
-  return Object.freeze({start,select,finish,following});
+  return Object.freeze({start,select,deselect,finish,following});
 }
