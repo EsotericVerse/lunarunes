@@ -42,7 +42,7 @@ void warmRuneBaseSession();
 // Only content-hashed JS/CSS/fonts may be cached; photos, WASM, API and daily
 // IndexedDB records remain outside Cache Storage. Preview origins are isolated.
 if(import.meta.env.PROD&&'serviceWorker' in navigator&&
-   (location.protocol==='https:'||location.hostname==='localhost')){
+   (location.protocol==='https:'||location.protocol==='http:')){
   void navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{});
 }
 
