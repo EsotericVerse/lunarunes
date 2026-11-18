@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import RuneApp from './RuneApp.jsx';
 import {bindRunePublicReadPort,warmRuneBaseSession} from './runtime/rune-public-port.mjs';
 import {runePublicReadUrl} from './runtime/rune-public-url.mjs';
+import {applyRuneTheme,storedRuneTheme} from './runtime/rune-theme.mjs';
 import '../../app/styles/tokens.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';
@@ -13,6 +14,9 @@ import '../../app/styles/runes.css';
 // Local copy from LOC presentation CSS; no runtime or deploy-time LOC fetch.
 import './loc-rune-ui.css';
 import './style.css';
+
+// Load only the active LRS-owned CSS theme before mounting the Rune UI.
+applyRuneTheme(storedRuneTheme());
 
 // The existing LRS Worker performs bounded read-only queries against its
 // LRS_DATABASE_URL secret. Never send cookies, SQL, connection strings or
