@@ -5,7 +5,6 @@ const VERSION=1;
 const DIRECTION_VALUES=new Set(['正位','半正位','半逆位','逆位']);
 const DRAW_MODES=new Set(['single','daily','2card','3card','4card','5card','6card','7card','8card','9card','10card','ow3gs']);
 const DAILY_KINDS=new Set(['main','supplement','history_1','history_2']);
-const MAX_IMPORT_ROWS=50000;
 function openDatabase(){
   if(typeof indexedDB==='undefined')
     return Promise.reject(new Error('此裝置不支援本機 IndexedDB 紀錄。'));
@@ -121,33 +120,14 @@ export async function saveLocalRuneDraw(draw,mode,moonPhase){
     };
   });
 }
-export async function importLocalDailyTransfer(input){
-  if(!Array.isArray(input)||input.length>MAX_IMPORT_ROWS)
-    throw new Error('每日符文匯入資料超過 50,000 筆上限。');
-  const rows=input.map(row=>validateDaily({...row,source:'imported'}));
-  const seen=new Set();
-  for(const row of rows){
-    const key=row.record_date+'|'+row.draw_kind;
-    if(seen.has(key))throw new Error('來源內有重複每日紀錄：'+key);
-    seen.add(key);
-  }
+export async function addLocalDailyRune(input){
+  const row=validateDaily({...input,source:'local'});
   return transact(['daily'],'readwrite',(tx,set,fail)=>{
-    const store=tx.objectStore('daily'),read=store.getAll();
-    read.onsuccess=()=>{
-      const current=new Map((read.result||[])
-        .map(row=>[row.record_date+'|'+row.draw_kind,row]));
-      const fresh=[],conflicts=[];let identical=0;
-      for(const row of rows){
-        const key=row.record_date+'|'+row.draw_kind,old=current.get(key);
-        if(!old){fresh.push(row);continue;}
-        if(Number(old.rune_number)===row.rune_number&&
-           old.direction===row.direction&&
-           String(old.recorded_phase||'')===row.recorded_phase)identical++;
-        else conflicts.push(key);
-      }
-      for(const row of fresh)store.add(row);
-      set({newCount:fresh.length,duplicateCount:identical,
-        conflictCount:conflicts.length,conflicts});
+    const store=tx.objectStore('daily');
+    const req=store.get([row.record_date,row.draw_kind]);
+    req.onsuccess=()=>{
+      if(req.result)return fail(new Error('該日期與類別已有紀錄，不會覆寫。'));
+      store.add(row);set({newCount:1});
     };
   });
 }

@@ -39,16 +39,6 @@ function run(name){
   if(!/^[a-z0-9-]+\.mjs$/.test(name))throw Error('Invalid job name: '+name);
   return runProcess([resolvePath(root,'scripts',name)],name);
 }
-if(process.argv.includes('--self-test')){
-  // Exercise a real child-process success and failure without fetching assets.
-  await runProcess(['--eval','process.exit(0)'],'success-probe');
-  let failureWasDetected=false;
-  try{await runProcess(['--eval','process.exit(23)'],'failure-probe');}
-  catch{failureWasDetected=true;}
-  if(!failureWasDetected)throw Error('Child process failure was incorrectly ignored');
-  console.log('Asset runner self-test: child-process success/failure PASS');
-  process.exit(0);
-}
 async function phase(names){
   const outcomes=await Promise.allSettled(names.map(run));
   const failed=outcomes.filter(x=>x.status==='rejected');

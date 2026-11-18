@@ -4,7 +4,6 @@ import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import DailyRuneCalendar from '../../lrunes/DailyRuneCalendar';
 import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/daily/record-slots.mjs';
 import {Capacitor} from '@capacitor/core';
-import DailyRuneTransfer from '../../lrunes/DailyRuneTransfer';
 import ContextReturnNav from '../../modular/ContextReturnNav';
 import RuneCardInfo from '../../lrunes/RuneCardInfo';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
@@ -21,7 +20,7 @@ import {selectRows} from '../../loc/db/db-query.mjs';
 import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import {useAccount} from '../../loc/auth/use-account';
 import {useResourceCache} from '../../../packages/zenstack/client-queries';
-import {listLocalDailyRunes,importLocalDailyTransfer,updateLocalDailyRune,deleteLocalDailyRune} from '../../../modules/lrs/daily/local-records.mjs';
+import {listLocalDailyRunes,addLocalDailyRune,updateLocalDailyRune,deleteLocalDailyRune} from '../../../modules/lrs/daily/local-records.mjs';
 
 const FIRST_MONTH=2026*12+7;
 const EMPTY_ROWS=Object.freeze([]);
@@ -252,10 +251,10 @@ export default function DailyLogClient({embedded=false}={}){
       if(!canWrite)throw new Error('目前沒有新增每日符文的權限。');
       if(kindOccupied)throw new Error('該日期已經有此類紀錄。請選擇尚未使用的類別或其他日期。');
       if(native){
-        const result=await importLocalDailyTransfer([{
+        const result=await addLocalDailyRune({
           record_date:newForm.recordDate,draw_kind:newForm.drawKind,
           rune_number:Number(newForm.runeNumber),direction:newForm.direction,recorded_phase:''
-        }]);
+        });
         if(!result.newCount)throw new Error('該日期與類別已有本機紀錄，不會覆寫。');
       }else await insertDailyRuneRecord(newForm);
       const nextMonth=monthValueOf(newForm.recordDate);
@@ -405,8 +404,6 @@ export default function DailyLogClient({embedded=false}={}){
       </div>:null}
     </section>:null}
 
-    {canViewDetails?<DailyRuneTransfer cloudCanManage={canViewDetails&&!native}
-      onImported={()=>{loadMonth();window.dispatchEvent(new CustomEvent('loc-rune-local-changed'));}}/>:null}
     {canWrite?<section className="loc-card">
       <p className="loc-eyebrow">手動紀錄</p>
       <h2>人工新增紀錄</h2>
