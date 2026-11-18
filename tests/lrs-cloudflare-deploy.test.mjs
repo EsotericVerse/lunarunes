@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
-import {readFile} from 'node:fs/promises';
+import {readFile,readdir} from 'node:fs/promises';
 import {deploymentMode,deploymentArgs,verifyWorkerBoundary} from '../scripts/deploy-rune-cloudflare.mjs';
 
 const sha='a'.repeat(40);
@@ -59,4 +59,16 @@ test('Worker configuration permanently blocks the workers.dev hostname while kee
    {...cfg,observability:{enabled:false}},
    {...cfg,name:'another-worker'}
  ])assert.throws(()=>verifyWorkerBoundary(invalid),/LRS Worker boundary/);
+});
+
+test('LRS deployment workflows never fetch, dispatch or publish LOC',async()=>{
+ const workflows=await readdir(new URL('../.github/workflows/',import.meta.url));
+ assert.equal(workflows.includes('migrate-luna-source.yml'),false);
+ for(const filename of workflows.filter(name=>/\.ya?ml$/.test(name))){
+  const source=await readFile(new URL('../.github/workflows/'+filename,import.meta.url),'utf8');
+  assert.doesNotMatch(source,/repository_dispatch|workflow_dispatch:[^\n]*lunacodex|gh workflow run[^\n]*lunacodex|git -C[^\n]*lunacodex|EsotericVerse\/lunacodex/,'LRS workflow must not deploy or fetch LOC: '+filename);
+ }
+ const deploy=await readFile(new URL('../scripts/deploy-rune-cloudflare.mjs',import.meta.url),'utf8');
+ assert.match(deploy,/config\?\.name!=='lunarunes'/);
+ assert.doesNotMatch(deploy,/lunacodex|LOC_WORKFLOW_KEY|LOC_EMERGENCY_KEY/);
 });
