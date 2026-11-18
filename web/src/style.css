@@ -29,3 +29,7 @@ button,a{touch-action:manipulation}
   .lrs-local-daily-record .loc-rune-card-image{max-width:170px}
   .lrs-local-trend-row{grid-template-columns:80px minmax(0,1fr) 3ch}
 }
+
+/* Only the selected local theme loads; a compact control replaces UI documentation. */
+.lrs-theme-switch{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;padding:.4rem clamp(.75rem,3vw,2rem);font-size:.82rem;color:var(--loc-muted)}
+.lrs-theme-switch select{min-width:3.25rem;min-height:2rem;padding:.15rem .35rem;border:1px solid var(--loc-line);border-radius:.5rem;background:var(--loc-panel);color:var(--loc-text)}
