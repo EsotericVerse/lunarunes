@@ -2,6 +2,7 @@ import {lazy,Suspense,useEffect,useState} from 'react';
 import RuneCardHub from '../../app/lrunes/RuneCardHub.jsx';
 import {pageFromPath} from './runtime/rune-routes.mjs';
 import GameBoard from '../../modules/lrs/boardgame/GameBoard.jsx';
+import {applyRuneTheme,RUNE_THEME_IDS,storedRuneTheme} from './runtime/rune-theme.mjs';
 
 // LRS Web publishes only draw/card and game. The lrunes Scope homepage,
 // daily records, culture, statistics, search and management belong to LOC.
@@ -18,12 +19,20 @@ function ScopeHomeLink(){
 
 export default function RuneApp(){
   const [page,setPage]=useState(()=>pageFromPath(window.location.pathname));
+  const [theme,setTheme]=useState(()=>storedRuneTheme());
   useEffect(()=>{
     const update=()=>setPage(pageFromPath(window.location.pathname));
     window.addEventListener('popstate',update);
     return()=>window.removeEventListener('popstate',update);
   },[]);
   return <div className="lrs-feature-app" data-lrs-features="card-game">
+    <div className="lrs-theme-switch">
+      <label htmlFor="lrs-theme-select">主題</label>
+      <select id="lrs-theme-select" aria-label="符文主題" value={theme}
+        onChange={event=>{const next=applyRuneTheme(event.target.value);setTheme(next);}}>
+        {RUNE_THEME_IDS.map((id,index)=><option key={id} value={id}>{index+1}</option>)}
+      </select>
+    </div>
     <Suspense fallback={<main className="loc-next-main"><p className="scope-status">正在載入月之符文…</p></main>}>
       {page==='card'?<RuneCardHub Navigation={RuneArtNav}/>
         :page==='game'?<GameBoard/>
