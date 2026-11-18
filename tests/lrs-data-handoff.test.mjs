@@ -34,8 +34,8 @@ test('seven LRS-only relations are explicitly classified and private records sta
  assert.deepEqual(contract.tables.map(x=>x.name),[
   'runes','runes_etc','runes_group','lrunes_blocks','lrunes_daily','lrunes_anchor','lrunes_galaxy']);
  assert.deepEqual(contract.privateByDefault,['lrunes_daily','lrunes_anchor','lrunes_galaxy']);
- assert.deepEqual(contract.publicReadAllowlist,['runes','runes_etc','runes_group','lrunes_blocks']);
- assert.equal(contract.restrictedReads.lrunes_blocks,'hero-only');
+ assert.deepEqual(contract.publicReadAllowlist,['runes','runes_etc','runes_group']);
+ assert.equal(contract.tables.find(t=>t.name==='lrunes_blocks').publicRead,'never');
  assert.equal(contract.activation,'operator-explicit-only');
 });
 test('pack/verify/compare give a data parity gate without DB URL or live writes',()=>{
