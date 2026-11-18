@@ -7,17 +7,12 @@ const source=async path=>readFile(new URL('../'+path,import.meta.url),'utf8');
 
 // Rebases the still-relevant portions of old PR #10 onto the actual main
 // paths and device-only daily routes. Do not resurrect retired LOC shims.
-test('standalone LRS starts from original Rune homepage rather than a demo',async()=>{
-  const [entry,home]=await Promise.all([
-    source('web/src/RuneApp.jsx'),source('app/lrunes/RunesClient.jsx')
-  ]);
-  assert.match(entry,/import RunesClient from ['"]\.\.\/\.\.\/app\/lrunes\/RunesClient\.jsx['"]/);
-  assert.match(entry,/<RunesClient\s*\/>/);
-  assert.match(home,/<ScopeEditableBlocks/);
-  assert.match(home,/<RuneCardEntryBubbles\s*\/>/);
-  assert.match(home,/<RuneIntroSection\s*\/>/);
-  assert.doesNotMatch(entry,/function\s+(?:Landing|Cards|Gallery)\s*\(/);
-  assert.doesNotMatch(entry,/<(?:GlobalNav|GlobalFooter|Footer)\b/);
+test('standalone LRS does not mount the LOC Scope homepage',async()=>{
+  const entry=await source('web/src/RuneApp.jsx');
+  assert.doesNotMatch(entry,/import RunesClient|<RunesClient/);
+  assert.match(entry,/https:\/\/lrunes\.lo3rwang\.cc\//);
+  assert.match(entry,/page==='card'/);
+  assert.match(entry,/page==='game'/);
 });
 
 test('public 2D/3D scenes and actual local board game retain the original routes',async()=>{
@@ -32,28 +27,27 @@ test('public 2D/3D scenes and actual local board game retain the original routes
     assert(views.includes(component),component+' original scene missing');
 });
 
-test('device-local daily route never pretends to authorize LOC private history',async()=>{
-  const [entry,nav,daily]=await Promise.all([
+test('LOC owns daily record routes, LRS Web does not mount them',async()=>{
+  const [entry,nav]=await Promise.all([
     source('web/src/RuneApp.jsx'),
-    source('web/src/runtime/rune-navigation.jsx'),
-    source('web/src/runtime/rune-local-daily.jsx')
+    source('web/src/runtime/rune-navigation.jsx')
   ]);
-  assert.equal(pageFromPath('/daily/log/'),'daily-log');
-  assert.equal(pageFromPath('/daily/trend/'),'daily-trend');
+  assert.equal(pageFromPath('/daily/log/'),'scope-home-link');
+  assert.equal(pageFromPath('/daily/trend/'),'scope-home-link');
+  assert.doesNotMatch(entry,/RuneLocalDailyPage|DailyLogClient/);
   assert.match(nav,/user:null/);
   assert.match(nav,/canLocAccessSync:\(\)=>false/);
-  assert.doesNotMatch(entry,/<DailyLogClient\b/);
-  assert.doesNotMatch(daily,/(?:selectDailyRuneMonth|selectDailyRuneRange|dbAuthRelation|LRS_DATABASE_URL)/);
-  assert.match(daily,/listLocalDailyRunes/);
 });
 
-test('LRS Worker bounds anonymous Hero reads, not the LOC HTTP or credential session',async()=>{
+test('legacy Hero read API is not mounted as an LRS Web homepage',async()=>{
   const [hero,port,entry]=await Promise.all([
     source('web/src/runtime/rune-home-public.jsx'),
     source('web/src/runtime/rune-public-port.mjs'),
     source('web/src/main.jsx')
   ]);
   assert.match(hero,/readPublicRuneHero\(\)/);
+  const web=await source('web/src/RuneApp.jsx');
+  assert.doesNotMatch(web,/rune-home-public|RunesClient/);
   assert.match(port,/silver\.lrunes_blocks/);
   assert.match(port,/column:'page_name',operator:'eq',value:'hero'/);
   assert.match(entry,/fetch\('\/api\/lrs\/public-read'/);
