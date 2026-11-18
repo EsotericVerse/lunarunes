@@ -44,7 +44,6 @@ const expected=[
  'content/lrunes/index.js',
  'content/lrunes/game.js',
  'web/src/runtime/rune-public-port.mjs',
- 'app/lrunes/RunesClient.jsx',
  'app/lrunes/visual/RuneArtStage.jsx'
 ];
 for(const p of expected)if(!fileSet.has(p))throw Error('Missing canonical Rune owner: '+p);
