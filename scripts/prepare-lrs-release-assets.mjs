@@ -8,7 +8,7 @@
  * missing. A clean machine must still assemble its first full release; a
  * subsequent Web-only build reuses the verified immutable art pack.
  *
- * iOS is NOT involved: LAS consumes its separate, real-file artifact pack.
+ * The Web preparation is independent of LRS's separately triggered iOS IPA build.
  */
 import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
