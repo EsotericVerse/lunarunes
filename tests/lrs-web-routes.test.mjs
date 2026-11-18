@@ -49,3 +49,10 @@ test('LRS Web keeps no duplicate LOC Scope homepage or daily record view',async(
   const routes=await readFile(new URL('../web/src/runtime/rune-routes.mjs',import.meta.url),'utf8');
   assert.doesNotMatch(routes,/return 'daily-log'|return 'daily-trend'|return 'home'/);
 });
+
+test('game board returns to LOC Scope without importing the LOC application',async()=>{
+  const source=await readFile(new URL('../modules/lrs/boardgame/GameBoard.jsx',import.meta.url),'utf8');
+  assert.match(source,/href="https:\/\/lrunes\.lo3rwang\.cc\/"/);
+  assert.doesNotMatch(source,/from ['"][^'"]*\/loc\//);
+  assert.doesNotMatch(source,/\bLRS_DATABASE_URL\b/);
+});
