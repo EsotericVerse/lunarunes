@@ -17,6 +17,7 @@ on:
       - 'tests/lrs-web-routes.test.mjs'
       - 'tests/lrs-original-page-parity.test.mjs'
       - 'tests/lrs-life-engine.test.mjs'
+      - 'tests/lrs-boardgame-end-to-end.test.mjs'
       - 'tests/lrs-gpu-lifecycle.test.mjs'
       - 'scripts/build-lrs-modules.mjs'
       - 'scripts/prepare-lrs-release-assets.mjs'
@@ -56,7 +57,7 @@ jobs:
       - name: Verify importable module subpaths (rune/card/boardgame)
         run: npm run check:lrs:consumer
       - name: Check independent tabletop and Rune-life simulation engines
-        run: node --test tests/lrs-life-engine.test.mjs
+        run: node --test tests/lrs-life-engine.test.mjs tests/lrs-boardgame-end-to-end.test.mjs
       - name: Verify portable lrs package excludes art binaries and build files
         run: npm run check:lrs:package
       - name: Regress 3D one-shot GPU release and aborted Rune reads
