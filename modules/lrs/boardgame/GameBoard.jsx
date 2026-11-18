@@ -49,7 +49,7 @@ export default function GameBoard(){
           <h1>月之符文 · 桌遊</h1>
           <p>本機輪流操作 · 二至四名玩家 · 八回合事件與共振</p>
         </div>
-        <a className="loc-button" href="/lrunes/">返回月之符文</a>
+        <a className="loc-button" href="https://lrunes.lo3rwang.cc/">返回月之符文</a>
       </header>
       {!game?<section className="lrg-panel lrg-launch">
         <h2>建立牌局</h2>
