@@ -58,14 +58,14 @@ test('loc:dialect read port compiles bounded SELECT only on LRS card tables',()=
   assert.throws(()=>lrsPublicSelect(db,{...query,schema:'private'}),/Unsupported LRS table/);
   assert.throws(()=>lrsPublicSelect(db,{...query,table:'lrunes_blocks'}),/Unsupported LRS table/);
 });
-test('Worker calls its own LRS_DB_URL once and never contacts LOC site',async()=>{
+test('Worker calls its own LRS_DATABASE_URL once and never contacts LOC site',async()=>{
   let received;
   const read=async(url,query)=>{
     received={url,query};
     return {rows:[{rune_id:66,rune_name:'命'}]};
   };
   const resp=await handlePublicRuneRead(requestFor(card),
-    {LRS_DB_URL:'postgresql://private.example:5432/lrs'},read);
+    {LRS_DATABASE_URL:'postgresql://private.example:5432/lrs'},read);
   assert.equal(resp.status,200);
   assert.deepEqual(await resp.json(),{
     rows:[{rune_id:66,rune_name:'命'}],dataSource:'lrs-database'
@@ -81,11 +81,11 @@ test('missing Secret fails closed; original art/Web remains independent',async()
   assert.equal(resp.status,503);
   assert.equal(called,false);
   assert.match((await resp.json()).error,/not configured/);
-  await assert.rejects(readLrsPublicRows('',publicRuneQuery(card)),/LRS_DB_URL/);
+  await assert.rejects(readLrsPublicRows('',publicRuneQuery(card)),/LRS_DATABASE_URL/);
 });
 test('failed database connections never expose credentials or fake empty data',async()=>{
   const resp=await handlePublicRuneRead(requestFor(card),
-    {LRS_DB_URL:'postgresql://private:password@db.example/lrs'},async()=>{throw Error('password db.example');});
+    {LRS_DATABASE_URL:'postgresql://private:password@db.example/lrs'},async()=>{throw Error('password db.example');});
   assert.equal(resp.status,503);
   const result=await resp.text();
   assert(!result.includes('password'));
