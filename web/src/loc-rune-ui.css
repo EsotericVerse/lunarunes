@@ -1,0 +1,153 @@
+/* One-time, local copy of Rune-relevant LOC presentation CSS.
+   Source: EsotericVerse/lunacodex app/styles/uiux.css and app/styles/features.css
+   LOC main source inspected 2026-11-18; LRS builds/deploys this file alone.
+   No cross-site CSS, URL, shared CDN, LOC release or runtime dependency. */
+
+:root{
+  --loc-ui-max:1280px;
+  --loc-ui-reading:72ch;
+  --loc-ui-radius-xl:30px;
+  --loc-ui-radius-lg:22px;
+  --loc-ui-radius-md:16px;
+  --loc-ui-radius-sm:12px;
+  --loc-ui-space-1:.375rem;
+  --loc-ui-space-2:.625rem;
+  --loc-ui-space-3:.875rem;
+  --loc-ui-space-4:1.125rem;
+  --loc-ui-space-5:1.5rem;
+  --loc-ui-space-6:2rem;
+  --loc-ui-space-7:clamp(2.5rem,5vw,4.5rem);
+  --loc-ui-ease:cubic-bezier(.22,1,.36,1);
+  --loc-ui-ease-soft:cubic-bezier(.16,1,.3,1);
+  --loc-ui-fast:160ms;
+  --loc-ui-med:320ms;
+  --loc-ui-slow:620ms;
+  --loc-ui-hairline:color-mix(in srgb,var(--loc-line) 74%,transparent);
+  --loc-ui-panel:color-mix(in srgb,var(--loc-panel) 82%,transparent);
+  --loc-ui-panel-strong:color-mix(in srgb,var(--loc-panel) 94%,var(--loc-bg));
+  --loc-ui-panel-soft:color-mix(in srgb,var(--loc-panel-2) 52%,transparent);
+  --loc-ui-accent-soft:color-mix(in srgb,var(--loc-accent) 12%,transparent);
+  --loc-ui-gold-soft:color-mix(in srgb,var(--loc-gold) 10%,transparent);
+  --loc-ui-shadow:0 30px 80px rgb(0 0 0 / .18),0 8px 24px rgb(0 0 0 / .09);
+  --loc-ui-shadow-hover:0 34px 90px rgb(0 0 0 / .24),0 12px 32px rgb(0 0 0 / .12);
+  --scope-max:var(--loc-ui-max);
+  --scope-gap:clamp(.9rem,1.6vw,1.35rem);
+  --scope-radius:var(--loc-ui-radius-lg);
+  --loc-radius:var(--loc-ui-radius-lg);
+  --loc-radius-sm:var(--loc-ui-radius-sm);
+  --loc-type-page-title:clamp(2.65rem,7.4vw,6.25rem);
+  --loc-type-section-title:clamp(1.28rem,1.7vw,1.65rem);
+  --loc-type-subtitle:clamp(.88rem,1vw,.98rem);
+  --loc-type-body:clamp(.96rem,.25vw + .9rem,1.04rem);
+  --loc-type-eyebrow:.72rem;
+  --loc-type-ui:.9rem;
+  --loc-weight-page-title:760;
+  --loc-weight-section-title:700;
+  --loc-weight-subtitle:600;
+  --loc-weight-eyebrow:760;
+  --loc-line-page-title:.96;
+  --loc-line-section-title:1.2;
+  --loc-line-subtitle:1.55;
+  --loc-line-body:1.78;
+  /* Shared Hero-only responsive typography; ordinary blocks stay unchanged. */
+  --loc-type-hero-home-title:clamp(4rem,6.4vw,6.5rem);
+  --loc-type-hero-feature-title:clamp(2.25rem,3vw,3.25rem);
+  --loc-type-hero-feature-subtitle:clamp(1.0625rem,1.4vw,1.375rem);
+  --loc-type-hero-feature-copy:clamp(1rem,1.1vw,1.125rem);
+  --loc-type-home-section-title:clamp(1.5rem,2.1vw,1.875rem);
+  --loc-type-hero-subtitle:clamp(1.25rem,1.8vw,1.875rem);
+  --loc-type-hero-copy:clamp(1.125rem,1.45vw,1.375rem);
+  --loc-type-hero-eyebrow:clamp(.875rem,1.05vw,1.0625rem);
+  --loc-line-hero-title:1.06;
+  --loc-line-hero-copy:1.65;
+}
+
+.loc-next-main,.scope-main{
+  width:min(var(--loc-ui-max),calc(100% - clamp(1rem,4vw,4rem)));
+  margin-inline:auto;
+  padding:clamp(1.25rem,3vw,2.5rem) 0 clamp(1.25rem,2.5vw,2rem);
+  animation:loc-ui-page-in var(--loc-ui-slow) var(--loc-ui-ease-soft) both;
+}
+.loc-next-main>.scope-main{
+  width:100%;
+  margin:0;
+  padding:0;
+}
+.loc-next-main[data-loc-scope="loc"][data-loc-view="home"]{
+  animation:none;
+}
+
+@keyframes loc-ui-page-in{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
+
+
+.loc-next-main,.scope-main,.loc-view,.scope-page,.scope-content{
+  min-width:0;
+  max-width:100%;
+}
+.loc-view,.scope-page,.scope-content{
+  gap:clamp(1rem,2.2vw,1.75rem);
+}
+.scope-page,.scope-content{
+  grid-template-columns:minmax(0,1fr);
+}
+:is(.loc-view,.scope-page,.scope-content)>*{
+  min-width:0;
+  max-width:100%;
+}
+
+.loc-hero,.scope-hero{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:clamp(1.5rem,4vw,3.4rem);
+  border:1px solid var(--loc-ui-hairline);
+  border-radius:var(--loc-ui-radius-xl);
+  background:var(--loc-panel);
+  box-shadow:var(--loc-shadow-card);
+}
+
+.loc-hero::after,.scope-hero::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:18rem;
+  aspect-ratio:1;
+  right:-8rem;
+  top:-10rem;
+  border:1px solid var(--loc-line-soft);
+  border-radius:50%;
+  box-shadow:0 0 0 2.25rem var(--loc-line-soft),0 0 0 5rem color-mix(in srgb,var(--loc-line-soft) 45%,transparent);
+  opacity:.45;
+}
+
+/* Hero hierarchy: showcase homepages keep their existing large treatment.
+   Functional pages use the middle tier; detail and management pages stay compact. */
+.scope-feature-hero,
+.loc-hero-feature{
+  padding:clamp(1.3rem,3vw,2.25rem);
+  border-radius:var(--loc-ui-radius-lg);
+}
+
+.scope-feature-hero>.home-title-row>h1,
+.loc-hero-feature h1{
+  font-size:clamp(2.25rem,4.8vw,3.8rem)!important;
+  line-height:1!important;
+  letter-spacing:-.045em;
+}
+
+
+.loc-style-group.fallback{border-style:dashed}.loc-draw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));}
+
+/* LunaRunes */
+.loc-draw-grid{
+  gap:clamp(.8rem,2vw,1.35rem);
+}
+
+.loc-draw-card,.runes-advice-grid article,.reading-ref-card{
+  border-color:var(--loc-ui-hairline);
+  border-radius:var(--loc-ui-radius-md);
+  background:var(--loc-ui-panel-soft);
+}
