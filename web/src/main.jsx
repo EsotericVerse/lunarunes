@@ -2,6 +2,7 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import RuneApp from './RuneApp.jsx';
 import {bindRunePublicReadPort,warmRuneBaseSession} from './runtime/rune-public-port.mjs';
+import {runePublicReadUrl} from './runtime/rune-public-url.mjs';
 import '../../app/styles/tokens.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';
@@ -18,7 +19,7 @@ bindRunePublicReadPort(async(table,query)=>{
   // AbortSignal belongs to this browser request, never to the public-read
   // JSON payload or Worker query contract.
   const {signal,...publicQuery}=query||{};
-  const response=await fetch('/api/lrs/public-read',{
+  const response=await fetch(runePublicReadUrl(window.location.protocol),{
     method:'POST',credentials:'omit',cache:'no-store',redirect:'error',
     headers:{accept:'application/json','content-type':'application/json'},
     body:JSON.stringify({table,query:publicQuery}),
@@ -34,7 +35,7 @@ bindRunePublicReadPort(async(table,query)=>{
 // nine public groups. SessionStorage has no time TTL and stores nothing else.
 void warmRuneBaseSession();
 
-// Vite Web only: LOC's native IPA never imports this entry or registers this SW.
+// Web-only service worker: native Capacitor IPA uses local packaged files.
 // Only content-hashed JS/CSS/fonts may be cached; photos, WASM, API and daily
 // IndexedDB records remain outside Cache Storage. Preview origins are isolated.
 if(import.meta.env.PROD&&'serviceWorker' in navigator&&
