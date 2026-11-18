@@ -3,10 +3,10 @@
 const PREFIX='lrs.rune.theme';
 export const RUNE_THEME_IDS=Object.freeze(Array.from({length:8},(_,i)=>'theme-'+(i+1)));
 export function runeThemeId(value){return RUNE_THEME_IDS.includes(value)?value:'theme-1';}
-export function storedRuneTheme(storage=globalThis.localStorage){
-  try{return runeThemeId(storage?.getItem(PREFIX));}catch{return 'theme-1';}
+export function storedRuneTheme(storage){
+  try{return runeThemeId((storage??globalThis.localStorage)?.getItem(PREFIX));}catch{return 'theme-1';}
 }
-export function applyRuneTheme(theme,{doc=globalThis.document,storage=globalThis.localStorage}={}){
+export function applyRuneTheme(theme,{doc=globalThis.document,storage}={}){
   const id=runeThemeId(theme);
   const root=doc.documentElement;
   root.setAttribute('data-theme-id',id);
@@ -19,6 +19,6 @@ export function applyRuneTheme(theme,{doc=globalThis.document,storage=globalThis
     doc.head.appendChild(link);
   }
   if(link.getAttribute('href')!=='/themes/'+id+'.css')link.setAttribute('href','/themes/'+id+'.css');
-  try{storage?.setItem(PREFIX,id);}catch{}
+  try{(storage??globalThis.localStorage)?.setItem(PREFIX,id);}catch{}
   return id;
 }
