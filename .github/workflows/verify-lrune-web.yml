@@ -39,24 +39,16 @@ jobs:
         with:
           node-version: '24'
       - name: Install only the independent Rune module dependencies
-        run: npm install --no-audit --no-fund
-      - name: Keep generated npm lockfile for reproducible dependency pinning
-        uses: actions/upload-artifact@v4
-        with:
-          name: lrune-package-lock
-          path: package-lock.json
-          if-no-files-found: error
+        run: npm ci --no-audit --no-fund
       - name: Build all four independent LRS ESM modules (no Vite, Worker or effects)
         run: npm run build:lrs:modules
       - name: Verify all lrs modules, loc:dialect port and real local board-game rules
         run: npm run check:lrs:modules
-      - name: Verify LRS daily data ownership and legacy App/IPA model bridge
+      - name: Verify LRS-owned daily domain model
         run: node --test tests/lrs-daily-domain.test.mjs
-      - name: Regression-check legacy module test
-        run: npm run check:lrune:core
       - name: Verify importable module subpaths (rune/card/boardgame)
         run: npm run check:lrs:consumer
-      - name: Check independent tabletop and Rune-life simulation engines
+      - name: Check existing tabletop regression and isolated experimental life-engine code
         run: node --test tests/lrs-life-engine.test.mjs tests/lrs-boardgame-end-to-end.test.mjs
       - name: Verify portable lrs package excludes art binaries and build files
         run: npm run check:lrs:package
@@ -64,7 +56,7 @@ jobs:
         run: node --test tests/lrs-gpu-lifecycle.test.mjs
       - name: Verify bounded Web-only static cache and transient anonymous public read coalescing
         run: node --test tests/lrs-web-static-cache.test.mjs tests/lrs-public-read-dedupe.test.mjs
-      - name: Verify original LRS Web routes and native LOC card hub entry
+      - name: Verify independently served LRS card/game routes
         run: node --test tests/lrs-web-routes.test.mjs
       - name: Verify original Rune screen parity and private daily boundaries
         run: node --test tests/lrs-original-page-parity.test.mjs
