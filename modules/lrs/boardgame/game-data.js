@@ -1,3 +1,4 @@
+import {randomIndex} from '../card/draw-core.mjs';
 // Restored playable LOCAL tabletop dataset using the project's historical
 // 32 Alpha events (the legacy JS deletion in commit b925b520) and the
 // canonical 66-symbol names. No SQL game-table dependency, no network and
@@ -34,7 +35,8 @@ export function localTabletopRules(){
 export function shuffle(list){
   const result=[...(list||[])];
   for(let i=result.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
+    // Share the card module's unbiased random-index draw; no second tabletop RNG.
+    const j=randomIndex(i+1);
     [result[i],result[j]]=[result[j],result[i]];
   }
   return result;
