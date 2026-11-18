@@ -23,6 +23,7 @@ test('public 2D/3D scenes and actual local board game retain the original routes
   assert.match(entry,/<GameBoard\s*\/>/);
   for(const name of ['duel','daily','list'])
     assert.equal(pageFromPath('/card/'+name+'/'),name);
+  assert.equal(pageFromPath('/daily/'),'daily');
   for(const component of ['RuneRitualLab','RuneDaily3D','RuneAtlasLab','Rune3DPreview','Rune3DLibrary'])
     assert(views.includes(component),component+' original scene missing');
 });
