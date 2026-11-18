@@ -28,6 +28,7 @@ on:
       - 'contracts/rune-original-art.json'
       - 'assets/**'
       - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/verify-lrs-worker-release.yml'
   workflow_dispatch:
 permissions:
@@ -42,7 +43,7 @@ jobs:
         with:
           node-version: '24'
       - name: Install independent LRS dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Verify bounded Web cache never stores Rune images, VFX, SQL or local records
         run: node --test tests/lrs-web-static-cache.test.mjs tests/lrs-public-read-dedupe.test.mjs
       - name: Verify the exact public Rune read allowlist
