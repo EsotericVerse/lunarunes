@@ -1,70 +1,35 @@
-# LunaRunes — modular Rune and game engine
+# LunaRunes（月符／符韻）
 
-This repository owns the **lo3r@lrs · LunaRunes (lrs)** modules. The canonical, user-selected logical identifiers are:
+LRS（`lo3r@lrs`）獨立維護符文、抽牌、每日符文、桌遊引擎、畫面及原創素材。Web 與原生 App 各自交付，不因 LOC 或 LAS 更新而一併部署。
 
-| Module | Responsibility | Code |
+| 模組 | 責任 | 原始碼 |
 | --- | --- | --- |
-| `lrs:rune` | 66 Rune foundation, groups, canonical image identity, source artwork, Three.js/Effekseer/WASM resources | `modules/lrs/rune/` |
-| `lrs:boardgame` | Existing local tabletop rules and gameplay | `modules/lrs/boardgame/` |
-| `lrs:card` | Card draw algorithms, directions, spreads, moon-phase readings and card text composition | `modules/lrs/card/` |
-| `lrs:daily` | Daily Rune records, moon calendar and daily-data contract | `modules/lrs/daily/` |
+| `lrs:rune` | 符文、圖鑑、圖片與特效 | `modules/lrs/rune/` |
+| `lrs:card` | 抽牌、方向位與牌陣 | `modules/lrs/card/` |
+| `lrs:daily` | 每日符文與紀錄 | `modules/lrs/daily/` |
+| `lrs:boardgame` | 桌遊與模擬規則 | `modules/lrs/boardgame/` |
 
-**SQL is not owned by LRS.** LOC's `loc:dialect` supplies `readRows` and the ZModel-backed column projector to `lrs:card`. The card module does not import database drivers, credentials, LOC authorization or SQL transports.
+## 系統邊界
 
-`LunaCodex` retains the canonical `/lrunes/` Scope routing and Web integration. `LunArcus` owns Auth/SSO/MCP and cross-system communication. **LunaCodex alone owns the existing complete App/IPA build.** LRS provides immutable source and real Rune files to LOC, but never builds an IPA.
+- **LRS** 自行維護 Web／Worker、符文資料及自己的原生 App／IPA 工作；原生建置是否可用以 LRS 現行 Workflow 與實際產物驗證，不以規劃當作已交付。
+- **LOC** 自行維護月典網站、Galaxy／Anchor、Scope、SQL Portable，以及 LOC 自己的 App／IPA；需要時以明確的跨系統契約引用符文內容。
+- **LAS** 自行部署 Auth、MCP、Plugins 與通訊協定服務，不建置任何 IPA。
 
-## Package consumption
+三個 Repository **各自管理自己的 Routing Table 與部署**。LRS Web 的路由只由 LRS 自己維護；LOC 的 Scope 路由不等於 LRS 的 Web 路由，LAS 的 Auth／MCP 路由也不屬於 LRS。跨站入口以連結或明確的協定銜接，不複製也不共用路由表。
 
-The published **logical module IDs** contain a colon; portable JavaScript module import paths use package subpaths:
-
-```js
-import {runeImage} from 'lrs/rune';                 // lrs:rune
-import {createLunaRunesGame} from 'lrs/boardgame'; // lrs:boardgame
-import {createCardModule} from 'lrs/card';         // lrs:card
-import {createDailyModule} from 'lrs/daily';       // lrs:daily
-// LOC-side:
-// import {createLocRuneCardDialect} from './modules/loc/dialect/lrs-card.mjs';
-// const draw = createCardModule(createLocRuneCardDialect());
-```
-
-These are source import contracts, not a claim of an independently published npm package. LRS's standalone Worker deployment is separate from npm package publication and from LOC's version-pinned consumption.
-
-The package `files` whitelist excludes generated Web output, immutable artwork, Effekseer effect binaries and WASM. 3D/React/Sharp dependencies are optional peers or project build-only dependencies, not required for a consumer of the pure `lrs/card` module.
-
-`modules/lrs/**` owns Rune business implementation; `app/lrunes/**` contains the original Rune UI and LOC native handoff entries. The retired `modules/lrune/**` duplicate path must not be restored.
-
-## Build and verification
+## 建置與檢查
 
 ```bash
-npm install
 npm run check:lrs:modules
-npm run check:lrs:consumer
-npm run check:lrs:package
-npm run dev:web
+npm run check:lrs:ownership
 npm run build:web
-
-npm run art:verify
-npm run artifacts:web:art
-npm run artifacts:ios:art
-
-# Heavy effects preparation is explicit and Rune-owned:
-npm run effects:prepare
-npm run artifacts:web
-npm run artifacts:ios
+npm run build:cloudflare
+npm run check:cloudflare:release
+npm run deploy:cloudflare:dry-run
 ```
 
-`dist/web-app` is the standalone Vite/React Web code output; it deliberately excludes original art and WASM. `dist/web` is independently publishable Web asset output, while `dist/ios` consists of real files consumed by **LOC's existing IPA build**. Neither artifact exporter touches LOC's deployment.
+符文原圖與授權素材的來源及完整性依 `contracts/rune-original-art.json`、`scripts/build-rune-artifacts.mjs` 驗證。Web 產物與原生素材分開產生；iOS 使用實際檔案，不以 Web URL 取代。資產匯出不等於 IPA 編譯完成。
 
-`VITE_LRS_ASSET_ORIGIN` selects an independently published Rune Web asset origin; the earlier `VITE_LRUNE_ASSET_ORIGIN` is temporarily supported as a migration alias.
+正式 Web 部署以 LRS 既有 `lunarunes` Worker 設定為準；原生 App 依 LRS 自己的 Workflow 驗證，不交給 LOC 或 LAS 發布。版本以 `release/version.json`、實際 Git SHA 與檢查碼分別確認，不能混用。
 
-## Repository ownership and release
-
-LRS owns the rune, card, daily and board-game implementation and its original art, effects and Web assets. LOC owns the canonical Scope integration and the sole App/IPA pipeline; LAS owns Auth, OAuth, MCP and Plugins. The current working contract comes from the code, release manifest and tests, not dated migration notes.
-
-Web release assets are assembled by `scripts/assemble-rune-cloudflare.mjs` from `dist/web-app` and `dist/web`; a standalone release must preserve image paths, Effekseer files, WASM and their checksums. Run `npm run build:cloudflare`, `npm run check:cloudflare:release` and `npm run deploy:cloudflare:dry-run` to validate without publishing. The existing `lunarunes` Worker is deployed independently; ordinary LRS releases do not trigger LOC deployment.
-
-For the LOC iOS handoff, `npm run artifacts:ios` produces real files and an artifact manifest. LOC pins the LRS source revision and verifies checksums; iOS assets cannot be replaced with Web URLs. Web and iOS are separate deliveries from the same Rune source.
-
-The authoritative release label is `release/version.json`. It is distinct from the Git commit SHA and from the media checksum. Original artwork identity and attribution are pinned by `contracts/rune-original-art.json`. Migration-era details remain traceable via Git history and the private engineering archive rather than duplicated `docs/` files.
-
-The board-game engine and future game features must be judged from their actual modules and runnable UI; a planned feature is not automatically playable just because its contract or engine exists.
+具體路由、資料庫、模組匯入與建置步驟以目前程式碼和測試為準。歷史搬遷說明由 Git Commit 和私人 Slack 工程封存保留，不在 README 重複累積版本日誌。

@@ -35,4 +35,4 @@
 - [audio-feedback](skills/audio-feedback/SKILL.md) — 遊戲聲音設計：原創音效、操作確認、儀式聲景、動作節奏與靜音／無聲可玩。
 - [game-delivery](skills/game-delivery/SKILL.md) — LRS 遊戲作品驗收與獨立交付：可玩的 Web、資產完整性、原生素材契約及部署結果。
 
-**使用方式**：以風格設計為出發點，根據本次目標直接選 `art-direction`、`game-ui-ux`、`game-feel`、`scene-blueprint` 或相關專長；需要時可組合多項技能、隨工作自然延伸，沒有固定先後或數量上限。細節微調也是設計工作，不強制先做整份場景圖；大幅場景調整再採合適規格。技能數多代表專業覆蓋，不需要每次全部預載。禁止把 LOC 的 Next.js SaaS、MCP／SSO、SQL Portable、Hero 或 LAS IPA 管線當遊戲開發流程。
+**使用方式**：以風格設計為出發點，根據本次目標直接選 `art-direction`、`game-ui-ux`、`game-feel`、`scene-blueprint` 或相關專長；需要時可組合多項技能、隨工作自然延伸，沒有固定先後或數量上限。細節微調也是設計工作，不強制先做整份場景圖；大幅場景調整再採合適規格。技能數多代表專業覆蓋，不需要每次全部預載。禁止把 LOC 的 Next.js SaaS、LAS 的 MCP／Auth 或其他 Repo 的 IPA 工作流搬進 LRS 遊戲開發。
