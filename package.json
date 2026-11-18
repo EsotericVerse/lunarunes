@@ -5,7 +5,6 @@
   "type": "module",
   "description": "lo3r@lrs LunaRunes: rune, boardgame, card, daily independently exported modules",
   "scripts": {
-    "art:verify": "node scripts/build-rune-artifacts.mjs --target=web --art-only --verify-only",
     "artifacts:web:art": "node scripts/build-rune-artifacts.mjs --target=web --art-only",
     "artifacts:ios:art": "node scripts/build-rune-artifacts.mjs --target=ios --art-only",
     "effects:prepare": "node scripts/prepare-rune-runtime-assets.mjs",
@@ -15,7 +14,7 @@
     "build:web": "vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
     "build:cloudflare": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
-    "deploy:cloudflare": "node scripts/deploy-rune-cloudflare.mjs",
+    "deploy:cloudflare": "wrangler deploy",
     "build:lrs:modules": "node scripts/build-lrs-modules.mjs",
     "build:lrs:rune": "node scripts/build-lrs-modules.mjs rune",
     "build:lrs:boardgame": "node scripts/build-lrs-modules.mjs boardgame",
