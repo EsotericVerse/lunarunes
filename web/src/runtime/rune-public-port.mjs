@@ -4,7 +4,7 @@ import {readRuneBaseSession,storeRuneBaseSession,clearRuneBaseMemory,
   runeBaseFetchQuery,reuseRuneBaseSession} from './rune-base-session.mjs';
 
 // Public-read port. LRS sends only bounded, anonymous read requests to its
-// own existing Worker. Only the LRS Worker may hold LRS_DATABASE_URL;
+// own existing Worker. Only the LRS Worker may hold LRS_DB_URL;
 // Rune Web must not access another project's database or private record APIs.
 let readRows=null;
 // Share only simultaneous anonymous reads. A completed result is immediately
