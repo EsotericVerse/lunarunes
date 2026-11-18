@@ -45,7 +45,7 @@
 - **只修改 `EsotericVerse/lunarunes`。** 不擅改 LOC、LAS 的原始碼、路由、Cloudflare、SSO、資料庫、Hero 或 IPA 工作流程。
 - **LRS 自行持有符文資料所有權與資料存取契約**；只透過自己的 Worker／程式端口存取自己的資料，不借用 LOC／LAS 的資料庫 URL 或授權。SQL 引擎／Dialect 的設計或測試不屬於遊戲本次任務，嚴禁藉資料切割改動其他 Repo。
 - **LOC 和 LRS 各自負責自己的 App／IPA**，互不接管打包、發布或部署；LRS 原生建置仍須以本 Repo 實際 Workflow 與產物驗證，不能把 PR 中的實作當作已發布。**LAS 不負責任何 IPA**，只維護 Auth／OAuth／MCP／Plugins／Tunnel。
-- **LRS 的 Routing Table、Web 與素材由 LRS 獨立維護及部署**，不與 LOC Scope 路由或 LAS Auth／MCP 路由共用；其他 Web 系統以明確 URL／API 契約引用，iOS 是實體檔案交付，不混同。LRS `main` 合併後自動部署**唯一既有** `lunarunes` Production Worker；不部署 dev／Preview，不因日常 LRS 更新觸發 LOC。緊急及由作者裁定的大版本，才走既有 LOC 特殊通道與限時授權，禁止自行 Grant／Renew。不得擅改正式 Trigger。
+- **LRS 的 Routing Table、Web 與素材由 LRS 獨立維護及部署**，不與 LOC Scope 路由或 LAS Auth／MCP 路由共用；其他 Web 系統以明確 URL／API 契約引用，iOS 是實體檔案交付，不混同。LRS `main` 由自己的 Cloudflare Builds 部署 `lunarunes` 正式 Worker；非 `main` 由 LRS 自己的 Cloudflare Preview 處理。IPA 僅由 LRS 的手動 GitHub Workflow 打包。絕不觸發 LOC／LAS 的部署、預覽或 Workflow。
 - 不因跨模組的需求就在其他 Repo 建相似實作；介面有問題，查來源與當前契約，不能自行代另一邊決策。
 
 ## 目錄責任（Web、原生與模組不可混用）
@@ -62,7 +62,7 @@
 - **抽牌／牌陣與閱讀**：`modules/lrs/card/`；**桌遊引擎**：`modules/lrs/boardgame/`。
 - **每日月相、記錄格位與裝置本機紀錄**：`modules/lrs/daily/`；`app/lrunes/` 和 `app/daily/` 只保留需在頁面／原生流程執行的 UI 與整合入口，不再建立業務程式副本。
 - 不把別個專案的 `app/loc/` 業務模型複製進 LRS。缺少外部授權／私有資料介面時要保持不可用，不能自行 Grant 或開放私有資料。
-- 修改 LRS 畫面、符文功能或建置路徑時，執行 `npm run check:lrs:ownership`；這是 LRS 原始碼去重檢查，**不是 SQL Dialect 測試**。
+- LRS 自動檢查僅保留 `npm run check:syntax` 和 `npm run check:files`，不以其他政策測試阻擋創作。
 
 ## Skills 由風格設計出發，依作品與任務延伸
 

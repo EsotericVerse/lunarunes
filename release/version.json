@@ -1,7 +1,7 @@
 {
   "schema": "lunarunes.release-version.v1",
   "version": "1.0.2",
-  "status": "release-test",
+  "status": "release",
   "owner": "LRS",
-  "notes": "Owner-designated LRS 1.0.2: complete 67 single Rune and nine Rune group no-TTL tab Session, VFX cleanup and bounded static fetch lifecycle. LRS self-deploys its existing Worker from main; LOC integrates by a separate pinned-source update and its normal main deployment."
+  "notes": "LRS 1.0.2 independent rune app; Cloudflare main production and branch previews; LRS-only manual IPA packaging. No cross-repository deployments."
 }

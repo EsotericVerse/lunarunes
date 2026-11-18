@@ -1,38 +1,23 @@
 {
   "name": "lrs",
-  "version": "0.1.0-migration",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "description": "lo3r@lrs LunaRunes: rune, boardgame, card, daily independently exported modules",
   "scripts": {
-    "art:verify": "node scripts/build-rune-artifacts.mjs --target=web --art-only --verify-only",
-    "artifacts:web:art": "node scripts/build-rune-artifacts.mjs --target=web --art-only",
-    "artifacts:ios:art": "node scripts/build-rune-artifacts.mjs --target=ios --art-only",
-    "effects:prepare": "node scripts/prepare-rune-runtime-assets.mjs",
-    "artifacts:web": "node scripts/build-rune-artifacts.mjs --target=web",
-    "artifacts:ios": "node scripts/build-rune-artifacts.mjs --target=ios",
     "dev:web": "vite --config web/vite.config.mjs",
     "build:web": "vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
-    "check:lrune:core": "npm run check:lrs:modules",
-    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs tests/lrs-asset-url.test.mjs",
-    "check:lrs:package": "node scripts/check-lrs-package.mjs",
-    "check:lrs:consumer": "node --test tests/lrs-consumer.test.mjs",
-    "build:cloudflare": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
-    "deploy:cloudflare": "node scripts/deploy-rune-cloudflare.mjs",
-    "check:cloudflare:release": "node scripts/check-rune-cloudflare-release.mjs",
-    "deploy:cloudflare:dry-run": "wrangler deploy --dry-run --outdir dist/worker-dry-run",
-    "check:cloudflare:deploy": "node --test tests/lrs-cloudflare-deploy.test.mjs",
-    "build:lrs:modules": "node scripts/build-lrs-modules.mjs",
-    "build:lrs:rune": "node scripts/build-lrs-modules.mjs rune",
-    "build:lrs:boardgame": "node scripts/build-lrs-modules.mjs boardgame",
-    "build:lrs:card": "node scripts/build-lrs-modules.mjs card",
-    "build:lrs:daily": "node scripts/build-lrs-modules.mjs daily",
+    "build:cloudflare": "npm run check:syntax && npm run check:files && npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
+    "deploy:cloudflare": "wrangler deploy",
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
-    "build:lrs:assets:status": "node scripts/prepare-lrs-release-assets.mjs --check",
-    "build:lrs:assets:force": "node scripts/prepare-lrs-release-assets.mjs --force",
-    "build:lrs:app": "npm run build:web",
-    "check:lrs:ownership": "node scripts/check-lrs-source-ownership.mjs && node --test tests/lrs-single-source.test.mjs"
+    "effects:prepare": "node scripts/prepare-rune-runtime-assets.mjs",
+    "artifacts:web:art": "node scripts/build-rune-artifacts.mjs --target=web --art-only",
+    "artifacts:ios:art": "node scripts/build-rune-artifacts.mjs --target=ios --art-only",
+    "artifacts:web": "node scripts/build-rune-artifacts.mjs --target=web",
+    "artifacts:ios": "node scripts/build-rune-artifacts.mjs --target=ios",
+    "check:syntax": "node --check index.mjs && node --check public-rune-read.mjs && node --check lrs-database.mjs && node --check modules/lrs/card/draw-core.mjs && node --check scripts/assemble-rune-cloudflare.mjs",
+    "check:files": "node scripts/check-lrs-file-count.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
@@ -51,31 +36,6 @@
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
     "./daily": "./modules/lrs/daily/index.mjs",
     "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs"
-  },
-  "files": [
-    "modules/lrs/**",
-    "LICENSE",
-    "README.md"
-  ],
-  "peerDependencies": {
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "motion": "13.4.4",
-    "three": "0.187.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "motion": {
-      "optional": true
-    },
-    "three": {
-      "optional": true
-    }
   },
   "dependencies": {
     "kysely": "0.29.8",
