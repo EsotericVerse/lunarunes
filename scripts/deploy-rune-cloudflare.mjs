@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 /**
- * LRS release policy: main Workers Builds deploys its own Worker only.
- * All non-main Workers Builds are validation-only: no dev/preview Worker.\n * Independent manual/emergency releases
- * still require explicit approved pinned SHA and an existing credential.
- * No LRS merge triggers LOC production.
+ * LRS release policy: main Workers Builds deploys its own Worker (full
+ * production deploy + promote). Non-main Workers Builds create a
+ * version-only Preview (wrangler versions upload) so branches get a
+ * Preview URL, without ever promoting to production.
+ * Independent manual/emergency releases still require explicit approved
+ * pinned SHA and an existing credential.
+ * LOC and LAS deploy fully independently; no LRS merge triggers either.
  */
 import {spawnSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
@@ -24,7 +27,7 @@ export function deploymentMode(env=process.env){
   if(env.WORKERS_CI){
     if(!env.WORKERS_CI_BRANCH)
       throw new Error('Missing WORKERS_CI_BRANCH; refuse ambiguous deployment');
-    return env.WORKERS_CI_BRANCH==='main'?'automatic':'skip';
+    return env.WORKERS_CI_BRANCH==='main'?'automatic':'preview';
   }
   if(env.LRS_RELEASE_APPROVED!=='1')return 'skip';
   if(!COMMIT_SHA.test(env.LRS_RELEASE_SHA||''))
@@ -33,7 +36,9 @@ export function deploymentMode(env=process.env){
 }
 export function deploymentArgs(env=process.env){
   const mode=deploymentMode(env);
-  return mode==='skip'?[]:['deploy'];
+  if(mode==='skip')return [];
+  if(mode==='preview')return ['versions','upload'];
+  return ['deploy'];
 }
 function currentCommit(){
   const r=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8',windowsHide:true});
@@ -61,7 +66,10 @@ function main(){
   verifyWorkerBoundary(JSON.parse(readFileSync('wrangler.jsonc','utf8')));
   const cli=process.platform==='win32'?'wrangler.cmd':'wrangler';
   const args=deploymentArgs();
-  if(args.length!==1||args[0]!=='deploy')throw new Error('Only the existing lunarunes production deployment is permitted');
+  const validArgs=mode==='preview'
+    ?args.length===2&&args[0]==='versions'&&args[1]==='upload'
+    :args.length===1&&args[0]==='deploy';
+  if(!validArgs)throw new Error('Unexpected Wrangler arguments for mode '+mode);
   console.log('[LRS Cloudflare]',mode,
     mode==='deploy'?process.env.LRS_RELEASE_SHA:process.env.WORKERS_CI_BRANCH);
   const child=spawnSync(cli,args,{stdio:'inherit',env:process.env,windowsHide:true});

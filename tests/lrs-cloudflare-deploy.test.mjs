@@ -9,9 +9,9 @@ test('LRS main merge deploys LRS itself, independently of LOC',()=>{
   assert.equal(deploymentMode(env),'automatic');
   assert.deepEqual(deploymentArgs(env),['deploy']);
 });
-test('LRS branch Workers Builds never creates a dev or preview Worker',()=>{
-  assert.equal(deploymentMode({WORKERS_CI:'1',WORKERS_CI_BRANCH:'work/rune-art'}),'skip');
-  assert.deepEqual(deploymentArgs({WORKERS_CI:'1',WORKERS_CI_BRANCH:'feature/game'}),[]);
+test('LRS non-main Workers Builds create a version-only Preview, never a production deploy',()=>{
+  assert.equal(deploymentMode({WORKERS_CI:'1',WORKERS_CI_BRANCH:'work/rune-art'}),'preview');
+  assert.deepEqual(deploymentArgs({WORKERS_CI:'1',WORKERS_CI_BRANCH:'feature/game'}),['versions','upload']);
 });
 test('Missing Workers branch is rejected, never guessed as production',()=>{
   assert.throws(()=>deploymentMode({WORKERS_CI:'1'}),/Missing WORKERS_CI_BRANCH/);
