@@ -9,6 +9,8 @@ import '../../app/styles/home-composition.css';
 import '../../app/styles/home-content.css';
 import '../../app/styles/home-runes.css';
 import '../../app/styles/runes.css';
+// Local copy from LOC presentation CSS; no runtime or deploy-time LOC fetch.
+import './loc-rune-ui.css';
 import './style.css';
 
 // The existing LRS Worker performs bounded read-only queries against its
