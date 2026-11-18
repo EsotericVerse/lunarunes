@@ -46,7 +46,7 @@ jobs:
           test -s dist/cloudflare/index.html
           output="$(npx wrangler preview --name "pr-${{ github.event.pull_request.number }}" --json)"
           printf '%s\n' "$output"
-          url="$(printf '%s\n' "$output" | jq -er '.preview.urls[0]')"
+          url="$(printf '%s\n' "$output" | sed -n '/^{/,$p' | jq -er '.preview.urls[0]')"
           printf 'preview_url=%s\n' "$url" >> "$GITHUB_OUTPUT"
           {
             echo '### LRS Cloudflare Worker Preview'
