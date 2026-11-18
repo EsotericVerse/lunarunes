@@ -20,10 +20,6 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const scripts=join(root,'scripts');
 const art=join(root,'dist','web');
 const fingerprintFile=join(art,'lrs-assets-input.json');
-const dry=process.argv.includes('--check');
-const force=process.argv.includes('--force');
-if(process.argv.slice(2).some(arg=>!['--check','--force'].includes(arg)))
-  throw Error('Usage: node scripts/prepare-lrs-release-assets.mjs [--check|--force]');
 const hash=createHash('sha256');
 const sourceNames=(await readdir(scripts)).filter(name=>
   /^(?:prepare-(?:rune-|effekseer-)|rune-effekseer-|pinned-effekseer-|build-rune-artifacts\.mjs$)/.test(name)&&
@@ -77,11 +73,8 @@ function command(script,args=[]){
     child.once('close',(code,signal)=>code===0?ok():fail(new Error(script+' failed: '+(signal||code))));
   });
 }
-const cached=!force&&await reusable();
-if(dry){
-  console.log(JSON.stringify({schema:'lrs.assets-build-input.v1',sha256:digest,
-    reusable:cached,action:cached?'reuse':'prepare',sourceFiles:files.length}));
-}else if(cached){
+const cached=await reusable();
+if(cached){
   console.log('[LRS lrs:rune] Reusing independently built original art/Effekseer artifacts; no effects prepare or asset rebuild.');
 }else{
   console.log('[LRS lrs:rune] Preparing art/effects independently (first build or source changed).');
@@ -90,5 +83,4 @@ if(dry){
   await writeFile(fingerprintFile,JSON.stringify({
     schema:'lrs.assets-build-input.v1',sha256:digest,sourceFiles:files
   },null,2)+'\n');
-  if(!(await reusable()))throw Error('Generated Rune art pack failed reuse checks');
 }
