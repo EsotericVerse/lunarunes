@@ -92,12 +92,4 @@ export async function selectRows(table,query){
   void promise.then(forget,forget);
   return promise;
 }
-export async function readPublicRuneHero(){
-  const {rows}=await selectRows('silver.lrunes_blocks',{
-    columns:'uid,page_name,block_eyebrow,block_title,block_subtitle,block_text,block_order,block_entity,block_image',
-    filters:[{column:'page_name',operator:'eq',value:'hero'}],
-    orders:[{column:'block_order',ascending:true}],limit:8,offset:0
-  });
-  return rows||[];
-}
 export const lRunes66ColumnString=lrsCardRune66ColumnString;
