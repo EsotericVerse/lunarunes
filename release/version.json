@@ -1,7 +1,7 @@
 {
   "schema": "lunarunes.release-version.v1",
-  "version": "1.01R",
+  "version": "1.0.2",
   "status": "release-test",
   "owner": "LRS",
-  "notes": "Owner-designated Rune Web one-shot VFX and memory lifecycle release test. Only existing LRS Worker auto-deploys; observe but do not force LOC deployment."
+  "notes": "Owner-designated LRS 1.0.2: complete 67 single Rune and nine Rune group no-TTL tab Session, VFX cleanup and bounded static fetch lifecycle. LRS self-deploys its existing Worker from main; LOC integrates by a separate pinned-source update and its normal main deployment."
 }

@@ -12,7 +12,7 @@ const version=JSON.parse(await readFile('release/version.json','utf8'));
 assert.equal(release.schema,'lunarunes.cloudflare-release.v1');
 assert.equal(version.schema,'lunarunes.release-version.v1');
 assert.equal(release.releaseVersion,version.version);
-assert.match(release.releaseVersion,/^\d+\.\d+R$/);
+assert.match(release.releaseVersion,/^(?:\d+\.\d+R|\d+\.\d+\.\d+)$/);
 assert.equal(release.includesEffects,true);
 assert.equal(release.mediaSchema,RUNE_MEDIA_VERSION_SCHEMA);
 assert.match(release.mediaVersion,/^[0-9a-f]{64}$/);
