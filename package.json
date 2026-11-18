@@ -23,7 +23,9 @@
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
     "build:lrs:assets:status": "node scripts/prepare-lrs-release-assets.mjs --check",
     "build:lrs:assets:force": "node scripts/prepare-lrs-release-assets.mjs --force",
-    "build:lrs:app": "npm run build:web"
+    "build:lrs:app": "npm run build:web",
+    "check:syntax": "node --check index.mjs && node --check public-rune-read.mjs && node --check modules/lrs/card/draw-core.mjs && node --check scripts/assemble-rune-cloudflare.mjs",
+    "test:smoke": "node --test tests/lrs-smoke.test.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
