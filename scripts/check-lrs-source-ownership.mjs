@@ -26,7 +26,14 @@ const removedPaths=new Set([
 const owns=p=>removedPaths.has(p)||removedPrefixes.some(prefix=>p.startsWith(prefix))||
  ['app/loc/blocks/home-block-model.js','app/loc/blocks/hero-image.mjs',
   'app/loc/model/moon-phase.js'].includes(p);
-const forbidden=files.filter(p=>p.startsWith('app/loc/')||p.startsWith('app/modular/')||owns(p));
+// LOC owns all Scope routes, published Blocks and Scope management. LRS may
+// keep only card/game Next compatibility routes for LOC's existing IPA bridge.
+const LRS_FEATURE_ROUTE=/^app\/lrunes\/(?:card(?:\/(?:daily|duel|list))?|game)\/page\.jsx$/;
+const forbidden=files.filter(p=>
+  p.startsWith('app/loc/')||p.startsWith('app/modular/')||
+  p.startsWith('content/lrunes/')||
+  (p.startsWith('app/lrunes/')&&p.endsWith('/page.jsx')&&!LRS_FEATURE_ROUTE.test(p))||
+  p==='app/lrunes/page.jsx'||owns(p));
 if(forbidden.length)throw Error('Legacy duplicate Rune implementation remains: '+forbidden.slice(0,10).join(', '));
 const expected=[
  'modules/lrs/rune/hero/home-presentation.mjs',
