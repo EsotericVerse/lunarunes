@@ -8,6 +8,8 @@
  * trends and narrative are supplied by the host, never invented in this core.
  * No SQL, SSO, LOC UI, Worker, or native packaging dependency.
  */
+import {randomIndex as canonicalRuneRandomIndex} from '../card/draw-core.mjs';
+
 export const LIFE_ASPECTS=Object.freeze([
   Object.freeze({key:'soul',name:'靈魂',focus:'心靈、潛意識、出國',decision:'自我成長'}),
   Object.freeze({key:'connection',name:'連結',focus:'朋友、同事',decision:'外交'}),
@@ -21,7 +23,7 @@ export const LIFE_ASPECTS=Object.freeze([
 export const LIFE_TURN=Object.freeze({
   duration:'month',draw:8,play:5,unplayed:3,trendLimit:11
 });
-export const LIFE_DIRECTIONS=Object.freeze(['正','半正','半逆','逆']);
+export const LIFE_DIRECTIONS=Object.freeze(['正位','半正位','半逆位','逆位']);
 const ALLOWED_ASPECTS=new Set(LIFE_ASPECTS.map(item=>item.key));
 const PLAYABLE_RUNES=Object.freeze(Array.from({length:66},(_,i)=>i+1));
 function ensureMonth(value){
@@ -41,20 +43,21 @@ function allowedContext({environment={},trendRunes=[]}={}){
     throw new TypeError('Rune-life trends must have up to 11 valid runes');
   return {environment:{...environment},trendRunes:[...trendRunes]};
 }
-function sampleEight(random){
+function sampleEight(pickIndex){
   const deck=[...PLAYABLE_RUNES];
   // Partial Fisher–Yates: uniform, distinct eight-card sample.
   for(let i=0;i<LIFE_TURN.draw;i++){
-    const n=random();
-    if(typeof n!=='number'||!Number.isFinite(n)||n<0||n>=1)
-      throw new TypeError('random() must return a number in [0,1)');
-    const j=i+Math.floor(n*(deck.length-i));
+    // Canonical lrs:card randomIndex powers the existing Rune draw.
+    const index=pickIndex(deck.length-i);
+    if(!Number.isInteger(index)||index<0||index>=deck.length-i)
+      throw new TypeError('randomIndex() must return a valid deck index');
+    const j=i+index;
     [deck[i],deck[j]]=[deck[j],deck[i]];
   }
   return deck.slice(0,LIFE_TURN.draw);
 }
-export function createRuneLifeEngine({random=Math.random,applyAction,resolveEvent}={}){
-  if(typeof random!=='function')throw new TypeError('Rune-life requires random function');
+export function createRuneLifeEngine({randomIndex=canonicalRuneRandomIndex,applyAction,resolveEvent}={}){
+  if(typeof randomIndex!=='function')throw new TypeError('Rune-life requires a valid card randomIndex function');
   if(applyAction!==undefined&&typeof applyAction!=='function')
     throw new TypeError('applyAction must be a function');
   if(resolveEvent!==undefined&&typeof resolveEvent!=='function')
@@ -64,7 +67,7 @@ export function createRuneLifeEngine({random=Math.random,applyAction,resolveEven
     const context=allowedContext(options);
     return {
       kind:'lrs:life',month,status:'selecting',
-      hand:sampleEight(random),actions:[],history:[],
+      hand:sampleEight(randomIndex),actions:[],history:[],
       environment:context.environment,trendRunes:context.trendRunes
     };
   }
