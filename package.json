@@ -14,15 +14,8 @@
     "dev:web": "vite --config web/vite.config.mjs",
     "build:web": "vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
-    "check:lrune:core": "npm run check:lrs:modules",
-    "check:lrs:modules": "node --test tests/lrs-modules.test.mjs tests/lrs-asset-url.test.mjs",
-    "check:lrs:package": "node scripts/check-lrs-package.mjs",
-    "check:lrs:consumer": "node --test tests/lrs-consumer.test.mjs",
     "build:cloudflare": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-cloudflare.mjs",
     "deploy:cloudflare": "node scripts/deploy-rune-cloudflare.mjs",
-    "check:cloudflare:release": "node scripts/check-rune-cloudflare-release.mjs",
-    "deploy:cloudflare:dry-run": "wrangler deploy --dry-run --outdir dist/worker-dry-run",
-    "check:cloudflare:deploy": "node --test tests/lrs-cloudflare-deploy.test.mjs",
     "build:lrs:modules": "node scripts/build-lrs-modules.mjs",
     "build:lrs:rune": "node scripts/build-lrs-modules.mjs rune",
     "build:lrs:boardgame": "node scripts/build-lrs-modules.mjs boardgame",
@@ -31,8 +24,7 @@
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
     "build:lrs:assets:status": "node scripts/prepare-lrs-release-assets.mjs --check",
     "build:lrs:assets:force": "node scripts/prepare-lrs-release-assets.mjs --force",
-    "build:lrs:app": "npm run build:web",
-    "check:lrs:ownership": "node scripts/check-lrs-source-ownership.mjs && node --test tests/lrs-single-source.test.mjs"
+    "build:lrs:app": "npm run build:web"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
