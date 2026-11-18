@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createLunaRunesGame} from '../modules/lrs/boardgame/boardgame-rules.js';
-import {localTabletopRules} from '../modules/lrs/boardgame/game-data.js';
+import {localTabletopRules,shuffle} from '../modules/lrs/boardgame/game-data.js';
+import {readFile} from 'node:fs/promises';
 
 // An end-to-end pure-engine check of the existing local tabletop rules.
 // Never chooses or changes a game design; never requests SQL, LOC or networking.
@@ -51,4 +52,16 @@ for(const count of [2,3,4]){
 test('boardgame resolves asymmetric choices without hanging',()=>{
   const result=playMatch(2,{attack:true});
   assert.equal(result.stage,'finished');
+});
+
+test('tabletop shuffling uses the existing card draw core, not a second random generator',async()=>{
+  const source=await readFile(new URL('../modules/lrs/boardgame/game-data.js',import.meta.url),'utf8');
+  assert.match(source,/import \{randomIndex\} from '\.\.\/card\/draw-core\.mjs'/);
+  assert.doesNotMatch(source,/Math\.random\s*\(/);
+  const deck=localTabletopRules().cards;
+  assert.equal(deck.length,66);
+  const shuffled=shuffle(deck);
+  assert.equal(shuffled.length,deck.length);
+  assert.equal(new Set(shuffled.map(c=>c.id)).size,66);
+  assert.deepEqual(shuffled.map(c=>c.id).sort((a,b)=>a-b),deck.map(c=>c.id).sort((a,b)=>a-b));
 });
