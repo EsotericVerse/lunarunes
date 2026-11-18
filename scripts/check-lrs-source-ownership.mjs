@@ -40,9 +40,6 @@ const expected=[
  'modules/lrs/daily/real-moon-phase.mjs',
  'modules/lrs/daily/analytics.mjs',
  'modules/lrs/daily/transfer-contract.mjs',
- 'content/lrunes/hero.js',
- 'content/lrunes/index.js',
- 'content/lrunes/game.js',
  'web/src/runtime/rune-public-port.mjs',
  'app/lrunes/visual/RuneArtStage.jsx'
 ];
