@@ -46,7 +46,7 @@ test('old backup format, byte/row limits and duplicate policy remain identical',
  assert.doesNotMatch(transfer,/(?:app\/loc|app\/modular|query-batch-size)/);
 });
 
-test('one CSV serializer is used by native and independent Web; strict export roundtrips',()=>{
+test('daily CSV serializer remains available to LOC native; Web does not mount daily pages',()=>{
  const records=[
   {record_date:'2026-11-17',draw_kind:'main',rune_number:65,direction:'半正位',recorded_phase:'新月'},
   {record_date:'2026-11-17',draw_kind:'supplement',rune_number:66,direction:'逆位',recorded_phase:''}
@@ -60,9 +60,8 @@ test('one CSV serializer is used by native and independent Web; strict export ro
  assert.equal(invalid.length,0);
  assert.deepEqual(valid,records);
  const native=readFileSync(new URL('../app/lrunes/DailyRuneTransfer.jsx',import.meta.url),'utf8');
- const web=readFileSync(new URL('../web/src/runtime/rune-local-daily.jsx',import.meta.url),'utf8');
+ const web=readFileSync(new URL('../web/src/RuneApp.jsx',import.meta.url),'utf8');
  assert.match(native,/makeDailyCsv\(list\)/);
  assert.doesNotMatch(native,/const csvCell=/);
- assert.match(web,/makeDailyCsv\(rows\)/);
- assert.match(web,/planDailyTransfer\(valid,rows\)/);
+ assert.doesNotMatch(web,/rune-local-daily|RuneLocalDailyPage|daily-log|daily-trend/);
 });
