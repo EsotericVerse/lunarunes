@@ -39,18 +39,14 @@ test('LOC owns daily record routes, LRS Web does not mount them',async()=>{
   assert.match(nav,/canLocAccessSync:\(\)=>false/);
 });
 
-test('legacy Hero read API is not mounted as an LRS Web homepage',async()=>{
-  const [hero,port,entry]=await Promise.all([
-    source('web/src/runtime/rune-home-public.jsx'),
+test('LRS Web and public port never access LOC Scope Hero',async()=>{
+  const [port,entry,api]=await Promise.all([
     source('web/src/runtime/rune-public-port.mjs'),
-    source('web/src/main.jsx')
+    source('web/src/main.jsx'),
+    source('public-rune-read.mjs')
   ]);
-  assert.match(hero,/readPublicRuneHero\(\)/);
-  const web=await source('web/src/RuneApp.jsx');
-  assert.doesNotMatch(web,/rune-home-public|RunesClient/);
-  assert.match(port,/silver\.lrunes_blocks/);
-  assert.match(port,/column:'page_name',operator:'eq',value:'hero'/);
+  assert.doesNotMatch(port,/readPublicRuneHero|silver\.lrunes_blocks/);
+  assert.doesNotMatch(api,/silver\.lrunes_blocks/);
   assert.match(entry,/fetch\('\/api\/lrs\/public-read'/);
   assert.match(entry,/credentials:'omit'/);
-  assert.doesNotMatch(entry,/loc\.lo3rwang\.cc\/api/);
 });
