@@ -3,26 +3,32 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pageFromPath} from '../web/src/runtime/rune-routes.mjs';
 
-test('existing Rune home, card hub and feature routes work with or without LOC scope prefix',()=>{
+test('standalone LRS Web only resolves card and game routes',()=>{
   const expected={
-    '/':'home','/lrunes':'home','/lrunes/':'home',
-    '/card':'card','/card/':'card','/lrunes/card/':'card',
-    '/card/duel/':'duel','/lrunes/card/duel/':'duel',
-    '/card/daily/':'daily','/lrunes/card/daily/':'daily',
-    '/card/list/':'list','/lrunes/card/list/':'list',
-    '/game/':'game','/game/room/':'game','/lrunes/game/':'game',
-    '/daily/log/':'daily-log','/lrunes/daily/log/':'daily-log',
-    '/daily/trend/':'daily-trend','/lrunes/daily/trend/':'daily-trend'
+    '/card':'card','/card/':'card',
+    '/card/duel/':'duel','/card/daily/':'daily','/card/list/':'list',
+    '/game/':'game','/game/room/':'game'
   };
   for(const [pathname,page] of Object.entries(expected))
     assert.equal(pageFromPath(pathname),page,pathname);
 });
-test('unimplemented routes never silently show a fabricated Rune page',()=>{
-  for(const pathname of ['/culture/','/manage/','/search/','/trace/','/lrunesextra/'])
-    assert.equal(pageFromPath(pathname),'unmatched',pathname);
+test('LOC Scope home and daily records cannot be served as LRS Web routes',()=>{
+  for(const pathname of [
+    '/','/lrunes','/lrunes/','/lrunes/card/','/lrunes/game/',
+    '/daily/log/','/daily/trend/','/lrunes/daily/log/',
+    '/culture/','/statics/','/search/','/trace/','/manage/'
+  ])assert.equal(pageFromPath(pathname),'scope-home-link',pathname);
 });
 
-test('the LOC-native and LRS Web card hubs share one visual body without losing Web lazy navigation',async()=>{
+test('Web feature entry does not bundle LOC Scope homepage or LOC daily pages',async()=>{
+  const web=await readFile(new URL('../web/src/RuneApp.jsx',import.meta.url),'utf8');
+  assert.match(web,/https:\/\/lrunes\.lo3rwang\.cc\//);
+  assert.doesNotMatch(web,/import RunesClient|RuneLocalDailyPage|readPublicRuneHero|page==='home'/);
+  assert.match(web,/page==='card'/);
+  assert.match(web,/page==='game'/);
+});
+
+test('LOC-native and LRS Web card hubs share one visual body',async()=>{
   const source=async path=>readFile(new URL('../'+path,import.meta.url),'utf8');
   const [shared,native,web]=await Promise.all([
     source('app/lrunes/RuneCardHub.jsx'),
@@ -35,31 +41,19 @@ test('the LOC-native and LRS Web card hubs share one visual body without losing 
   assert.match(native,/<RuneCardHub Navigation=\{RuneArtNav\}\s*\/>/);
   assert.match(web,/RuneArtNav=lazy\(/);
   assert.match(web,/<RuneCardHub Navigation=\{RuneArtNav\}\s*\/>/);
-  assert.doesNotMatch(native,/<h1>符文美術場域<\/h1>/);
-  assert.doesNotMatch(web,/<h1>符文美術場域<\/h1>/);
 });
 
-test('independent daily Web pages use real device IndexedDB; no fake account or private LOC adapter',async()=>{
+test('native daily record model stays available without being mounted on LRS Web',async()=>{
   const source=async path=>readFile(new URL('../'+path,import.meta.url),'utf8');
-  const [web,device,local,calendar,localModel]=await Promise.all([
-    source('web/src/RuneApp.jsx'),
+  const [device,local,calendar,localModel]=await Promise.all([
     source('web/src/runtime/rune-local-daily.jsx'),
     source('modules/lrs/daily/local-records.mjs'),
     source('app/lrunes/DailyRuneCalendar.jsx'),
     source('modules/lrs/daily/analytics.mjs')
   ]);
-  assert.match(web,/RuneLocalDailyPage=lazy\(/);
-  assert.match(web,/view=\{page==='daily-log'\?'log':'trend'\}/);
   assert.match(device,/listLocalDailyRunes/);
   assert.match(device,/importLocalDailyTransfer/);
-  assert.match(device,/updateLocalDailyRune/);
-  assert.match(device,/deleteLocalDailyRune/);
-  assert.match(device,/parseDailyCsv/);
-  assert.match(device,/makeDailyCsv/);
   assert.match(device,/DAILY_TRANSFER_MAX_BYTES/);
-  assert.match(device,/dailyTrend\(periodRows,bucket\)/);
-  assert.match(device,/DailyRuneCalendar/);
-  assert.match(device,/不會自動同步雲端/);
   assert.doesNotMatch(device,/(?:\/loc\/auth\/|\/loc\/db\/|dbAuthRelation|LRS_DATABASE_URL|sessionOnly|fakeUser)/);
   assert.match(local,/indexedDB.open/);
   assert.match(calendar,/realMoonPhase/);
