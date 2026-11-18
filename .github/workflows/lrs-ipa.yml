@@ -1,0 +1,78 @@
+name: LRS IPA
+run-name: LRS IPA · ${{ github.ref_name }} · ${{ github.sha }}
+
+# LRS-owned manual IPA packaging only; does not deploy LOC or LAS.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lrs-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    runs-on: macos-26-intel
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.5'
+          cache: npm
+      - name: Install pinned LRS dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build LRS Web and pinned art as local IPA files
+        run: |
+          npm run build:cloudflare
+      - name: Install Capacitor in this LRS job only
+        run: |
+          npm install --no-save --package-lock=false --no-audit --no-fund \
+            '@capacitor/core@8.5.3' '@capacitor/ios@8.5.3' '@capacitor/cli@8.5.3'
+      - name: Create LRS's temporary native iOS project
+        run: |
+          node_modules/.bin/cap add ios
+          node_modules/.bin/cap sync ios
+      - name: Compile unsigned iOS arm64 application
+        env:
+          LRS_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          version="$(node -p "JSON.parse(require('fs').readFileSync('release/version.json','utf8')).version")"
+          test -n "$version"
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/lrs-ios-build" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            MARKETING_VERSION="$version" \
+            CURRENT_PROJECT_VERSION="$LRS_BUILD_NUMBER" \
+            build
+      - name: Verify and package standalone unsigned LRS IPA
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/lrs-ios-build/Build/Products/Debug-iphoneos/App.app"
+          mkdir -p dist/ipa "$RUNNER_TEMP/lrs-payload/Payload"
+          ditto "$app" "$RUNNER_TEMP/lrs-payload/Payload/App.app"
+          name="LRS-${{ github.run_number }}-device-unsigned.ipa"
+          (cd "$RUNNER_TEMP/lrs-payload" && zip -qry "$GITHUB_WORKSPACE/dist/ipa/$name" Payload)
+          echo "ipa_name=$name" >> "$GITHUB_OUTPUT"
+          echo 'This IPA is unsigned, so it is not installable until Apple signing.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload LRS unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LRS-${{ github.run_number }}-device-unsigned
+          path: dist/ipa/${{ steps.package.outputs.ipa_name }}
+          if-no-files-found: error
+          retention-days: 14
