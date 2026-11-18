@@ -23,11 +23,11 @@ test('LRS controls only its own connection binding; no LOC/LAS credential fallba
  const backend=read('lrs-database.mjs');
  const web=read('web/src/main.jsx');
  assert.match(worker,/handlePublicRuneRead/);
- assert.match(readEndpoint,/env\?\.LRS_DATABASE_URL/);
- assert.match(backend,/LRS_DATABASE_URL/);
+ assert.match(readEndpoint,/env\?\.LRS_DB_URL/);
+ assert.match(backend,/LRS_DB_URL/);
  assert.match(web,/credentials:'omit'/);
  for(const name of ['LOC_DATABASE_URI','LAS_DATABASE_URL','LOC_AUTH_DATABASE_URL']){
   assert(!worker.includes(name)&&!readEndpoint.includes(name)&&!backend.includes(name)&&!web.includes(name));
  }
- assert(!web.includes('LRS_DATABASE_URL:'));
+ assert(!web.includes('LRS_DB_URL:'));
 });
