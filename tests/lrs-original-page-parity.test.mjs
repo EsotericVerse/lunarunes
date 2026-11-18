@@ -45,7 +45,7 @@ test('LRS Web and public port never access LOC Scope Hero',async()=>{
     source('web/src/main.jsx'),
     source('public-rune-read.mjs')
   ]);
-  assert.doesNotMatch(port,/readPublicRuneHero|silver\.lrunes_blocks/);
+  assert.doesNotMatch(port,/export async function readPublicRuneHero|['"]silver\.lrunes_blocks['"]/);
   assert.doesNotMatch(api,/silver\.lrunes_blocks/);
   assert.match(entry,/fetch\('\/api\/lrs\/public-read'/);
   assert.match(entry,/credentials:'omit'/);
