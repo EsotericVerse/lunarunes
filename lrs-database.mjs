@@ -1,7 +1,7 @@
 /**
  * LRS read-only host implementation of the loc:dialect read port.
  *
- * Connection selection is the Worker's LRS_DB_URL secret ONLY.
+ * Connection selection is the Worker's LRS_DATABASE_URL secret ONLY.
  * Table/column selection is the fixed, validated LRS Rune projection in
  * public-rune-read.mjs. No client-controlled host, DB URL, SQL or schema.
  * The original tables stay in place; this performs SELECT, never migration.
@@ -30,7 +30,7 @@ export function lrsPublicSelect(db,query){
 
 export async function readLrsPublicRows(connectionString,query){
   if(typeof connectionString!=='string'||!/^postgres(?:ql)?:\/\//i.test(connectionString))
-    throw Object.assign(new Error('LRS_DB_URL unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
+    throw Object.assign(new Error('LRS_DATABASE_URL unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
   // The isolated loc:dialect server-only adapter owns request-scoped pg
   // connection lifecycle; LRS retains the exact read whitelist and query shape.
   const db=dialect('pg',connectionString);
