@@ -13,8 +13,9 @@ test('Worker public Rune endpoint never automatically exposes migrated private r
   assert(!tables.includes(privateTable));
   assert.equal(contract.tables.find(t=>t.name===privateTable).publicRead,'never');
  }
- assert.equal(contract.restrictedReads.lrunes_blocks,'hero-only');
- assert.match(code,/mapped\[0\]\.value!=='hero'/);
+ assert.equal(contract.tables.find(t=>t.name==='lrunes_blocks').publicRead,'never');
+ assert(!tables.includes('lrunes_blocks'));
+ assert(!code.includes("'silver.lrunes_blocks'"));
 });
 test('LRS controls only its own connection binding; no LOC/LAS credential fallback',()=>{
  const worker=read('index.mjs');
