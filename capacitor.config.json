@@ -1,0 +1,9 @@
+{
+  "appId": "cc.lo3rwang.lrs.mobile",
+  "appName": "LunaRunes",
+  "webDir": "dist/cloudflare",
+  "server": {
+    "hostname": "localhost",
+    "iosScheme": "capacitor"
+  }
+}
