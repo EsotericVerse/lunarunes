@@ -7,19 +7,14 @@ import {readLrsPublicRows} from './lrs-database.mjs';
 const TABLE_FIELDS=Object.freeze({
   'silver.runes':new Set(Object.keys(LRS_CARD_RUNE66_FIELDS)),
   'silver.runes_etc':new Set(['rune_id','dir','type','current_moon','desc']),
-  'silver.runes_group':new Set(['group_id','english_name','desc','quality','style','runeslist']),
-  'silver.lrunes_blocks':new Set([
-    'uid','page_name','block_eyebrow','block_title','block_subtitle',
-    'block_text','block_order','block_entity','block_image'
-  ])
+  'silver.runes_group':new Set(['group_id','english_name','desc','quality','style','runeslist'])
 });
 const FILTER_FIELDS=Object.freeze({
   'silver.runes':new Set(['rune_id','group_name']),
   'silver.runes_etc':new Set(['rune_id','dir','type','current_moon']),
-  'silver.runes_group':new Set(['group_id']),
-  'silver.lrunes_blocks':new Set(['page_name'])
+  'silver.runes_group':new Set(['group_id'])
 });
-const LIMITS=Object.freeze({'silver.runes':67,'silver.runes_etc':20,'silver.runes_group':9,'silver.lrunes_blocks':8});
+const LIMITS=Object.freeze({'silver.runes':67,'silver.runes_etc':20,'silver.runes_group':9});
 const HEADERS={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'};
 const response=(data,status)=>new Response(JSON.stringify(data),{status,headers:HEADERS});
 function invalid(){return response({error:'Invalid LRS public Rune query'},400);}
@@ -47,11 +42,6 @@ export function publicRuneQuery(body){
     if(typeof item.value==='string'&&item.value.length>70)return null;
     mapped.push({column:item.column,op:item.operator,value:item.value});
   }
-  // LRS's public Hero reader can only read its own Hero, never arbitrary
-  // editable blocks. The LOC backend still enforces the final public ACL.
-  if(table==='silver.lrunes_blocks'&&(
-    mapped.length!==1||mapped[0].column!=='page_name'||
-    mapped[0].op!=='eq'||mapped[0].value!=='hero'))return null;
   const orders=query.orders??[];
   if(!Array.isArray(orders)||orders.length>2||
     orders.some(o=>!o||typeof o!=='object'||!allowed.has(o.column)||
