@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * LunaRunes: pinned, offline asset outputs for independent Rune Web hosting
- * and real file artifacts consumed by LunArcus' existing IPA workflow.
- * This intentionally does not download effects, build an IPA, or touch LOC.
+ * and standalone native files assembled by LRS's own iOS build.
+ * This script only exports art; the separate LRS iOS workflow builds the IPA.
  */
 import {createHash} from 'node:crypto';
 import {copyFile,cp,mkdir,readFile,readdir,rm,rename,writeFile} from 'node:fs/promises';
