@@ -27,7 +27,7 @@ import {createDailyModule} from 'lrs/daily';       // lrs:daily
 // const draw = createCardModule(createLocRuneCardDialect());
 ```
 
-These are import contracts, not a claim that LOC already installs an independently released LRS package. The package is still undergoing migration and is **not published to production**.
+These are source import contracts, not a claim of an independently published npm package. LRS's standalone Worker deployment is separate from npm package publication and from LOC's version-pinned consumption.
 
 The package `files` whitelist excludes generated Web output, immutable artwork, Effekseer effect binaries and WASM. 3D/React/Sharp dependencies are optional peers or project build-only dependencies, not required for a consumer of the pure `lrs/card` module.
 
