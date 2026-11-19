@@ -4,6 +4,8 @@
 
 優先視任務使用：`art-direction`、`game-ui-ux`、`game-feel`、`card-experience`、`effekseer-vfx`、`3d-rendering`、`game-performance`、`scene-blueprint`、`game-rules`、`life-simulation`。其他已有技能按需使用，不自動移除。
 
+影片／MV 與音樂愛情故事需要轉為可剪輯影片時，才選用 [hyperframes](skills/hyperframes/SKILL.md)，再依任務讀取外部官方規範；一般遊戲運作、純文字創作與網站建置不觸發。
+
 台灣繁體中文說明：`zh-tw-writing`。原創符文文字與美感由作者決定。
 
 外部參考索引：https://github.com/sraodev/awesome-opensource-ai-cheat-sheets
