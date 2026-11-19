@@ -570,3 +570,146 @@
   .runes-home-hero.runes-home-hero--side{grid-template-columns:minmax(0,1fr)}
   .runes-home-hero--side picture,.runes-home-hero--side .runes-home-hero-copy{grid-column:1;grid-row:auto}
 }
+
+/* lrunes Scope editorial layout — scoped to the Rune homepage only.
+   Keep the author-owned Hero HTML, original card art and shared LOC tokens. */
+.runes-home{
+  --runes-prose-width:68ch;
+}
+.runes-home .runes-home-hero-copy{
+  width:min(100%,42rem);
+  gap:clamp(.6rem,1.5vw,1rem);
+}
+.runes-home .home-title-row{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.4rem;
+}
+.runes-home .home-title-row>.loc-subtitle{
+  display:block;
+  max-width:38ch;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  line-height:1.55!important;
+  -webkit-line-clamp:unset;
+  line-clamp:unset;
+}
+.runes-home .runes-home-hero-copy .runes-home-body{
+  gap:.55rem;
+  max-width:var(--runes-prose-width);
+}
+.runes-home .runes-home-hero-copy .runes-home-body>p{
+  max-width:60ch;
+  margin:0;
+  overflow-wrap:anywhere;
+  text-wrap:pretty;
+}
+.runes-home .runes-home-body>p:has(>br:only-child){display:none}
+.runes-home .runes-home-body a{
+  display:inline-block;
+  margin:.1rem .25rem .25rem 0;
+  padding:.25rem .55rem;
+  border:1px solid rgba(239,242,255,.32);
+  border-radius:var(--loc-ui-radius-md);
+  background:rgba(7,11,24,.35);
+  color:#f7f8ff;
+  font-size:.88em;
+  line-height:1.5;
+  text-decoration:none;
+  overflow-wrap:anywhere;
+}
+.runes-home .runes-home-body a:is(:hover,:focus-visible){
+  border-color:rgba(239,242,255,.8);
+  background:rgba(7,11,24,.62);
+  text-decoration:underline;
+  text-underline-offset:.2em;
+}
+.runes-home .home-section-heading{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.35rem;
+  max-width:var(--runes-prose-width);
+}
+.runes-home .home-section-heading>h2{
+  display:block;
+  margin:0;
+  padding:0 0 .25rem;
+  border-bottom:0;
+}
+.runes-home .home-section-heading>.loc-subtitle{
+  max-width:var(--runes-prose-width);
+  margin:0!important;
+  font-weight:400;
+}
+.runes-home .runes-reading-flow .basic-item h3{
+  margin:0;
+  color:var(--loc-heading);
+  font-size:clamp(1rem,1.5vw,1.16rem);
+  line-height:1.5;
+  font-weight:700;
+}
+.runes-home .runes-reading-flow .basic-item p{
+  margin:0;
+  max-width:46ch;
+  color:var(--loc-muted);
+  font-size:.95rem;
+  line-height:1.8;
+  text-wrap:pretty;
+}
+.runes-home .runes-home-intro-copy p{
+  max-width:var(--runes-prose-width);
+  text-wrap:pretty;
+}
+.runes-home .runes-review-lead{
+  margin:0;
+  color:var(--loc-muted);
+  font-size:.94rem;
+  line-height:1.75;
+}
+.runes-home .runes-review-grid{
+  grid-template-columns:minmax(0,1fr);
+  gap:0;
+}
+.runes-home .runes-review-item{
+  display:block;
+  padding:0;
+  border-right:0;
+  border-bottom:1px solid var(--loc-line);
+  counter-increment:none;
+}
+.runes-home .runes-review-item::before{content:none}
+.runes-home .runes-review-item summary{
+  cursor:pointer;
+  padding:1rem .15rem;
+  color:var(--loc-heading);
+  line-height:1.5;
+}
+.runes-home .runes-review-item summary::marker{color:var(--loc-accent)}
+.runes-home .runes-review-item summary strong{
+  display:inline;
+  margin:0;
+  color:var(--loc-heading);
+  font-size:1.04rem;
+}
+.runes-home .runes-review-item summary:focus-visible{
+  outline:2px solid var(--loc-accent);
+  outline-offset:2px;
+}
+.runes-home .runes-review-item>p{
+  max-width:var(--runes-prose-width);
+  margin:0 0 1.2rem 1.1rem;
+  color:var(--loc-text);
+  font-size:.96rem;
+  line-height:1.85;
+  text-wrap:pretty;
+}
+@media(max-width:620px){
+  .runes-home .home-title-row{gap:.3rem}
+  .runes-home .runes-home-hero-copy{width:100%}
+  .runes-home .runes-home-body a{padding:.28rem .5rem}
+  .runes-home .runes-reading-flow .basic-item p{font-size:.94rem}
+  .runes-home .runes-review-item>p{margin-left:0}
+}

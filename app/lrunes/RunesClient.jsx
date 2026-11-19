@@ -88,7 +88,7 @@ export default function RunesClient(){
       <div className="home-section-heading">
         <p className="loc-eyebrow">Explore LunaRunes</p>
         <h2 id="runes-home-entry-title">從這裡開始</h2>
-        <p className="loc-subtitle">抽牌、每日符文或圖鑑，選擇你想進入的方式。</p>
+        <p className="loc-subtitle">抽取符文、閱讀每日指引，或從圖鑑探索六十六符。</p>
       </div>
       <RuneCardEntryBubbles />
     </section>
@@ -119,31 +119,32 @@ export default function RunesClient(){
         <p className="loc-eyebrow">Reading & Review</p>
         <h2>判讀與回測結果</h2>
       </div>
+      <p className="runes-review-lead">六個閱讀主題，點選標題即可展開完整說明。</p>
       <div className="runes-review-grid" aria-label="判讀與回測結果說明">
-        <article className="runes-review-item">
-          <strong>天時一直在改變</strong>
+        <details className="runes-review-item">
+          <summary><strong>天時一直在改變</strong></summary>
           <p>月之符文由於有天時設定（當前月相與卡片月相的交互作用），所以每次的判讀跟回測結果都可能會有差異。這是因為外在的時機一直在改變，符文的解析方式必須跟隨時機而動，才不會有跟不上時代的結果狀況。</p>
-        </article>
-        <article className="runes-review-item">
-          <strong>符文推演的是可能性</strong>
+        </details>
+        <details className="runes-review-item">
+          <summary><strong>符文推演的是可能性</strong></summary>
           <p>而符文只是推演出未來的可能性，將一片完全未知的未來，設定好一個風格濾鏡，方便你作不同解度的切入解析。</p>
-        </article>
-        <article className="runes-review-item">
-          <strong>命運仍然在你手上</strong>
+        </details>
+        <details className="runes-review-item">
+          <summary><strong>命運仍然在你手上</strong></summary>
           <p>命運的掌控始終在你手上。符文並不會替你做下決定，也不會武斷認為一定可以或一定不可以。只是提供一個解析方向，方便你在完全沒有頭緒的迷霧中，慢慢找到適合自己的方式去處理跟面對。</p>
-        </article>
-        <article className="runes-review-item">
-          <strong>回測不是把結果刷到滿意</strong>
+        </details>
+        <details className="runes-review-item">
+          <summary><strong>回測不是把結果刷到滿意</strong></summary>
           <p>當然可以一直回測，如果你只是想要回測直到結果滿意，當然可以，但真正的命運並不會讓你滿意。命運即是如此。</p>
-        </article>
-        <article className="runes-review-item">
-          <strong>符文不替你叫醒自己</strong>
+        </details>
+        <details className="runes-review-item">
+          <summary><strong>符文不替你叫醒自己</strong></summary>
           <p>如果你選擇裝睡不肯醒來，符文也沒有義務要提醒你鬧鐘設定，也不會武斷的叫你放棄或選擇繼續，只是提供一個解析的方式來做參考。</p>
-        </article>
-        <article className="runes-review-item">
-          <strong>符文不是神秘學權威</strong>
+        </details>
+        <details className="runes-review-item">
+          <summary><strong>符文不是神秘學權威</strong></summary>
           <p>月之符文不是神秘學權威，也不要求你把抽牌結果當成不可質疑的真理。它是一套以符文本義、卡牌方向與月相交互提供解析角度的指引籤詩；你可以把結果當作參考、提示，或重新整理問題的起點。接受或不接受、採取什麼行動，仍然是你的選擇。</p>
-        </article>
+        </details>
       </div>
     </section>
   </section>;
