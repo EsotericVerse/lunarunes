@@ -3,11 +3,11 @@ import RunesClient from '../../app/lrunes/RunesClient.jsx';
 import RuneCardHub from '../../app/lrunes/RuneCardHub.jsx';
 import {ScopeLink} from './runtime/rune-navigation.jsx';
 import {pageFromPath} from './runtime/rune-routes.mjs';
-import GameBoard from '../../modules/lrs/boardgame/GameBoard.jsx';
 // These are LOC's original 2D/3D presentation components, not a new gallery.
 const RuneUnifiedView=lazy(()=>import('../../app/lrunes/RuneUnifiedView.jsx'));
 const RuneArtNav=lazy(()=>import('../../app/lrunes/Rune3DNav.jsx'));
 const RuneLocalDailyPage=lazy(()=>import('./runtime/rune-local-daily.jsx'));
+const GameBoard=lazy(()=>import('../../modules/lrs/boardgame/GameBoard.jsx'));
 
 // Preserve the exact body of LOC's original app/card/page.jsx. Its Next.js
 // metadata belongs to LOC, while the LRS Web document owns its own title.

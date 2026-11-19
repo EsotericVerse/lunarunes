@@ -8,9 +8,6 @@ import './game-board.css';
 
 const LETTERS=['A','B','C','D'];
 const PHASES={opening:'起手準備',event:'事件回應',resonance:'共振行動',duel:'決勝回合',finished:'牌局結束'};
-const ROLES=[{key:'self',name:'回復自身',description:'德 +2'},
-  {key:'attack',name:'干預對手',description:'對手德 −2'}];
-
 export default function GameBoard(){
   const rules=useMemo(()=>localTabletopRules(),[]);
   const [count,setCount]=useState(2);
@@ -62,7 +59,7 @@ export default function GameBoard(){
         <button type="button" className="loc-button primary" onClick={startGame}>開始遊戲</button>
       </section>:<>
         <div className="lrg-topline">
-          <span>第 {game.round} 回合／8</span>
+          <span>{stage==='duel'?'第 9 回合 · 延長決勝':`第 ${game.round} 回合／${rules.rounds.length}`}</span>
           <strong>{PHASES[stage]||stage}</strong>
           <button type="button" className="loc-button" onClick={startGame}>重新開局</button>
         </div>
@@ -111,7 +108,7 @@ export default function GameBoard(){
             onClick={()=>action('resolveEvent')}>全部確認 · 判定事件</button>:null}
         </section>:null}
         {(stage==='resonance'||stage==='duel')&&player?<section className="lrg-panel">
-          <h2>玩家 {LETTERS[game.active]} 的共振行動</h2>
+          <h2>玩家 {LETTERS[game.active]} · {stage==='duel'?'延長決勝':'共振'}行動</h2>
           <p>選擇回復自己或干預其他玩家。每名參與者依序執行一次。</p>
           <div className="lrg-actions">
             <button type="button" className="loc-button primary"
