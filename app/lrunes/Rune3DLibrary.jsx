@@ -6,7 +6,6 @@ import {selectRows} from '../loc/db/db-query.mjs';
 import RuneArtStage from './visual/RuneArtStage';
 import RuneCardInfo from './RuneCardInfo';
 import EffekseerStage from '../../modules/lrs/rune/vfx/EffekseerStage';
-import RuneExtrudedGlyph from '../../modules/lrs/rune/vfx/RuneExtrudedGlyph';
 import {RUNE_GLYPH_STYLES,runeGlyphProfile} from '../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
 import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../modules/lrs/rune/rune-directory.mjs';
 import {navigationHref} from '../modular/routing/scope-registry.js';
@@ -20,6 +19,7 @@ import '../../modules/lrs/rune/styles/rune-chamber.css';
 
 // The room is loaded only when a visitor opens a rune; never render 66 canvases.
 const RuneChamber=lazy(()=>import('../../modules/lrs/rune/RuneChamber.jsx'));
+const RuneExtrudedGlyph=lazy(()=>import('../../modules/lrs/rune/vfx/RuneExtrudedGlyph'));
 
 // Nine canonical groups, eight runes each except the last group, which also
 // carries rune 0 (德 / Rune Zero, excluded from card draw): 0, 65, 66.
@@ -29,7 +29,7 @@ const RuneChamber=lazy(()=>import('../../modules/lrs/rune/RuneChamber.jsx'));
 const GROUPS=Object.freeze([
   {id:1,name:'靈魂'},{id:2,name:'連結'},{id:3,name:'生命'},{id:4,name:'自然'},
   {id:5,name:'礦物'},{id:6,name:'元素'},{id:7,name:'秩序'},{id:8,name:'無序'},
-  {id:9,name:'特殊'}
+  {id:9,name:'系統'}
 ]);
 const RUNE_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords','extra_rules','extra_notes','rune_evolution_history','myth_story','soul_question','practice_challenge','ritual_advice','harmony_advice');
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
@@ -196,7 +196,7 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
     <header className="rune-3d-header">
       <p className="loc-eyebrow">LUNARUNES · 符文圖鑑</p>
       <h1>{group?group.name+'組 · 3D 符文圖鑑':'六十六枚符文 · 3D 圖鑑'}</h1>
-      <p>{group?'先瀏覽群組介紹與符文卡片；選擇任一枚後，才展開該符文專屬的 Effekseer 特效。':
+      <p>{group?'先瀏覽群組介紹與符文卡片；選擇任一枚，進入專屬 3D 展室，亦可切換原創特效。':
         '以九個群組的原創圖片為入口，展開符文畫廊，不再使用星系式選單。'}</p>
     </header>
     {status==='loading'?<p className="rune-3d-library-message" role="status">正在載入此群組的符文卡片……</p>:null}
@@ -208,7 +208,7 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
     {status==='ready'&&group&&error?<p className="rune-3d-atlas-data-warning" role="status">{error}</p>:null}
     {status==='ready'&&!group?<section className="rune-3d-atlas-gallery" aria-label="九大群組原創圖片">
       <RuneArtStage mode="groups" items={groups} onSelect={selectGroup}
-        galleryTitle="九大符文群組 · 66 種獨立特效" galleryDescription="九組只是分類，先瀏覽群組介紹與符文卡片，點選任一枚才播放其獨立 3D 特效。"/>
+        galleryTitle="九大符文群組 · 66 枚符文展室" galleryDescription="九組各有不同展室風格，選擇一枚符文才載入專屬 3D 房間。"/>
     </section>:null}
     {status==='ready'&&group?<>
       <nav className="rune-3d-atlas-back" aria-label="返回群組畫廊">
@@ -270,7 +270,9 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
         <div className={'rune-effekseer-glyph rune-effekseer-glyph--'+currentGlyph.font+' rune-3d-atlas-glyph-model'}
           data-glyph-family={currentGlyph.family} data-glyph-finish={currentGlyph.finish}
           style={{'--rune-ink':currentGlyph.ink}} data-glyph-ink={currentGlyph.ink}>
-          <RuneExtrudedGlyph key={'preview-'+current.rune_id} word={runeName(current).slice(0,1)} profile={currentGlyph}/>
+          <Suspense fallback={<span className="rune-3d-glyph-fallback">{runeName(current).slice(0,1)}</span>}>
+            <RuneExtrudedGlyph key={'preview-'+current.rune_id} word={runeName(current).slice(0,1)} profile={currentGlyph}/>
+          </Suspense>
         </div>
         <div className="rune-3d-atlas-glyph-copy">
           <p className="loc-eyebrow">3D 字型 · 固定檢視</p>
