@@ -4,14 +4,15 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 
 ## 創作與功能
 - 可抽符文為 1–66；第零符「德」不抽。原始卡面、四方向位、月相和已定義的規則不擅改。
-- `lrs:rune`：圖像、Hero、3D、Effekseer；`lrs:card`：抽牌；`lrs:daily`：每日符文與紀錄；`lrs:boardgame`：遊戲。
+- `lrs:rune`：圖像、Hero、3D、Effekseer；`lrs:card`：抽牌；`lrs:daily`：每日符文與紀錄；`lrs:boardgame`：遊戲及獨立模擬人生核心。
 - 按作者指定意象與實際畫面直接修改；需要時才按需查閱 `.agents/SKILL-INDEX.md` 和相關 Skills。不要一次載入全部。
 - 不以自編測試、主觀評分、政策或文書替代作者實際驗收；遇到錯誤直接修正，不改符文定義。
 
 ## 專案隔離與部署
 - 只處理 `EsotericVerse/lunarunes`。不修改或觸發 LOC／LAS 的程式、資料庫、預覽、部署或 IPA。
-- Web 僅由 LRS GitHub Actions 建置、GitHub Pages 發布：`main` 正式發布，PR 只驗證建置，不部署 Preview。禁止 Cloudflare Worker／DNS／Access／Token／Secret／網域等任何 CF 操作或變更。
-- IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。GitHub Pages 只供靜態服務，不能假裝有 SQL API；需要後端資料時必須另外驗證可用來源。
+- LRS Web 以 GitHub main 為唯一原始碼來源；Cloudflare Workers Builds 負責正式版及分支 Preview。正式版 Build 留空，Deploy 為 `npm run deploy`；預覽 Build 為 `npm run build:pages`，Preview 為 `npx wrangler preview`。
+- `wrangler.json` 指向既有 `lunarunes` Worker；僅保留 LRS 靜態資源及 `/api/lrs/public-read`。不擅自改 Cloudflare DNS／Access／Token／Secret／網域設定，不自行 Grant 或延長授權。
+- IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。iOS 素材隨 App 打包，Web 使用獨立已發布素材。
 - 不設額外測試或檢查 Workflow；所有 Access 授權上限六小時，不自行 Grant、延長、提升權限或使用跨 Repo 大權杖。
 - 保留原始素材、著作權與第三方授權；著作權修改由作者決定。
 

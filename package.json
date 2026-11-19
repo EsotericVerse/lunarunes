@@ -10,7 +10,8 @@
     "preview:web": "vite preview --config web/vite.config.mjs",
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
     "build:pages": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-pages.mjs",
-    "build:ipa": "npm run build:pages"
+    "build:ipa": "npm run build:pages",
+    "deploy": "npm run build:pages && wrangler deploy"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",

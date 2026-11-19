@@ -1,15 +1,16 @@
 # LunaRunes（月符／符韻）
 
-獨立符文與遊戲專案。
+LRS 獨立符文與遊戲專案；LRS Web 由 Cloudflare Workers Builds 對接 `EsotericVerse/lunarunes`，不與 LOC、LAS 共用部署。
 
 - 本機開發：`npm ci`、`npm run dev:web`
-- Web：GitHub Actions 唯一建置／發布管道，`main` 經 GitHub Pages 正式發布，PR 僅建置、不發布 Preview
-- 本機完整 Web 打包：`npm run build:pages`（`dist/pages`）
-- IPA：GitHub Actions「LRS IPA」手動執行（目前產出未簽署 IPA，使用本機打包素材）
-- Cloudflare：LRS 無操作權，不發布 Worker、不讀寫 DNS／網域／權杖／憑證或其他 CF 設定
+- Web 唯一建置基礎：`npm run build:pages`（輸出 `dist/pages`，包含 Vite 與原始素材）
+- Cloudflare 正式分支 `main`：Build command 留空；Deploy command `npm run deploy`（內含一次 `build:pages`，再由 Wrangler 發布）
+- Cloudflare Preview：Build command `npm run build:pages`；Preview command `npx wrangler preview`
+- Cloudflare Worker：`lunarunes`，設定在 `wrangler.json`；Web API `/api/lrs/public-read`，資料庫密鑰只存在 Worker runtime Secret
+- LRS 網站：`lrs.lo3rwang.cc`，由使用者在 Cloudflare 管理的 DNS CNAME 指向 `lunarunes.esotericverse.workers.dev`
+- IPA：GitHub Actions「LRS IPA」手動打包獨立未簽署 IPA，使用本機素材，不透過 Web 路徑替代
+- GitHub Actions 不再自動發布另一套 Web／GitHub Pages；LRS 不操作 LOC、LAS，也不跨 Repo 觸發
 
-GitHub Pages 是靜態託管服務，不支援舊 Worker 的 `/api/lrs/public-read` POST／SQL 功能；此功能需獨立的正式資料來源才能恢復，不得假稱已由 Pages 取代。既有本機桌遊和裝置內每日符文紀錄不依賴該 API。原始卡面、Effekseer/WASM 素材隨本 Repo 自有網站與 IPA 發布。
+`assets/` 與 `public/vendor/` 保留素材原檔；`modules/lrs/` 保留符文與遊戲引擎。模擬人生 `life-engine.mjs` 獨立於既有桌遊。
 
-符文與遊戲：`modules/lrs/`；素材：`assets/`、`public/vendor/`。
-
-LOC、LAS、LRS 各自獨立，不跨 Repo 觸發部署或改動 DNS。
+Worker 已設定的 `LRS_DATABASE_URL` 仍由 Cloudflare runtime Secret 管理，切勿寫入 Repository。建置成功、GitHub Build Trigger 與公開 API 可用性仍需在真實部署後分別驗證。
