@@ -11,5 +11,6 @@
       "/api/*"
     ]
   },
-  "previews": {}
+  "previews": {},
+  "workers_dev": false
 }
