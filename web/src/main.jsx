@@ -12,15 +12,14 @@ import '../../app/styles/home-runes.css';
 import '../../app/styles/runes.css';
 import './style.css';
 
-// GitHub Pages is static. A real LRS public-read adapter can be configured
-// only via an independently provisioned, explicitly approved HTTPS endpoint;
-// Pages itself cannot process POST/SQL. Never expose SQL credentials.
+// Browser Web reads its own LRS Worker API; Capacitor may use a separately
+// configured HTTPS read endpoint. Never expose SQL credentials in the browser.
 bindRunePublicReadPort(async(table,query)=>{
   // AbortSignal belongs to this browser request, never to the public-read
   // JSON payload or Worker query contract.
   const {signal,...publicQuery}=query||{};
   const endpoint=runePublicReadUrl(window.location.protocol);
-  if(!endpoint)throw new Error('GitHub Pages 不提供資料庫 API；符文文字資料尚未接入獨立的公開讀取來源。');
+  if(!endpoint)throw new Error('LRS 公開資料端點尚未設定；請確認 Worker 網域或原生 App 的 HTTPS 讀取位址。');
   const response=await fetch(endpoint,{
     method:'POST',credentials:'omit',cache:'no-store',redirect:'error',
     headers:{accept:'application/json','content-type':'application/json'},
