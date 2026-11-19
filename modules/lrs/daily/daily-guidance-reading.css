@@ -1,0 +1,41 @@
+/* Presentation-only LunaRunes daily guidance. No runtime resource or cache. */
+.lrs-daily-reading{
+  width:100%;min-width:0;max-width:1060px;margin:clamp(1rem,3vw,1.8rem) auto;
+  padding:clamp(1rem,3vw,1.9rem);
+  border:1px solid var(--loc-gold-border-soft,var(--loc-line));
+  border-radius:var(--loc-ui-radius-lg,20px);
+  background:var(--loc-panel);
+  color:var(--loc-text);
+}
+.lrs-daily-reading-heading{display:flex;gap:1rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:1.25rem}
+.lrs-daily-reading-heading>div{max-width:65ch}
+.lrs-daily-reading-heading h2{margin:.3rem 0 .5rem;color:var(--loc-heading);font:700 clamp(1.35rem,3vw,1.8rem)/1.3 "Noto Serif TC","Songti TC",serif}
+.lrs-daily-reading-heading p:last-child{margin:0;color:var(--loc-muted);line-height:1.75}
+.lrs-daily-reading-summary{display:grid;grid-template-columns:minmax(125px,190px) minmax(0,1fr);align-items:center;gap:clamp(.85rem,2.5vw,1.6rem);padding:0 0 1.4rem;border-bottom:1px solid var(--loc-line)}
+.lrs-daily-reading-art{width:100%;aspect-ratio:1;display:grid;place-items:center;border-radius:14px;background:var(--loc-panel-2);overflow:hidden}
+.lrs-daily-reading-art img{max-width:88%;max-height:88%;width:auto;height:auto;object-fit:contain}
+.lrs-daily-reading-identity{min-width:0}
+.lrs-daily-reading-identity h3{margin:.3rem 0 1rem;font:700 clamp(1.15rem,2.5vw,1.5rem)/1.4 "Noto Serif TC","Songti TC",serif;color:var(--loc-heading)}
+.lrs-daily-reading-identity dl{display:flex;flex-wrap:wrap;gap:.6rem 1.3rem;margin:0}
+.lrs-daily-reading-identity dl>div{display:grid;gap:.15rem}
+.lrs-daily-reading-identity dt{font-size:.79rem;color:var(--loc-muted)}
+.lrs-daily-reading-identity dd{margin:0;color:var(--loc-text);font-weight:650}
+.lrs-daily-reading-identity .lrs-daily-reading-context{font-size:.85rem;line-height:1.7;color:var(--loc-muted);margin:1rem 0 0;max-width:60ch}
+.lrs-daily-guidance{min-width:0;max-width:100%}
+.lrs-daily-guidance-list{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.lrs-daily-guidance-item{display:grid;grid-template-columns:2.3rem minmax(0,1fr);gap:clamp(.7rem,2vw,1.1rem);padding:clamp(1.05rem,2vw,1.45rem) 0;border-bottom:1px solid var(--loc-line)}
+.lrs-daily-guidance-item:last-child{border-bottom:0}
+.lrs-daily-guidance-number{font:650 .79rem/1.6 system-ui,sans-serif;letter-spacing:.06em;color:var(--loc-gold,var(--loc-accent))}
+.lrs-daily-guidance-copy{min-width:0;max-width:72ch}
+.lrs-daily-guidance-copy h3{margin:0 0 .45rem;font:700 1.05rem/1.5 "Noto Serif TC","Songti TC",serif;color:var(--loc-heading)}
+.lrs-daily-guidance-copy p{margin:0;font-size:clamp(.96rem,1.5vw,1.06rem);line-height:1.88;white-space:pre-wrap;overflow-wrap:anywhere;text-wrap:pretty;color:var(--loc-text)}
+.lrs-daily-guidance-note,.lrs-daily-guidance-empty{margin:1rem 0 0;max-width:65ch;line-height:1.7;color:var(--loc-muted);font-size:.91rem}
+.rune-art-daily-trigger{display:flex;justify-content:center;margin:1rem auto}
+.rune-art-daily-trigger .rune-skin-btn{min-height:48px;min-width:min(100%,240px)}
+.rune-art-result-body .lrs-daily-guidance,.rune-3d-modal .lrs-daily-guidance{padding:0 .35rem}
+.rune-art-result-body .lrs-daily-guidance-copy p,.rune-3d-modal .lrs-daily-guidance-copy p{color:var(--loc-text)}
+@media(max-width:600px){
+  .lrs-daily-reading-summary{grid-template-columns:1fr}
+  .lrs-daily-reading-art{width:min(100%,175px);margin:0 auto}
+  .lrs-daily-guidance-item{grid-template-columns:1.8rem minmax(0,1fr)}
+}

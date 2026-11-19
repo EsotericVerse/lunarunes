@@ -10,13 +10,12 @@ import useNativeNavigation from '../../modular/use-native-navigation';
 import ScopeLink from '../../modular/ScopeLink';
 import {loadDrawCards,randomIndex} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
+import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../modules/lrs/daily/DailyGuidanceReading.jsx';
 import '../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../modules/lrs/rune/art/rune-art-layout.css';
 
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
 const CARD_ROTATION=[0,90,-90,180];
-const FIELDS=[['sit_q','狀況形容'],['sit_a','狀況表達'],
-  ['daily_r','每日占卜提醒'],['daily_g','每日占卜引導'],['daily_b','每日占卜祝福']];
 export default function RuneDaily3D({presentationSwitcher=null}){
   const native=useNativeNavigation();
   const [moon,setMoon]=useState(()=>realMoonPhase());
@@ -40,28 +39,25 @@ export default function RuneDaily3D({presentationSwitcher=null}){
     const index=randomIndex(4);
     try{
       const [card]=await loadDrawCards([{runeNumber,dir:index+1}],{
-        staticTypes:['direction'],moonTypes:FIELDS.map(([type])=>type),currentMoon
+        staticTypes:['direction'],moonTypes:DAILY_GUIDANCE_FIELDS.map(([type])=>type),currentMoon
       });
       if(!card)throw new Error('每日符文資料尚未就緒。');
       if(mounted.current){
         setDraw({card,directionIndex:index,
           direction:DIRECTIONS[index],birth:Date.now(),moon:currentMoon});
         // Daily has precisely one card, so reveal canonical details immediately.
-        setDetails(true);
+        setDetails(false);
       }
     }catch(e){if(mounted.current)setError('每日指示讀取失敗：'+String(e?.message||e));}
     finally{lock.current=false;if(mounted.current)setBusy(false);}
   }
-  const fields=draw?FIELDS.map(([key,label])=>({
-    label,text:String(draw.card?.rune_etc?.[key]?.[draw.directionIndex+1]||'').trim()
-  })).filter(field=>field.text):[];
   return <main className="loc-next-main" data-rune-lab="daily3d">
     <div className="loc-panel rune-skin-lab rune-art-shell">
     {presentationSwitcher}
     <header className="rune-art-header">
       <p className="loc-eyebrow">LunaRunes · Living Daily</p>
       <h1>每日符文 · 月光指示</h1>
-      <p>每日指示獨立呈現。以當下真實月相、符文與位向精確查詢原有五項文字。</p>
+      <p>抽取一枚符文，依當下真實月相與方向閱讀五項原始指引。結果會直接排在舞台下方，無須先開啟視窗。</p>
     </header>
     <nav className="rune-art-toolbar">
       <span className="rune-art-toolbar-label">真實月相：{moon}　·　每日指示</span>
@@ -70,10 +66,13 @@ export default function RuneDaily3D({presentationSwitcher=null}){
       <RuneArtStage mode="daily" items={draw?[draw]:[]}
         onSelect={()=>setDetails(true)} onBackgroundClick={!busy&&!draw?drawDaily:undefined}/>
       <div className="rune-art-stage-label" role="status">
-        {busy?'正在讀取今日符文與原始指引……':draw?'今日符文已亮相，指引將直接呈現；點選卡片可重新閱讀。':'輕觸月光召喚每日符文'}
+        {busy?'正在讀取符文與原始指引……':draw?'指引已呈現於下方；點選卡片可集中閱讀。':'輕觸月光，或使用下方按鈕抽取每日符文。'}
       </div>
     </section>
+    {!draw?<div className="rune-art-daily-trigger"><button type="button" className="rune-skin-btn primary"
+      onClick={drawDaily} disabled={busy}>{busy?'正在讀取…':'抽取每日符文'}</button></div>:null}
     {error?<p className="rune-skin-error" role="alert">{error}</p>:null}
+    {draw?<DailyGuidanceReading item={draw} onFocus={()=>setDetails(true)}/>:null}
     <div className="rune-art-footer">
       <nav className="rune-skin-controls" aria-label="符文模式">
         <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','',native)} native={native}>回符文首頁</ScopeLink>
@@ -110,12 +109,8 @@ export default function RuneDaily3D({presentationSwitcher=null}){
               </div>
             </div>
             <div className="rune-art-daily-fields" aria-label="每日五項指示">
-              {fields.map(field=><article key={field.label}>
-                <h3>{field.label}</h3><p>{field.text}</p>
-              </article>)}
+              <DailyGuidanceFields card={draw.card} directionIndex={draw.directionIndex}/>
             </div>
-            {Number(draw.card.rune_id)>=65&&fields.length<5?
-              <p className="rune-art-daily-caveat">特殊符文尚未建置全部每日母資料，僅展示實際存在的原始文字。</p>:null}
           </div>
         </section>
       </div>,document.body
