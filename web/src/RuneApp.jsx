@@ -21,7 +21,7 @@ export default function RuneApp(){
   return <div className="lrs-original-scope" data-lrs-original-pages="true">
     {/* LOC's outer global NAV and Footer are intentionally NOT mounted. */}
     <Suspense fallback={<main className="loc-next-main"><p className="scope-status" role="status">正在載入月之符文…</p></main>}>
-      {page==='home'?<main className="loc-next-main"><RunesClient/><nav className="runes-home-nav lrs-daily-links" aria-label="符文本機紀錄">
+      {page==='home'?<main className="loc-next-main" data-loc-scope="lrunes" data-loc-view="home"><RunesClient/><nav className="runes-home-nav lrs-daily-links" aria-label="符文本機紀錄">
           <ScopeLink className="loc-button" href="/daily/log/">本機每日紀錄</ScopeLink>
           <ScopeLink className="loc-button" href="/daily/trend/">本機紀錄趨勢</ScopeLink>
         </nav></main>

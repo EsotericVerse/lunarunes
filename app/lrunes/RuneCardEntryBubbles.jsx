@@ -4,9 +4,9 @@ import useNativeNavigation from '../modular/use-native-navigation';
 import ScopeLink from '../modular/ScopeLink';
 
 const ENTRIES=Object.freeze([
-  {title:'符文抽牌',description:'同一頁切換 2D 平面卡圖與最新 3D 特效，抽取 1 至 11 枚。',path:'card/duel'},
-  {title:'每日符文',description:'單枚每日指示，可切換 2D／3D。',path:'card/daily'},
-  {title:'符文圖鑑',description:'九組符文及 66 枚原創卡面，可切換 2D／3D。',path:'card/list'}
+  {title:'符文抽牌',description:'從一枚到十一枚，探索符文本義、卡牌方向與月相交互。',path:'card/duel'},
+  {title:'每日符文',description:'以一枚符文記錄當下，留下可回看的每日線索。',path:'card/daily'},
+  {title:'符文圖鑑',description:'走進九個群組，逐張欣賞卡面與閱讀六十六符。',path:'card/list'}
 ]);
 export default function RuneCardEntryBubbles(){
   const native=useNativeNavigation();
