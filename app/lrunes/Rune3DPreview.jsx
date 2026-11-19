@@ -14,12 +14,12 @@ import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs'
 import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from '../../modules/lrs/rune/rune-directory.mjs';
 import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from '../../modules/lrs/card/rune-draw-motion.mjs';
 import RuneCardInfo from './RuneCardInfo';
+import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../modules/lrs/daily/DailyGuidanceReading.jsx';
 import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import '../../modules/lrs/rune/styles/skin-lab.css';
 import '../../modules/lrs/rune/vfx/effekseer-stage.css';
 
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
-const DAILY_FIELDS=[['sit_q','狀況形容'],['sit_a','狀況表達'],['daily_r','每日占卜提醒'],['daily_g','每日占卜引導'],['daily_b','每日占卜祝福']];
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
 const RUNE_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords');
 const GROUP_NAMES=['靈魂','連結','生命','自然','礦物','元素','秩序','無序','特殊'];
@@ -80,12 +80,6 @@ function ResultDialog({title,children,onClose}){
     </section>
   </div>,document.body);
 }
-function readDaily(item){
-  return DAILY_FIELDS.map(([key,label])=>({
-    label,text:String(item.card?.rune_etc?.[key]?.[item.directionIndex+1]||'').trim()
-  })).filter(field=>field.text);
-}
-
 export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
   const native=useNativeNavigation();
   const [items,setItems]=useState([]);
@@ -212,7 +206,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
     try{
       const rows=await loadDrawCards([{runeNumber,dir:directionIndex+1}],{
         staticTypes:mode==='daily'?['direction']:[],
-        moonTypes:mode==='daily'?DAILY_FIELDS.map(([key])=>key):['sit_q'],
+        moonTypes:mode==='daily'?DAILY_GUIDANCE_FIELDS.map(([key])=>key):['sit_q'],
         currentMoon,signal:controller.signal
       });
       const card=rows.find(row=>Number(row.rune_id)===runeNumber);
@@ -227,7 +221,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
           setTransferTarget(null);
           setFinished(true);
           setPhase('ready');
-          setResultOpen(true);
+          setResultOpen(false);
         }else{
           const remainingWait=Math.max(0,380-(Date.now()-started));
           if(remainingWait)await new Promise(resolve=>setTimeout(resolve,remainingWait));
@@ -282,7 +276,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
     <header className="rune-3d-header">
       <p className="loc-eyebrow">LunaRunes · 符文顯現</p>
       <h1>{label}</h1>
-      <p>抽中時由巨大符文字或漂浮卡圖登場，專屬 Effekseer 魔法鋪滿舞台，再一起歸位；抽牌規則維持不變。</p>
+      <p>{mode==='daily'?'抽取一枚符文，以真實月相與方向閱讀每日五項原始指引。抽取完成即可在舞台下方直接閱讀。':'抽中時由巨大符文字或漂浮卡圖登場，專屬 Effekseer 魔法鋪滿舞台，再一起歸位；抽牌規則維持不變。'}</p>
     </header>
     <nav className="rune-3d-toolbar" aria-label="顯示與模式切換">
       <span className="rune-3d-toolbar-label">{isList?(group?group.name+'組':'九大群組'):'真實月相：'+moon+' · '+items.length+' 枚'}</span>
@@ -401,6 +395,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
         </>}
     </section>
 
+    {mode==='daily'&&day?<DailyGuidanceReading item={day} onFocus={()=>setResultOpen(true)}/>:null}
     {isList?<div className="rune-3d-footer">
       {group?<button className="rune-skin-btn" type="button" onClick={()=>{setGroup(null);setSelected(null);setFocusedRune(null);}}>← 返回九個群組</button>:null}
       {group?<span>{group.english_name||''}　{group.desc||''}</span>:null}
@@ -440,9 +435,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
           realMoonPhase={day.moon} layout="home" expandKeywords/>
       </div>:null}
       <h3>{mode==='daily'?'每日符文指引':'指引籤詩'}</h3>
-      {day?<div className="rune-3d-daily-fields">
-        {readDaily(day).map(field=><article key={field.label}><h3>{field.label}</h3><p>{field.text}</p></article>)}
-      </div>:<p>{reading}</p>}
+      {day?<DailyGuidanceFields card={day.card} directionIndex={day.directionIndex}/>:<p>{reading}</p>}
       {mode!=='daily'?<button type="button" className="rune-skin-btn" onClick={reset}>開始新抽牌</button>:null}
     </ResultDialog>}
     </div>
