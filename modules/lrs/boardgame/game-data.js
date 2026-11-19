@@ -2,7 +2,7 @@
 // 32 Alpha events (the legacy JS deletion in commit b925b520) and the
 // canonical 66-symbol names. No SQL game-table dependency, no network and
 // no new authoritative rule definitions.
-const CATALOG=[["靈魂","靈魂彩憶界域鏡核","SL"],["連結","向斷封鍊啟分悟誤","ML"],["生命","生老病死心愛語韻","SL"],["自然","樹花葉草根種實枝","NE"],["礦物","金玉晶地石鑽礦塵","ML"],["元素","光暗水火風土雷氣","NE"],["秩序","日月星時辰明空因","OC"],["無序","福運虛夢影幻變滅","OC"]];
+const CATALOG=[["靈魂","靈魂彩憶界域鏡核","SL"],["連結","向斷封鍊啟分悟誤","ML"],["生命","生老病死心愛語韻","SL"],["自然","樹花葉草根種實枝","NE"],["礦物","金玉晶地石鑽礦塵","ML"],["元素","光暗水火風土雷氣","NE"],["秩序","日月星辰明時空因","OC"],["無序","福禍無夢幻緣虛果","OC"]];
 const HISTORIC_EVENTS=[{"id":"E01","name":"記憶","req":["SL","SL"],"desc":"過去重新浮現。"},{"id":"E02","name":"自我懷疑","req":["SL","OC"],"desc":"你開始質疑自己的定義。"},{"id":"E03","name":"真實表達","req":["SL","ML"],"desc":"必須說出真正的想法。"},{"id":"E04","name":"內在映照","req":["SL","NE"],"desc":"環境反映出你的狀態。"},{"id":"E05","name":"誤解","req":["SL","ML"],"desc":"訊息產生偏差。"},{"id":"E06","name":"合作","req":["ML","ML"],"desc":"單獨完成變得困難。"},{"id":"E07","name":"切斷","req":["ML","OC"],"desc":"某條連結必須結束。"},{"id":"E08","name":"重建關係","req":["ML","NE"],"desc":"關係進入新階段。"},{"id":"E09","name":"疾病","req":["SL","NE"],"desc":"系統需要修復。"},{"id":"E10","name":"康復","req":["SL","ML"],"desc":"開始回到正常軌道。"},{"id":"E11","name":"愛","req":["SL","OC"],"desc":"接受某種無法控制的情感。"},{"id":"E12","name":"韻律","req":["SL","NE","ML"],"desc":"找回自己的節奏。"},{"id":"E13","name":"發芽","req":["NE","NE"],"desc":"成長開始。"},{"id":"E14","name":"修剪","req":["NE","ML"],"desc":"去除不必要部分。"},{"id":"E15","name":"等待","req":["NE","OC"],"desc":"時機尚未成熟。"},{"id":"E16","name":"豐收","req":["NE","ML","OC"],"desc":"長期累積開始回收。"},{"id":"E17","name":"建立基礎","req":["ML","ML"],"desc":"穩定優先。"},{"id":"E18","name":"資源不足","req":["ML","NE"],"desc":"必須重新分配。"},{"id":"E19","name":"重建","req":["ML","OC"],"desc":"舊結構失效。"},{"id":"E20","name":"結晶","req":["ML","SL","OC"],"desc":"經驗開始固化。"},{"id":"E21","name":"火花","req":["NE","OC"],"desc":"新變化出現。"},{"id":"E22","name":"風向改變","req":["NE","ML"],"desc":"環境開始轉向。"},{"id":"E23","name":"洪流","req":["NE","NE","OC"],"desc":"變化超出預期。"},{"id":"E24","name":"平衡","req":["NE","SL","ML"],"desc":"多種力量需要協調。"},{"id":"E25","name":"選擇","req":["OC","ML"],"desc":"必須取捨。"},{"id":"E26","name":"時機","req":["OC","NE"],"desc":"不是不能做，而是何時做。"},{"id":"E27","name":"規則","req":["OC","ML","SL"],"desc":"建立新的邊界。"},{"id":"E28","name":"定錨","req":["OC","OC"],"desc":"做出不可逆決定。"},{"id":"E29","name":"偶然","req":["OC","NE"],"desc":"預期外事件發生。"},{"id":"E30","name":"幻象","req":["OC","SL"],"desc":"真假難辨。"},{"id":"E31","name":"空窗","req":["OC","ML"],"desc":"沒有明顯答案。"},{"id":"E32","name":"未知來信","req":["SL","ML","NE","OC"],"desc":"世界要求全面回應。"}];
 const ASPECT={"靈魂":"SL","連結":"ML","生命":"SL","自然":"NE","礦物":"ML","元素":"NE","秩序":"OC","無序":"OC"};
 export const DEFAULT_TABLETOP_CONFIG=Object.freeze({
@@ -27,7 +27,7 @@ export function localTabletopRules(){
     [4,{code:'perfect',label:'完美',delta:2,drawCount:3}]
   ]);
   const rounds=Array.from({length:8},(_,i)=>({
-    round:i+1,phase:i%2===0?'event':'resonance'
+    round:i+1,phase:(i===3||i===7)?'resonance':'event'
   }));
   return {cards,events,resultByCoverage,rounds,config:DEFAULT_TABLETOP_CONFIG};
 }
