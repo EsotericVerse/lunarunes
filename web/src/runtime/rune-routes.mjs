@@ -6,6 +6,9 @@ export function pageFromPath(pathname='/'){
   if(path==='/lrunes')path='/';
   else if(path.startsWith('/lrunes/'))path=path.slice('/lrunes'.length);
   if(path==='/')return 'home';
+  if(path==='/novel/moonwriter')return 'novel-moonwriter';
+  if(/^\/novel\/moonwriter\/[A-Za-z0-9]{8}$/.test(path))
+    return 'novel-moonwriter:'+path.split('/').pop();
   if(path==='/card')return 'card';
   if(path==='/card/duel')return 'duel';
   if(path==='/card/daily')return 'daily';
