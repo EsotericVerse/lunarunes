@@ -7,6 +7,7 @@ import {pageFromPath} from './runtime/rune-routes.mjs';
 const RuneUnifiedView=lazy(()=>import('../../app/lrunes/RuneUnifiedView.jsx'));
 const RuneArtNav=lazy(()=>import('../../app/lrunes/Rune3DNav.jsx'));
 const RuneLocalDailyPage=lazy(()=>import('./runtime/rune-local-daily.jsx'));
+const MoonwriterPage=lazy(()=>import('./reading/MoonwriterPages.jsx'));
 const GameBoard=lazy(()=>import('../../modules/lrs/boardgame/GameBoard.jsx'));
 
 // Preserve the exact body of LOC's original app/card/page.jsx. Its Next.js
@@ -24,7 +25,10 @@ export default function RuneApp(){
       {page==='home'?<main className="loc-next-main" data-loc-scope="lrunes" data-loc-view="home"><RunesClient/><nav className="runes-home-nav lrs-daily-links" aria-label="符文本機紀錄">
           <ScopeLink className="loc-button" href="/daily/log/">本機每日紀錄</ScopeLink>
           <ScopeLink className="loc-button" href="/daily/trend/">本機紀錄趨勢</ScopeLink>
+          <ScopeLink className="loc-button" href="/novel/moonwriter/">《月語者》小說章目</ScopeLink>
         </nav></main>
+        :page==='novel-moonwriter'?<MoonwriterPage/>
+        :page.startsWith('novel-moonwriter:')?<MoonwriterPage key={page} uid={page.split(':')[1]}/>
         :page==='card'?<RuneCardHub Navigation={RuneArtNav}/>
         :page==='daily-log'||page==='daily-trend'?<RuneLocalDailyPage view={page==='daily-log'?'log':'trend'}/>
         :page==='game'?<GameBoard/>

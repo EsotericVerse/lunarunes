@@ -1,0 +1,36 @@
+/* LRS novel table of contents: 7-volume 182-chapter index. No full texts in bundle. */
+.lrs-novel{max-width:1060px;margin:0 auto;padding:clamp(1rem,3.5vw,2rem);min-width:0;color:var(--loc-text)}
+.lrs-novel-breadcrumb{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--loc-muted);margin:0 0 1.15rem}
+.lrs-novel-breadcrumb a{color:var(--loc-heading);text-underline-offset:.2em}
+.lrs-novel-hero{margin-bottom:1.2rem}
+.lrs-novel-hero-meta{font-weight:700;color:var(--loc-heading)!important}
+.lrs-novel-volumes{display:grid;gap:.9rem}
+.lrs-novel-volume{min-width:0;overflow:hidden;border:1px solid var(--loc-line);border-radius:var(--loc-ui-radius-lg,16px);background:var(--loc-panel)}
+.lrs-novel-volume-summary{display:flex;align-items:center;gap:1.2rem;cursor:pointer;padding:clamp(1rem,2.5vw,1.5rem);color:var(--loc-heading);list-style:none}
+.lrs-novel-volume-summary::-webkit-details-marker{display:none}
+.lrs-novel-volume-summary::after{content:'⌄';font-size:1.4rem;margin-left:auto;transition:transform .2s}
+.lrs-novel-volume[open]>.lrs-novel-volume-summary::after{transform:rotate(180deg)}
+.lrs-novel-volume-summary:focus-visible{outline:3px solid var(--loc-accent);outline-offset:-3px}
+.lrs-novel-volume-number{font-size:1.4rem;font-weight:750;color:var(--loc-accent);font-variant-numeric:tabular-nums}
+.lrs-novel-volume-heading{display:grid;gap:.25rem;min-width:0}
+.lrs-novel-volume-heading strong{font:700 clamp(1.06rem,2.5vw,1.32rem)/1.5 "Noto Serif TC","Songti TC",serif;overflow-wrap:anywhere}
+.lrs-novel-volume-heading small{font-size:.81rem;color:var(--loc-muted);line-height:1.5}
+.lrs-novel-chapter-list{list-style:none;margin:0;padding:.2rem clamp(.8rem,2.5vw,1.5rem) 1.2rem;display:grid;gap:0;counter-reset:none}
+.lrs-novel-chapter-list li{display:flex;align-items:center;gap:.6rem;border-top:1px solid var(--loc-line);min-width:0}
+.lrs-novel-chapter-list li>a:first-child{display:flex;align-items:center;gap:.9rem;min-width:0;flex:1;padding:.85rem .2rem;color:var(--loc-text);line-height:1.6;text-decoration:none;overflow-wrap:anywhere}
+.lrs-novel-chapter-list li>a:hover,.lrs-novel-chapter-list li>a:focus-visible{text-decoration:underline;text-underline-offset:.25em;color:var(--loc-heading)}
+.lrs-novel-chapter-index{min-width:2.1rem;color:var(--loc-accent);font-size:.88rem;text-align:center;font-weight:650;font-variant-numeric:tabular-nums}
+.lrs-novel-original-link{font-size:.79rem;white-space:nowrap;color:var(--loc-muted);padding:.65rem .35rem;text-underline-offset:.2em}
+.lrs-novel-footnote{font-size:.86rem;line-height:1.75;color:var(--loc-muted);max-width:76ch;margin:1.3rem 0}
+.lrs-novel-chapter-header{padding:clamp(1.1rem,3vw,2rem) 0;border-bottom:1px solid var(--loc-line);margin-bottom:1.5rem}
+.lrs-novel-chapter-header h1{font:750 clamp(1.4rem,3.6vw,2.2rem)/1.45 "Noto Serif TC","Songti TC",serif;color:var(--loc-heading);margin:.5rem 0}
+.lrs-novel-chapter-header>p:last-child{font-size:.86rem;color:var(--loc-muted)}
+.lrs-novel-prose{max-width:72ch;margin:0 auto;padding:0 .2rem 2rem}
+.lrs-novel-prose p{margin:0 0 1.4em;line-height:2.05;font-size:clamp(1rem,1.6vw,1.12rem);white-space:pre-wrap;overflow-wrap:anywhere;text-wrap:pretty;color:var(--loc-text)}
+.lrs-novel-next{border-top:1px solid var(--loc-line);display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;padding:1.3rem 0}
+.lrs-novel-next a{color:var(--loc-heading);text-underline-offset:.2em;max-width:44ch;line-height:1.6}
+.lrs-novel-next span{color:var(--loc-muted)}
+.lrs-novel-external{text-align:right;font-size:.89rem}
+.lrs-novel-external a{color:var(--loc-heading)}
+@media(max-width:620px){.lrs-novel{padding:.85rem}.lrs-novel-volume-summary{gap:.85rem}.lrs-novel-chapter-list li>a:first-child{gap:.5rem}.lrs-novel-prose p{line-height:1.95}}
+@media(prefers-reduced-motion:reduce){.lrs-novel-volume-summary::after{transition:none}}
