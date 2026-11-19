@@ -11,6 +11,7 @@ import '../../app/styles/home-content.css';
 import '../../app/styles/home-runes.css';
 import '../../app/styles/runes.css';
 import './style.css';
+import './rune-home-editorial.css';
 
 // Browser Web reads its own LRS Worker API; Capacitor may use a separately
 // configured HTTPS read endpoint. Never expose SQL credentials in the browser.

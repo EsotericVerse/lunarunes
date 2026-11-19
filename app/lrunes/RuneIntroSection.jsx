@@ -19,7 +19,7 @@ export default function RuneIntroSection(){
     <div className="home-section-heading runes-home-intro-heading">
       <p className="loc-eyebrow">LunaRunes(Symbolic Language)</p>
       <h2>月之符文籤詩系統</h2>
-      <p className="loc-subtitle">不涉及神秘學，為單純的指引籤詩。不保證一定就是註定，你擁有選擇權。</p>
+      <p className="loc-subtitle">一套以符文本義、卡牌方向與月相交互展開的語意指引。</p>
     </div>
     <div className="home-rune-layout runes-home-intro-layout">
       {sample.data?<RuneCardInfo card={sample.data} imageSrc={runeImage(sample.data)} layout="home" direction="正位"/>:
@@ -27,11 +27,9 @@ export default function RuneIntroSection(){
           <p className="scope-status">{sample.error?'符文示例目前無法讀取。':'正在讀取符文示例…'}</p>
         </div>}
       <div className="home-rune-copy home-rune-copy-plain runes-home-intro-copy">
-        <p className="runes-hint-kicker">不知道怎麼說的話，往下抽牌就對了！</p>
-        <p>沒什麼想問的，抽個每日符文看看吧！</p>
-        <p className="runes-hint-lead">月之符文的特有66符文字會給你提示籤詩，指引你的可能未來；能是祝福可能是警告，你當然擁有選擇權。</p>
-        <p className="runes-hint-seed">抽牌讓這符文成語意種子，成為語意起點，用你想要的方式，成長成為完整語意的成熟果實。</p>
-        <p>最後的選擇權仍然在你的手上！</p>
+        <p className="runes-hint-kicker">從一個符文，開始一段閱讀。</p>
+        <p className="runes-hint-lead">六十六枚原創符文，各自承載一個中文字的語意。抽取結果不是預言，而是理解當下的另一種角度。</p>
+        <p className="runes-hint-seed">以符文作為語意種子，結合方向與月相，讓你自己決定如何延伸、如何行動。</p>
       </div>
     </div>
   </section>;

@@ -10,6 +10,18 @@ import ScopeEditableBlocks from '../loc/blocks/ScopeEditableBlocks';
 
 const runeHref=(path,native)=>navigationHref('lrunes',path,native);
 
+// Display-only cleanup of the published editor HTML. Do not change the
+// author-controlled Hero snapshot or database record: the next section owns
+// the three entry links, so the legacy inline link rail is redundant.
+function presentRuneHeroText(html){
+  return String(html||'')
+    .replace(/<p(?:\s[^>]*)?>\s*(?:<br\s*\/?>\s*)+<\/p>/gi,'')
+    .replace(/<p(?:\s[^>]*)?>(?=[\s\S]*?<\/p>)([\s\S]*?)<\/p>/gi,(whole,body)=>{
+      const labels=['抽一張符文','抽每日符文','符文圖鑑','符文遊戲'];
+      return labels.every(label=>body.includes(label)) && (body.match(/<a\b/gi)||[]).length===4?'':whole;
+    });
+}
+
 // LunaRunes is a special-case homepage: only the Hero copy is editable.
 // Draw routes, draw buttons, game, intro, and reading guidance remain fixed UI.
 function renderRuneHero(slot,native){
@@ -41,7 +53,7 @@ function renderRuneHero(slot,native){
         <h1>{title}</h1>
         {subtitle?<div className="loc-subtitle" dangerouslySetInnerHTML={{__html:subtitle}}/>:null}
       </div>
-      {text?<div className="runes-home-body scope-rich-surface" dangerouslySetInnerHTML={{__html:text}}/>:null}
+      {text?<div className="runes-home-body scope-rich-surface" dangerouslySetInnerHTML={{__html:presentRuneHeroText(text)}}/>:null}
       {children.length?<div className="loc-home-block__children runes-home-children" style={{'--loc-bubble-columns':HomeBlock.bubbleColumns([slot.bubbleColumns],'hero')}}>
         {children.map((entity,index)=>{
           const card=HomeBlock.childPresentation(entity.title)==='card';
