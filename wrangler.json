@@ -12,5 +12,6 @@
     ]
   },
   "previews": {},
-  "workers_dev": false
+  "workers_dev": false,
+  "preview_urls": true
 }
