@@ -29,7 +29,7 @@ export default function RuneChamber({rune,groupId}){
   useEffect(()=>{
     const canvas=canvasRef.current;
     if(!canvas||!src)return;
-    let live=true,renderer,observer;
+    let live=true,renderer,observer,resizeFallback;
     const geometries=[],materials=[],textures=[];
     let scene,camera;
     let yaw=0,drag=null;
@@ -127,7 +127,7 @@ export default function RuneChamber({rune,groupId}){
       if(typeof ResizeObserver!=='undefined'){
         observer=new ResizeObserver(resize);
         observer.observe(canvas);
-      }else window.addEventListener('resize',resize);
+      }else{resizeFallback=resize;window.addEventListener('resize',resizeFallback);}
       resize();
       const loader=new THREE.TextureLoader();
       loader.load(src,t=>{
@@ -140,7 +140,7 @@ export default function RuneChamber({rune,groupId}){
     }
     return()=>{
       live=false;
-      observer?.disconnect();window.removeEventListener('resize',render);
+      observer?.disconnect();if(resizeFallback)window.removeEventListener('resize',resizeFallback);
       canvas.removeEventListener('pointerdown',pointerDown);
       canvas.removeEventListener('pointermove',pointerMove);
       canvas.removeEventListener('pointerup',pointerUp);
