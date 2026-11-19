@@ -1,5 +1,6 @@
 // Browser Web uses the same-origin LRS Worker API. Native Capacitor may use
 // an explicitly supplied HTTPS endpoint; it never receives database Secrets.
+// Preview and production both resolve the public-read API from their own host.
 export function runePublicReadUrl(){
   const configured=String(import.meta.env?.VITE_LRS_PUBLIC_READ_URL||'').trim();
   if(configured){
