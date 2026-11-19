@@ -10,9 +10,9 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 
 ## 專案隔離與部署
 - 只處理 `EsotericVerse/lunarunes`。不修改或觸發 LOC／LAS 的程式、資料庫、預覽、部署或 IPA。
-- Web 由 LRS Cloudflare Workers Builds 建置：`main` 正式發布，其他分支 Preview；不要新增 GitHub Web 部署。
-- IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。
-- 不設額外測試或檢查 Workflow；不得自行改變 Cloudflare 憑證、權限或安全設定。
+- Web 僅由 LRS GitHub Actions 建置、GitHub Pages 發布：`main` 正式發布，PR 只驗證建置，不部署 Preview。禁止 Cloudflare Worker／DNS／Access／Token／Secret／網域等任何 CF 操作或變更。
+- IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。GitHub Pages 只供靜態服務，不能假裝有 SQL API；需要後端資料時必須另外驗證可用來源。
+- 不設額外測試或檢查 Workflow；所有 Access 授權上限六小時，不自行 Grant、延長、提升權限或使用跨 Repo 大權杖。
 - 保留原始素材、著作權與第三方授權；著作權修改由作者決定。
 
 ## 文字與交付

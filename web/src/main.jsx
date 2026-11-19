@@ -12,14 +12,16 @@ import '../../app/styles/home-runes.css';
 import '../../app/styles/runes.css';
 import './style.css';
 
-// The existing LRS Worker performs bounded read-only queries against its
-// LRS_DATABASE_URL secret. Never send cookies, SQL, connection strings or
-// credentials from a standalone Rune browser.
+// GitHub Pages is static. A real LRS public-read adapter can be configured
+// only via an independently provisioned, explicitly approved HTTPS endpoint;
+// Pages itself cannot process POST/SQL. Never expose SQL credentials.
 bindRunePublicReadPort(async(table,query)=>{
   // AbortSignal belongs to this browser request, never to the public-read
   // JSON payload or Worker query contract.
   const {signal,...publicQuery}=query||{};
-  const response=await fetch(runePublicReadUrl(window.location.protocol),{
+  const endpoint=runePublicReadUrl(window.location.protocol);
+  if(!endpoint)throw new Error('GitHub Pages 不提供資料庫 API；符文文字資料尚未接入獨立的公開讀取來源。');
+  const response=await fetch(endpoint,{
     method:'POST',credentials:'omit',cache:'no-store',redirect:'error',
     headers:{accept:'application/json','content-type':'application/json'},
     body:JSON.stringify({table,query:publicQuery}),

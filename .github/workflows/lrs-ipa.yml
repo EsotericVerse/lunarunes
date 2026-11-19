@@ -30,7 +30,7 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build LRS Web and pinned art as local IPA files
         run: |
-          npm run build:cloudflare
+          npm run build:ipa
       - name: Install Capacitor in this LRS job only
         run: |
           npm install --no-save --package-lock=false --no-audit --no-fund \
