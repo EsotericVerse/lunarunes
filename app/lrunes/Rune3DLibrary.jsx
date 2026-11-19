@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect,useRef,useState} from 'react';
+import {lazy,Suspense,useEffect,useRef,useState} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
 import {selectRows} from '../loc/db/db-query.mjs';
 import RuneArtStage from './visual/RuneArtStage';
@@ -16,6 +16,10 @@ import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../modules/l
 import '../../modules/lrs/rune/styles/skin-lab.css';
 import '../../modules/lrs/rune/art/rune-art-layout.css';
 import '../../modules/lrs/rune/vfx/effekseer-stage.css';
+import '../../modules/lrs/rune/styles/rune-chamber.css';
+
+// The room is loaded only when a visitor opens a rune; never render 66 canvases.
+const RuneChamber=lazy(()=>import('../../modules/lrs/rune/RuneChamber.jsx'));
 
 // Nine canonical groups, eight runes each except the last group, which also
 // carries rune 0 (德 / Rune Zero, excluded from card draw): 0, 65, 66.
@@ -51,6 +55,7 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
   const [focusId,setFocusId]=useState(null);
   const [showCardInfo,setShowCardInfo]=useState(false);
   const [playback,setPlayback]=useState(0);
+  const [exhibitMode,setExhibitMode]=useState('room');
   const [textureQuality,setTextureQuality]=useState('original');
   useEffect(()=>{
     setTextureQuality(new URLSearchParams(window.location.search).get('texture')==='hd256'?'hd256':'original');
@@ -146,22 +151,44 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
       window.location.pathname+window.location.search+'#group-'+groupId+'/rune-'+runeId);
     setShowCardInfo(false);
     setPlayback(n=>n+1);
+    setExhibitMode('room');
     setFocusId(runeId);
   };
   const selectGroup=entry=>{
     window.history.pushState({runeCardLevel:'group'},'',
       window.location.pathname+window.location.search+'#group-'+entry.id);
-    setGroupId(entry.id);setFocusId(null);setShowCardInfo(false);
+    setGroupId(entry.id);setFocusId(null);setShowCardInfo(false);setExhibitMode('room');
   };
   const backToGroups=()=>{
     window.history.pushState({},'',window.location.pathname+window.location.search);
-    setGroupId(null);setFocusId(null);setShowCardInfo(false);
+    setGroupId(null);setFocusId(null);setShowCardInfo(false);setExhibitMode('room');
     window.scrollTo?.({top:0,behavior:'smooth'});
   };
   const stepRune=delta=>{
     if(!runes.length||!current)return;
     jumpTo(runes[(runePosition+delta+runes.length)%runes.length]);
   };
+
+  // The same archive copy accompanies the room and the original FX presentation.
+  // No parallel data request or re-authentication is required for either view.
+  const archive=current?<>
+    <p className="loc-eyebrow">RUNE ARCHIVE · {String(current.rune_id).padStart(2,'0')} / 66</p>
+    <h3 className="rune-3d-atlas-reading-title">{runeName(current)}之符文 · 詳細資料</h3>
+    <RuneCardInfo card={current} imageSrc={runeImage(current)} layout="home" expandKeywords/>
+    <div className="rune-3d-atlas-reading-details" aria-label="符文完整延伸敘述">
+      {[
+        ['角色行動',current.char_action],['額外規則',current.extra_rules],
+        ['額外留意',current.extra_notes],['符文歷史',current.rune_evolution_history],
+        ['神話故事',current.myth_story],['靈魂課題',current.soul_question],
+        ['實踐挑戰',current.practice_challenge],['儀式建議',current.ritual_advice],
+        ['調和建議',current.harmony_advice]
+      ].filter(([,value])=>String(value??'').trim()).map(([label,value])=>
+        <section key={label} className="rune-3d-atlas-reading-detail">
+          <h4>{label}</h4>
+          <p>{cleanse(Array.isArray(value)?value.join('、'):value)}</p>
+        </section>)}
+    </div>
+  </>:null;
 
   return <main className="loc-next-main" data-rune-3d-preview="list" data-rune-embodiment="66">
     <div className="loc-panel rune-skin-lab rune-3d-shell rune-3d-library">
@@ -209,40 +236,37 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
         <span>第 {current.rune_id} / 66 枚 · {group.name}</span>
         <span className="rune-3d-toolbar-label">粒子貼圖：{textureQuality==='hd256'?'256':'原始'}</span>
       </div>
-      <div ref={stageRef} className={'rune-3d-stage rune-3d-atlas-performance'+(showCardInfo?' rune-3d-atlas-performance--reading':'')}>
-        <EffekseerStage key={current.rune_id+'-'+playback} rune={current} vfxOnly textureQuality={textureQuality}
-          onPlaybackComplete={()=>setShowCardInfo(true)}/>
-        {showCardInfo?<motion.div key={'reading-'+current.rune_id+'-'+playback}
-          className="rune-3d-atlas-reading" role="region" aria-label={runeName(current)+'原始符文卡片資料'}
-          initial={reducedMotion?false:{opacity:0,y:20}}
-          animate={{opacity:1,y:0}}
-          transition={{duration:reducedMotion?0:.75,ease:'easeOut'}}>
-          <div className="rune-3d-atlas-reading-inner">
-            <p className="loc-eyebrow">RUNE ARCHIVE · {String(current.rune_id).padStart(2,'0')} / 66</p>
-            <h3 className="rune-3d-atlas-reading-title">{runeName(current)}之符文 · 詳細資料</h3>
-            <RuneCardInfo card={current} imageSrc={runeImage(current)} layout="home" expandKeywords/>
-            <div className="rune-3d-atlas-reading-details" aria-label="符文完整延伸敘述">
-              {[
-                ['角色行動',current.char_action],['額外規則',current.extra_rules],
-                ['額外留意',current.extra_notes],['符文歷史',current.rune_evolution_history],
-                ['神話故事',current.myth_story],['靈魂課題',current.soul_question],
-                ['實踐挑戰',current.practice_challenge],['儀式建議',current.ritual_advice],
-                ['調和建議',current.harmony_advice]
-              ].filter(([,value])=>String(value??'').trim()).map(([label,value])=>
-                <section key={label} className="rune-3d-atlas-reading-detail">
-                  <h4>{label}</h4>
-                  <p>{cleanse(Array.isArray(value)?value.join('、'):value)}</p>
-                </section>)}
-            </div>
-            <div className="rune-3d-atlas-reading-actions">
-              <button type="button" className="rune-skin-btn" onClick={()=>{
-                setShowCardInfo(false);setPlayback(n=>n+1);
-              }}>重播符文演出</button>
-            </div>
-          </div>
-        </motion.div>:null}
+      <div className="rune-chamber-modes" role="group" aria-label="符文展示方式">
+        <button type="button" className="rune-skin-btn" aria-pressed={exhibitMode==='room'}
+          onClick={()=>setExhibitMode('room')}>3D 符文房間</button>
+        <button type="button" className="rune-skin-btn" aria-pressed={exhibitMode==='effects'}
+          onClick={()=>{setShowCardInfo(false);setPlayback(n=>n+1);setExhibitMode('effects');}}>原創符文特效</button>
       </div>
-      <div className="rune-3d-atlas-glyph-review" aria-label={runeName(current)+'的 3D 字型檢視'}>
+      <div ref={stageRef} className={'rune-3d-stage rune-3d-atlas-performance'+(exhibitMode==='effects'&&showCardInfo?' rune-3d-atlas-performance--reading':'')}>
+        {exhibitMode==='room'?<Suspense fallback={<div className="rune-chamber-loading" role="status">正在準備符文展室…</div>}>
+          <RuneChamber key={current.rune_id} rune={current} groupId={groupId}/>
+        </Suspense>:<>
+          <EffekseerStage key={current.rune_id+'-'+playback} rune={current} vfxOnly textureQuality={textureQuality}
+            onPlaybackComplete={()=>setShowCardInfo(true)}/>
+          {showCardInfo?<motion.div key={'reading-'+current.rune_id+'-'+playback}
+            className="rune-3d-atlas-reading" role="region" aria-label={runeName(current)+'原始符文卡片資料'}
+            initial={reducedMotion?false:{opacity:0,y:20}}
+            animate={{opacity:1,y:0}}
+            transition={{duration:reducedMotion?0:.75,ease:'easeOut'}}>
+            <div className="rune-3d-atlas-reading-inner">
+              {archive}
+              <div className="rune-3d-atlas-reading-actions">
+                <button type="button" className="rune-skin-btn" onClick={()=>{
+                  setShowCardInfo(false);setPlayback(n=>n+1);
+                }}>重播符文演出</button>
+              </div>
+            </div>
+          </motion.div>:null}
+        </>}
+      </div>
+      {exhibitMode==='room'?<section className="rune-chamber-archive" aria-label={runeName(current)+'符文說明'}>
+        {archive}
+      </section>:<div className="rune-3d-atlas-glyph-review" aria-label={runeName(current)+'的 3D 字型檢視'}>
         <div className={'rune-effekseer-glyph rune-effekseer-glyph--'+currentGlyph.font+' rune-3d-atlas-glyph-model'}
           data-glyph-family={currentGlyph.family} data-glyph-finish={currentGlyph.finish}
           style={{'--rune-ink':currentGlyph.ink}} data-glyph-ink={currentGlyph.ink}>
@@ -253,7 +277,7 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
           <p>字型：{RUNE_GLYPH_STYLES[currentGlyph.family]?.label||currentGlyph.family}</p>
           <p>正面固定、立體筆畫及側面厚度，可直接比較每枚符文。</p>
         </div>
-      </div>
+      </div>}
       <div className="rune-3d-library-actions">
         <div className="rune-3d-review-stepping" role="group" aria-label="前後符文">
           <button type="button" className="rune-skin-btn" onClick={()=>stepRune(-1)}>← 上一枚</button>
@@ -266,8 +290,8 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
       <section className="rune-3d-atlas-gallery" aria-label={group.name+'原創符文卡圖'}>
         <RuneArtStage mode="runes" items={runes} onSelect={jumpTo}
           galleryTitle={group.name+' · 符文卡圖'}
-          galleryDescription="每枚卡片皆有自己的魔法特效；點選卡片即可切換上方動畫。"
-          runeActionLabel="觀看 3D 顯現"/>
+          galleryDescription="每枚符文皆有獨立展室；點選卡片進入房間，也可切換觀看原創特效。"
+          runeActionLabel="進入符文房間"/>
       </section>
     </>:null}
 
