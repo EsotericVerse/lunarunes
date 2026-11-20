@@ -6,6 +6,8 @@
 
 影片／MV 與音樂愛情故事需要轉為可剪輯影片時，才選用 [hyperframes](skills/hyperframes/SKILL.md)，再依任務讀取外部官方規範；一般遊戲運作、純文字創作與網站建置不觸發。
 
+Agent 回覆精簡：`caveman`，預設去除冗語、不省略技術證據；僅影響對話，不套用原創內容。
+
 台灣繁體中文說明：`zh-tw-writing`。原創符文文字與美感由作者決定。
 
 外部參考索引：https://github.com/sraodev/awesome-opensource-ai-cheat-sheets
