@@ -13,9 +13,9 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 ## 專案隔離與部署
 - 只處理 `EsotericVerse/lunarunes`。不修改或觸發 LOC／LAS 的程式、資料庫、預覽、部署或 IPA。
 - LRS Web 以 GitHub main 為唯一原始碼來源；Cloudflare Workers Builds 負責正式版及分支 Preview。正式版 Build 留空，Deploy 為 `npm run deploy`；預覽 Build 為 `npm run build:pages`，Preview 為 `npx wrangler preview`。
-- `wrangler.json` 指向既有 `lunarunes` Worker；僅保留 LRS 靜態資源及 `/api/lrs/public-read`。不擅自改 Cloudflare DNS／Access／Token／Secret／網域設定，不自行 Grant 或延長授權。
+- `wrangler.json` 指向既有 `lunarunes` Worker；只服務 LRS 自己的靜態資源與 API，以現有程式碼路由為準，不擴增其他用途。不擅自改 Cloudflare DNS／Access／Token／Secret／網域設定，不自行 Grant 或延長授權。
 - IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。iOS 素材隨 App 打包，Web 使用獨立已發布素材。
-- 不設額外測試或檢查 Workflow；所有 Access 授權上限六小時，不自行 Grant、延長、提升權限或使用跨 Repo 大權杖。
+- 不設額外測試或檢查 Workflow；Cloudflare Access 目前整個帳戶都沒有啟用，不自行重建、Grant、延長權限或使用跨 Repo 大權杖。
 - 保留原始素材、著作權與第三方授權；著作權修改由作者決定。
 
 ## 文字與交付
