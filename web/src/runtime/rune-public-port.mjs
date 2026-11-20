@@ -57,7 +57,7 @@ function awaitWithAbort(task,signal){
 }
 
 const ALLOWED_TABLES=new Set([
-  'silver.runes','silver.runes_etc','silver.runes_group','silver.lrunes_blocks'
+  'silver.runes','silver.runes_etc','silver.runes_group'
 ]);
 export function bindRunePublicReadPort(adapter){
   if(typeof adapter!=='function')throw new TypeError('LRS requires an actual public Rune read port');
@@ -75,7 +75,7 @@ export async function selectRows(table,query){
   if(!readRows)throw new Error('LRS 原版符文資料讀取尚未連接 LRS Worker；不能使用展示資料替代。');
   // ONLY the two fixed catalogue tables can reuse completed Session data.
   // Their exact SQL-style column/filter projection is validated; anything
-  // else (especially rune_etc, Hero and daily data) always uses the Worker.
+  // else (especially rune_etc and daily data) always uses the Worker.
   if(BASE_TABLES.includes(table)){
     let catalog=readRuneBaseSession(table);
     if(!catalog&&pendingBaseTables.has(table)){
@@ -110,13 +110,5 @@ export async function selectRows(table,query){
   const forget=()=>{if(pendingPublicReads.get(key)===entry)pendingPublicReads.delete(key);};
   void entry.promise.then(forget,forget);
   return entry.promise;
-}
-export async function readPublicRuneHero(){
-  const {rows}=await selectRows('silver.lrunes_blocks',{
-    columns:'uid,page_name,block_eyebrow,block_title,block_subtitle,block_text,block_order,block_entity,block_image',
-    filters:[{column:'page_name',operator:'eq',value:'hero'}],
-    orders:[{column:'block_order',ascending:true}],limit:8,offset:0
-  });
-  return rows||[];
 }
 export const lRunes66ColumnString=lrsCardRune66ColumnString;

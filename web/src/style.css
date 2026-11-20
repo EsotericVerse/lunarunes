@@ -1,13 +1,13 @@
-/* Only the independent Web document boundary. All Rune page styles and
-   presentation classes come from LOC's original CSS. No LRS demo skin. */
+/* Independent LRS feature runtime. LOC retains the lrunes Scope / Hero.
+   Shared Rune card styles remain available while feature UI is extracted. */
 :root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif}
 *{box-sizing:border-box}
 html{min-width:320px}
 body{margin:0;min-width:320px;background:var(--loc-bg);color:var(--loc-text)}
 button,select,input{font:inherit}
 button,a{touch-action:manipulation}
-.lrs-original-scope{min-height:100vh}
-.lrs-original-scope > .loc-next-main{min-height:100vh}
+.lrs-feature-host{min-height:100vh}
+.lrs-feature-host > .loc-next-main{min-height:100vh}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
@@ -29,3 +29,18 @@ button,a{touch-action:manipulation}
   .lrs-local-daily-record .loc-rune-card-image{max-width:170px}
   .lrs-local-trend-row{grid-template-columns:80px minmax(0,1fr) 3ch}
 }
+
+/* LRS-only feature directory; LOC owns the actual Scope home composition. */
+.lrs-feature-index{width:min(1140px,calc(100% - 2rem));margin:0 auto;padding:clamp(1.4rem,4vw,3.4rem) 0 5rem}
+.lrs-feature-header{display:grid;gap:.65rem;max-width:70ch;margin:0 0 clamp(1.4rem,3vw,2.5rem)}
+.lrs-feature-header :is(h1,p){margin:0}
+.lrs-feature-header h1{font:750 clamp(2rem,5vw,3.5rem)/1.28 "Noto Serif TC","Songti TC",serif;color:var(--loc-heading)}
+.lrs-feature-header>p:not(.loc-eyebrow){color:var(--loc-text);line-height:1.8}
+.lrs-feature-scope-link{justify-self:start;margin:.45rem 0;color:var(--loc-heading);text-decoration:underline;text-underline-offset:.3em;font-weight:650}
+.lrs-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.7vw,1.2rem)}
+.lrs-feature-card{display:grid;align-content:start;gap:.6rem;min-height:125px;padding:clamp(1.05rem,2vw,1.45rem);border:1px solid var(--loc-line);border-radius:14px;background:var(--loc-panel);color:var(--loc-text);text-decoration:none}
+.lrs-feature-card strong{font-size:clamp(1.05rem,1.5vw,1.24rem);line-height:1.45;color:var(--loc-heading)}
+.lrs-feature-card span{font-size:.94rem;line-height:1.65;color:var(--loc-muted)}
+.lrs-feature-card:is(:hover,:focus-visible){border-color:var(--loc-accent);background:var(--loc-panel-2);text-decoration:none}
+@media(max-width:850px){.lrs-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.lrs-feature-grid{grid-template-columns:1fr}.lrs-feature-index{width:calc(100% - 1.5rem)}}

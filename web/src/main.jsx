@@ -6,9 +6,7 @@ import {runePublicReadUrl} from './runtime/rune-public-url.mjs';
 import '../../app/styles/tokens.css';
 import '../../app/styles/components.css';
 import '../../app/styles/scope-system.css';
-import '../../app/styles/home-composition.css';
-import '../../app/styles/home-content.css';
-import '../../app/styles/home-runes.css';
+import './rune-feature-presentation.css';
 import '../../app/styles/runes.css';
 import './style.css';
 
