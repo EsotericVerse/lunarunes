@@ -67,7 +67,9 @@ export default function ScopeEditableBlocks({
       setBlocks(rows.map(normalizeRow).sort((a,b)=>a.order-b.order));
       setFailure('');
     }).catch(error=>{
-      if(mounted)setFailure('Hero 即時同步失敗，暫時顯示已發布版本。');
+      // Leaving the page is intentional; do not log aborted reads as errors.
+      if(!mounted||error?.name==='AbortError')return;
+      setFailure('Hero 即時同步失敗，暫時顯示已發布版本。');
       console.warn('[LRS Hero] Public read unavailable',error);
     });
     return()=>{mounted=false;};

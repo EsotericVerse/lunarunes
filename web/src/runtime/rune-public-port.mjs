@@ -9,8 +9,18 @@ import {readRuneBaseSession,storeRuneBaseSession,clearRuneBaseMemory,
 let readRows=null;
 // Share only simultaneous anonymous reads. A completed result is immediately
 // freed, unlike a persistent SQL/session cache; bounded by active requests.
-const pendingPublicReads=new Map();
+const pendingPublicReads=new Map(); // descriptor -> {controller,promise}
 const MAX_PENDING_PUBLIC_READS=32;
+
+// Release only in-flight, non-canonical public reads owned by the departing
+// route. Explicit per-component AbortSignals still belong to their callers.
+// Never retire the two canonical Session tables or their shared prefetch.
+export function releaseRuneTransientReads(){
+  const active=[...pendingPublicReads.values()];
+  pendingPublicReads.clear();
+  for(const entry of active)entry.controller.abort();
+  return active.length;
+}
 const BASE_TABLES=['silver.runes','silver.runes_group'];
 const pendingBaseTables=new Map();
 let baseGeneration=0;
@@ -53,7 +63,7 @@ export function bindRunePublicReadPort(adapter){
   if(typeof adapter!=='function')throw new TypeError('LRS requires an actual public Rune read port');
   // A newly bound transport must never borrow an outstanding promise from an
   // old connection/adapter. The old caller still owns its promise lifetime.
-  pendingPublicReads.clear();
+  releaseRuneTransientReads();
   pendingBaseTables.clear();
   baseGeneration++;
   clearRuneBaseMemory();
@@ -84,13 +94,22 @@ export async function selectRows(table,query){
   let key;
   try{key=JSON.stringify([table,query]);}catch{return readRows(table,query);}
   const existing=pendingPublicReads.get(key);
-  if(existing)return existing;
-  const promise=Promise.resolve().then(()=>readRows(table,query));
-  if(pendingPublicReads.size>=MAX_PENDING_PUBLIC_READS)return promise;
-  pendingPublicReads.set(key,promise);
-  const forget=()=>{if(pendingPublicReads.get(key)===promise)pendingPublicReads.delete(key);};
-  void promise.then(forget,forget);
-  return promise;
+  if(existing)return existing.promise;
+  // At excessive concurrency, preserve the existing no-cache behavior and
+  // let the component own its request; do not retain an unbounded registry.
+  if(pendingPublicReads.size>=MAX_PENDING_PUBLIC_READS)return readRows(table,query);
+  const controller=new AbortController();
+  const adapter=readRows;
+  const entry={controller,promise:null};
+  entry.promise=Promise.resolve().then(()=>{
+    if(controller.signal.aborted)
+      throw new DOMException('Page changed','AbortError');
+    return adapter(table,{...query,signal:controller.signal});
+  });
+  pendingPublicReads.set(key,entry);
+  const forget=()=>{if(pendingPublicReads.get(key)===entry)pendingPublicReads.delete(key);};
+  void entry.promise.then(forget,forget);
+  return entry.promise;
 }
 export async function readPublicRuneHero(){
   const {rows}=await selectRows('silver.lrunes_blocks',{
