@@ -1,10 +1,6 @@
-// Route recognition for the existing LOC Rune pages hosted independently by LRS.
-// The canonical Scope Routing Table remains in LunaCodex; this is only a
-// standalone Web pathname decoder, not a duplicate routing authority.
+// LRS-only feature paths. LOC alone owns /lrunes Scope and its route table.
 export function pageFromPath(pathname='/'){
   let path=String(pathname||'/').replace(/\/+$/,'')||'/';
-  if(path==='/lrunes')path='/';
-  else if(path.startsWith('/lrunes/'))path=path.slice('/lrunes'.length);
   if(path==='/')return 'home';
   if(path==='/novel/moonwriter')return 'novel-moonwriter';
   if(/^\/novel\/moonwriter\/[A-Za-z0-9]{8}$/.test(path))
