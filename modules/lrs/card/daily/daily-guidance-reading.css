@@ -39,3 +39,28 @@
   .lrs-daily-reading-art{width:min(100%,175px);margin:0 auto}
   .lrs-daily-guidance-item{grid-template-columns:1.8rem minmax(0,1fr)}
 }
+
+/* Interpretive flow is an ordered presentation of the existing source text. */
+.lrs-daily-integrated{min-width:0;padding:1.35rem 0 1rem}
+.lrs-daily-integrated-heading{margin-bottom:1rem}
+.lrs-daily-integrated-heading h3{color:var(--loc-heading);font:700 clamp(1.18rem,2.5vw,1.5rem)/1.5 "Noto Serif TC","Songti TC",serif;margin:.2rem 0 .4rem}
+.lrs-daily-integrated-heading p:last-child{color:var(--loc-muted);line-height:1.8;margin:0;max-width:72ch}
+.lrs-daily-integrated-foundation{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:1rem;margin:1rem 0}
+.lrs-daily-integrated-foundation>div{min-width:0;padding:1rem;border:1px solid var(--loc-line);border-radius:12px;background:var(--loc-panel-2)}
+.lrs-daily-integrated-foundation h4,.lrs-daily-integrated-moon h4{color:var(--loc-heading);margin:0 0 .6rem;font-size:1rem}
+.lrs-daily-integrated-foundation p,.lrs-daily-integrated-moon p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;margin:.4rem 0;color:var(--loc-text)}
+.lrs-daily-integrated-stages{padding:0;margin:1rem 0;list-style:none;display:grid;gap:.8rem}
+.lrs-daily-integrated-stage{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:1rem;padding:1rem;border:1px solid var(--loc-line);border-radius:12px;min-width:0}
+.lrs-daily-integrated-stage-index{font-size:.85rem;font-weight:650;color:var(--loc-gold,var(--loc-accent))}
+.lrs-daily-integrated-stage h4{margin:0;font:700 1.08rem/1.5 "Noto Serif TC","Songti TC",serif;color:var(--loc-heading)}
+.lrs-daily-integrated-stage-note{margin:.25rem 0 .8rem;line-height:1.7;color:var(--loc-muted);font-size:.87rem}
+.lrs-daily-integrated-source{margin:.7rem 0 0;min-width:0}
+.lrs-daily-integrated-source>span{font-size:.82rem;font-weight:650;color:var(--loc-muted)}
+.lrs-daily-integrated-source p{margin:.3rem 0 0;line-height:1.86;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--loc-text)}
+.lrs-daily-integrated-moon{border-top:1px solid var(--loc-line);padding:1rem 0}
+.lrs-daily-reading-original{border-top:1px solid var(--loc-line);padding-top:1rem}
+.lrs-daily-reading-original summary{cursor:pointer;color:var(--loc-heading);font-size:1rem;font-weight:650;padding:.5rem 0}
+.lrs-daily-reading-original summary:focus-visible{outline:2px solid var(--loc-accent);outline-offset:3px}
+@media(max-width:600px){
+  .lrs-daily-integrated-stage{gap:.65rem;padding:.85rem;grid-template-columns:1.55rem minmax(0,1fr)}
+}

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import {runeAssetDirectoryUrl,runeAssetUrl} from '../modules/lrs/rune/asset-url.mjs';
 import assert from 'node:assert/strict';
+import {buildDailyInterpretation} from '../modules/lrs/card/daily/interpretation.mjs';
 import {
   createLrsFramework,resolveLrsFeatureRoute,LRS_FEATURE_ROUTES,
   LRS_FEATURE_MODULES
@@ -83,4 +84,39 @@ test('Effekseer directory URLs preserve valid paths and reject traversal',()=>{
   assert.throws(()=>runeAssetUrl('vendor/effekseer/'),/Unsafe/);
   assert.throws(()=>runeAssetDirectoryUrl('vendor/../effekseer/'),/Unsafe/);
   assert.throws(()=>runeAssetDirectoryUrl('vendor//effekseer/'),/Unsafe/);
+});
+
+test('daily synthesis preserves source fields, selected direction and phase',()=>{
+  const card={rune_id:8,moon_phase:2,rune_description:'原始符文描述',rune_etc:{
+    direction:{2:'半正位原文'},
+    sit_q:{2:'當下的原文情境'},sit_a:{2:'當下的原文表達'},
+    daily_r:{2:'今天的原文提醒'},daily_g:{2:'今天的原文引導'},
+    daily_b:{2:'今天的原文祝福'}
+  }};
+  const read=buildDailyInterpretation({card,directionIndex:1,moon:'上弦'});
+  assert.equal(read.direction,'半正位');
+  assert.equal(read.directionMeaning,'半正位原文');
+  assert.equal(read.moonRelation,'same');
+  assert.equal(read.runeDescription,'原始符文描述');
+  assert.deepEqual(read.stages.map(x=>x.id),['situation','reminder','guidance','blessing']);
+  assert.deepEqual(read.stages[0].sources.map(x=>x.text),
+    ['當下的原文情境','當下的原文表達']);
+  assert.equal(read.originalCount,5);
+  assert.deepEqual(read.missing,[]);
+  assert.equal(buildDailyInterpretation({card,directionIndex:4,moon:'上弦'}),null);
+  assert.equal(buildDailyInterpretation({card:{rune_id:0},directionIndex:0}),null);
+});
+
+test('special rune reading omits absent original guidance without inventing text',()=>{
+  const read=buildDailyInterpretation({card:{rune_id:65,rune_etc:{
+    sit_q:{4:'原文情境'},sit_a:{4:'原文表達'}
+  }},directionIndex:3,moon:'空亡'});
+  assert.equal(read.cardMoon,null);
+  assert.equal(read.moonRelation,'not-marked');
+  assert.equal(read.originalCount,2);
+  assert.deepEqual(read.stages.map(s=>s.id),['situation']);
+  assert.deepEqual(read.missing,['每日占卜提醒','每日占卜引導','每日占卜祝福']);
+  assert.equal(buildDailyInterpretation({card:{rune_id:66},directionIndex:0,moon:'未知'}).stages.length,0);
+  assert.equal(buildDailyInterpretation({card:{rune_id:8,moon_phase:1},
+    directionIndex:0,moon:'上弦'}).moonRelation,'different');
 });
