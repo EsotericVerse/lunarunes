@@ -18,6 +18,22 @@ const art=path.join(dist,'web');
 const dest=path.join(dist,'pages');
 const stage=path.join(dist,'.pages-stage-'+process.pid);
 const manifest=JSON.parse(await readFile(path.join(art,'rune-artifacts.json'),'utf8'));
+const args=process.argv.slice(2);
+if(args.some(arg=>arg!=='--target=ios'))throw Error('Expected --target=ios or no arguments');
+const fullIosBundle=args.includes('--target=ios');
+// Cloudflare internal asset proxying is unavailable to the offline IPA.
+// Preserve every real texture in iOS, deduplicate byte-identical PNGs for Web.
+const artifactByPath=new Map(manifest.files.map(entry=>[entry.path,entry]));
+const aliases=[];
+function canAliasHd256(entry){
+  if(fullIosBundle||!entry.path.startsWith('vendor/effekseer/Collections/'))return false;
+  if(!/\/_hd256\/[^/]+\.png$/i.test(entry.path))return false;
+  const normalPath=entry.path.replace('/_hd256/','/');
+  const normal=artifactByPath.get(normalPath);
+  if(!normal||normal.sha256!==entry.sha256||normal.bytes!==entry.bytes)return false;
+  aliases.push({source:entry.path,target:normalPath,bytes:entry.bytes});
+  return true;
+}
 const version=JSON.parse(await readFile(path.join(root,'release','version.json'),'utf8'));
 if(version.schema!=='lunarunes.release-version.v1'||!/^(?:\d+\.\d+R|\d+\.\d+\.\d+)$/.test(version.version))
   throw Error('LRS release must have a valid owner-designated version');
@@ -60,7 +76,16 @@ try{
     // Original pictures are stored in assets/pics, but the published Rune
     // image URLs are /pics/*.jpg. Do not change the original source paths.
     const published=entry.path.startsWith('assets/pics/')?entry.path.slice('assets/'.length):entry.path;
+    if(canAliasHd256(entry))continue;
     await install(path.join(art,...entry.path.split('/')),published,entry);
+  }
+  // Cloudflare Workers Static Assets applies 200 internal proxy rules before
+  // serving matching static assets. This preserves every old PNG URL without
+  // uploading its duplicate bytes. Distinct HD256 artwork is never omitted.
+  if(aliases.length){
+    if(aliases.length>2000)throw Error('Too many static Rune texture aliases');
+    const rules=aliases.map(({source,target})=>'/'+source+' /'+target+' 200').join('\n')+'\n';
+    await writeFile(path.join(stage,'_redirects'),rules);
   }
   // The original Rune card-cut download is LRS-owned, not a LOC build input.
   await install(path.join(root,'assets','lunarunes','source','LunarRunesCardCut.pdf'),'LunarRunesCardCut.pdf');
@@ -85,6 +110,9 @@ try{
   await writeFile(path.join(stage,'rune-release.json'),JSON.stringify(output,null,2)+'\n');
   await rm(dest,{recursive:true,force:true});
   await rename(stage,dest);
-  console.log('LunaRunes GitHub Pages static asset release: '+releaseEntries.length+
-    ' files, '+releaseEntries.reduce((total,e)=>total+e.bytes,0)+' bytes');
+  console.log('LunaRunes static asset release: '+releaseEntries.length+
+    ' files, '+releaseEntries.reduce((total,e)=>total+e.bytes,0)+' bytes'+
+    (fullIosBundle?' (IPA: complete physical asset files)':
+      ' (Web: '+aliases.length+' verified byte-identical PNG aliases, '+
+      aliases.reduce((sum,e)=>sum+e.bytes,0)+' bytes omitted)'));
 }catch(e){await rm(stage,{recursive:true,force:true});throw e;}
