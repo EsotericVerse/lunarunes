@@ -11,3 +11,4 @@ export {DAILY_RUNE_PAGE_SIZE,DAILY_RUNE_MODES,DAILY_DIRECTIONS,CARD_MOON_PHASES,
   dailyTrend,dailyDirectionTrend,dailyCategoryTrend} from './analytics.mjs';
 
 export {DAILY_GUIDANCE_FIELDS,readDailyGuidance} from './guidance-fields.mjs';
+export {buildDailyInterpretation} from './interpretation.mjs';

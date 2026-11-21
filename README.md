@@ -26,7 +26,7 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 ## /card（含 daily）、/game 路由歸屬
 
 - `/card/`、`/card/duel/` 與 `/card/list/`：LRS 原生符文卡牌、抽牌與圖鑑。
-- `/card/daily/`：每日抽牌正式入口；`/card/daily/reading/`：讀取同次抽牌的五項原始指引，不重新抽牌。
+- `/card/daily/`：每日抽牌正式入口；`/card/daily/reading/`：依同次抽牌的符文本義、原始方向位、真實月相與五項來源欄位顯示整合解析，並可展開逐字原文；不重新抽牌、不補造占辭。純資料組合演算在 `modules/lrs/card/daily/interpretation.mjs`。
 - `/card/daily/log/`、`/card/daily/trend/`：獨立本機紀錄與趨勢。每日程式位於 `modules/lrs/card/daily/`。
 - 舊公開連結 `/daily/`、`/daily/log/`、`/daily/trend/` 只改到對應 `/card/daily/` 路徑，不保留另一套每日模組。
 - 解析頁只使用同一瀏覽器執行期間的暫存抽牌結果；重新整理後沒有結果就提示先抽牌，並不自動建立紀錄。
