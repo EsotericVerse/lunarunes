@@ -29,7 +29,8 @@
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
     "./daily": "./modules/lrs/daily/index.mjs",
-    "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs"
+    "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs",
+    "./framework": "./modules/lrs/framework/index.mjs"
   },
   "dependencies": {
     "kysely": "0.29.8",
