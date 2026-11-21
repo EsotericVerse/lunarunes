@@ -9,16 +9,15 @@
     ".": "./index.mjs",
     "./rune": "./rune/index.mjs",
     "./card": "./card/index.mjs",
-    "./daily": "./daily/index.mjs",
     "./boardgame": "./boardgame/index.mjs",
-    "./boardgame/ui": "./boardgame/ui.mjs"
+    "./boardgame/ui": "./boardgame/ui.mjs",
+    "./card/daily": "./card/daily/index.mjs"
   },
   "files": [
     "index.mjs",
     "manifest.mjs",
     "rune",
     "card",
-    "daily",
     "boardgame",
     "LICENSE",
     "README.md"

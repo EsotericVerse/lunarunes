@@ -7,8 +7,7 @@ import {LRS_MODULE} from '../manifest.mjs';
 export const LRS_FRAMEWORK_VERSION='1.0.0';
 export const LRS_FEATURE_MODULES=Object.freeze([
   {id:LRS_MODULE.modules.rune,name:'rune',roles:['catalogue','3d','assets']},
-  {id:LRS_MODULE.modules.card,name:'card',roles:['draw','readings']},
-  {id:LRS_MODULE.modules.daily,name:'daily',roles:['daily-read','local-records']},
+  {id:LRS_MODULE.modules.card,name:'card',roles:['draw','readings','daily-draw','daily-reading','local-records']},
   {id:LRS_MODULE.modules.boardgame,name:'boardgame',roles:['local-game','life-engine']},
   {id:LRS_MODULE.modules.reading,name:'reading',roles:['novel']}
 ].map(entry=>Object.freeze({...entry,roles:Object.freeze(entry.roles)})));
@@ -21,12 +20,11 @@ export const LRS_FEATURE_ROUTES=Object.freeze([
   route('home','lrs:rune','feature-index',/^\/$/),
   route('card-hub','lrs:card','card-hub',/^\/card$/),
   route('duel','lrs:card','rune-presentation',/^\/card\/duel$/,()=>({feature:'duel'})),
-  // Canonical daily entry is /daily; keep /card/daily as a legacy deep-link.
-  // Both resolve to the exact same LRS daily renderer and rules.
-  route('daily','lrs:daily','rune-presentation',/^\/(?:daily|card\/daily)$/,()=>({feature:'daily'})),
+  route('daily','lrs:card','rune-presentation',/^\/card\/daily$/,()=>({feature:'daily'})),
+  route('daily-reading','lrs:card','daily-reading',/^\/card\/daily\/reading$/),
   route('list','lrs:rune','rune-presentation',/^\/card\/list$/,()=>({feature:'list'})),
-  route('daily-log','lrs:daily','daily-history',/^\/daily\/log$/,()=>({view:'log'})),
-  route('daily-trend','lrs:daily','daily-history',/^\/daily\/trend$/,()=>({view:'trend'})),
+  route('daily-log','lrs:card','daily-history',/^\/card\/daily\/log$/,()=>({view:'log'})),
+  route('daily-trend','lrs:card','daily-history',/^\/card\/daily\/trend$/,()=>({view:'trend'})),
   route('game','lrs:boardgame','game-board',/^\/game(?:\/room)?$/),
   route('novel-moonwriter','lrs:reading','novel',/^\/novel\/moonwriter$/),
   route('novel-moonwriter-chapter','lrs:reading','novel',/^\/novel\/moonwriter\/([A-Za-z0-9]{8})$/,match=>({uid:match[1]}))
@@ -37,8 +35,18 @@ export function normalizedLrsPath(pathname='/'){
   const path=pathname.replace(/\/+$/,'')||'/';
   return path;
 }
-export function resolveLrsFeatureRoute(pathname='/',routes=LRS_FEATURE_ROUTES){
+// Old public deep links point to card-owned daily routes, not a second module.
+const OLD_DAILY_ROUTES=Object.freeze({
+  '/daily':'/card/daily',
+  '/daily/log':'/card/daily/log',
+  '/daily/trend':'/card/daily/trend'
+});
+export function canonicalLrsFeaturePath(pathname='/'){
   const path=normalizedLrsPath(pathname);
+  return OLD_DAILY_ROUTES[path]||path;
+}
+export function resolveLrsFeatureRoute(pathname='/',routes=LRS_FEATURE_ROUTES){
+  const path=canonicalLrsFeaturePath(pathname);
   for(const descriptor of routes){
     const match=descriptor.match.exec(path);
     if(!match)continue;

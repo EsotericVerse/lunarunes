@@ -7,6 +7,7 @@ import RuneCardHub from '../runes/RuneCardHub.jsx';
 const RuneUnifiedView=lazy(()=>import('../runes/RuneUnifiedView.jsx'));
 const RuneArtNav=lazy(()=>import('../runes/Rune3DNav.jsx'));
 const RuneLocalDailyPage=lazy(()=>import('./rune-local-daily.jsx'));
+const RuneDailyReading=lazy(()=>import('../runes/daily3d/RuneDailyReading.jsx'));
 const MoonwriterPage=lazy(()=>import('../reading/MoonwriterPages.jsx'));
 const GameBoard=lazy(()=>import('../../../modules/lrs/boardgame/GameBoard.jsx'));
 
@@ -15,6 +16,7 @@ const RENDERERS=Object.freeze({
   'card-hub':()=> <RuneCardHub Navigation={RuneArtNav}/>,
   'rune-presentation':({feature})=> <RuneUnifiedView feature={feature} defaultView="3d"/>,
   'daily-history':({view})=> <RuneLocalDailyPage view={view}/>,
+  'daily-reading':()=> <RuneDailyReading/>,
   'game-board':()=> <GameBoard/>,
   'novel':({uid})=> <MoonwriterPage key={uid||'contents'} uid={uid||''}/>,
   'not-found':()=> <main className="loc-next-main"><p className="scope-status" role="status">找不到此符文頁面。</p></main>

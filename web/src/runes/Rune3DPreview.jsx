@@ -5,12 +5,13 @@ import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from '../../../mo
 import {shouldMountRuneMist,shouldPlayRunePrelude} from '../../../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
 import {ScopeLink,runeFeatureHref} from '../runtime/rune-navigation.jsx';
 import {selectRows} from '../runtime/rune-public-port.mjs';
-import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
+import {realMoonPhase} from '../../../modules/lrs/card/daily/real-moon-phase.mjs';
 import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs';
 import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from '../../../modules/lrs/card/rune-draw-motion.mjs';
 import RuneCardInfo from './RuneCardInfo';
-import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../modules/lrs/daily/DailyGuidanceReading.jsx';
+import {DAILY_GUIDANCE_FIELDS} from '../../../modules/lrs/card/daily/guidance-fields.mjs';
+import {rememberDailyDraw,readDailyDraw} from '../runtime/rune-daily-result.mjs';
 import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import '../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../modules/lrs/rune/vfx/effekseer-stage.css';
@@ -78,14 +79,14 @@ function ResultDialog({title,children,onClose}){
 }
 export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
 
-  const [items,setItems]=useState([]);
+  const [items,setItems]=useState(()=>mode==='daily'&&readDailyDraw()?[readDailyDraw()]:[]);
   const [groups,setGroups]=useState([]);
   const [group,setGroup]=useState(null);
   const [runes,setRunes]=useState([]);
   const [selected,setSelected]=useState(null);
   const [reading,setReading]=useState('');
   const [resultOpen,setResultOpen]=useState(false);
-  const [finished,setFinished]=useState(false);
+  const [finished,setFinished]=useState(()=>mode==='daily'&&!!readDailyDraw());
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState('');
   const [moon,setMoon]=useState(()=>realMoonPhase());
@@ -102,7 +103,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
     setTextureQuality(query.get('texture')==='hd256'?'hd256':'original');
     setDiagnoseAmbient(query.get('fog_preview')==='1');
   },[]);
-  const [phase,setPhase]=useState('idle'); // idle → waiting → drawing → revealing → transfer → ready
+  const [phase,setPhase]=useState(()=>mode==='daily'&&readDailyDraw()?'ready':'idle'); // idle → waiting → drawing → revealing → transfer → ready
   const [pending,setPending]=useState(null);
   const [summonRuneId,setSummonRuneId]=useState(null);
   const [transferTarget,setTransferTarget]=useState(null);
@@ -112,7 +113,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
   const lock=useRef(false);
   const live=useRef(true);
   const drawRequest=useRef(null);
-  const cards=useRef([]);
+  const cards=useRef(mode==='daily'&&readDailyDraw()?[readDailyDraw()]:[]);
 
   useEffect(()=>{live.current=true;return()=>{
     live.current=false;
@@ -210,6 +211,8 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       const item={card,direction:DIRECTIONS[directionIndex],directionIndex,moon:currentMoon,birth:Date.now()};
       if(live.current&&!controller.signal.aborted){
         if(mode==='daily'){
+          // Same in-memory draw is shown on the separate reading route.
+          rememberDailyDraw(item);
           // No one-second waiting, ceremonial reveal, transfer, or second button.
           cards.current=[item];
           setItems([item]);
@@ -272,7 +275,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
     <header className="rune-3d-header">
       <p className="loc-eyebrow">LunaRunes · 符文顯現</p>
       <h1>{label}</h1>
-      <p>{mode==='daily'?'抽取一枚符文，以真實月相與方向閱讀每日五項原始指引。抽取完成即可在舞台下方直接閱讀。':'抽中時由巨大符文字或漂浮卡圖登場，專屬 Effekseer 魔法鋪滿舞台，再一起歸位；抽牌規則維持不變。'}</p>
+      <p>{mode==='daily'?'抽取一枚符文，以真實月相與方向決定結果；五項原始指引由獨立解析頁呈現。':'抽中時由巨大符文字或漂浮卡圖登場，專屬 Effekseer 魔法鋪滿舞台，再一起歸位；抽牌規則維持不變。'}</p>
     </header>
     <nav className="rune-3d-toolbar" aria-label="顯示與模式切換">
       <span className="rune-3d-toolbar-label">{isList?(group?group.name+'組':'九大群組'):'真實月相：'+moon+' · '+items.length+' 枚'}</span>
@@ -352,7 +355,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
             aria-label="本次召喚完成後的操作">
             <p className="rune-3d-ritual-title">召喚完成，{items.length} 枚符文</p>
             <p className="rune-3d-ritual-instructions">
-              {mode==='daily'?'今日符文已抽取完成。每日指引已自動顯示，可隨時重新查看。':
+              {mode==='daily'?'今日符文已抽取完成。可進入獨立解析頁閱讀原始指引。':
                 finished?'抽牌已結束，可重新查看籤詩或重新開始。':
                 items.length>=11?'已抽滿 11 枚符文，請查看籤詩或重新開始。':
                 '請選擇繼續抽牌、停止抽牌看籤詩，或重新開始；下方也能查看每枚符文的細節。'}
@@ -365,8 +368,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
                   disabled={busy}>停止抽牌看籤詩</button>
                 <button type="button" data-action="restart" onClick={reset}
                   disabled={busy}>重新開始抽牌</button>
-              </>:<button type="button" data-action="finish"
-                onClick={()=>setResultOpen(true)}>重新查看今日指引</button>}
+              </>:<ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily/reading')}>查看每日抽牌解析</ScopeLink>}
             </div>
           </div>:null}
           {items.length>0||phase==='transfer'?<div className="rune-3d-result-shelf"
@@ -391,7 +393,6 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
         </>}
     </section>
 
-    {mode==='daily'&&day?<DailyGuidanceReading item={day} onFocus={()=>setResultOpen(true)}/>:null}
     {isList?<div className="rune-3d-footer">
       {group?<button className="rune-skin-btn" type="button" onClick={()=>{setGroup(null);setSelected(null);setFocusedRune(null);}}>← 返回九個群組</button>:null}
       {group?<span>{group.english_name||''}　{group.desc||''}</span>:null}
@@ -410,7 +411,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       <nav className="rune-skin-controls" aria-label="符文三大功能">
         <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
         {MODES.filter(([id])=>id!==mode).map(([id,name])=>
-          <ScopeLink key={id} className="rune-skin-btn" href={runeFeatureHref(id==='daily'?'daily':'card/'+id)}>{name}</ScopeLink>)}
+          <ScopeLink key={id} className="rune-skin-btn" href={runeFeatureHref('card/'+id)}>{name}</ScopeLink>)}
       </nav>
     </footer>
     {selected&&<ResultDialog title={runeName(selected)+'之符文'} onClose={()=>setSelected(null)}>
@@ -431,7 +432,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
           realMoonPhase={day.moon} layout="home" expandKeywords/>
       </div>:null}
       <h3>{mode==='daily'?'每日符文指引':'指引籤詩'}</h3>
-      {day?<DailyGuidanceFields card={day.card} directionIndex={day.directionIndex}/>:<p>{reading}</p>}
+      {day?<ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily/reading')}>閱讀每日五項原始指引</ScopeLink>:<p>{reading}</p>}
       {mode!=='daily'?<button type="button" className="rune-skin-btn" onClick={reset}>開始新抽牌</button>:null}
     </ResultDialog>}
     </div>

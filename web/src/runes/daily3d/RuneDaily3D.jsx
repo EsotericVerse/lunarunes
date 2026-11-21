@@ -2,11 +2,12 @@ import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
-import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
+import {realMoonPhase} from '../../../../modules/lrs/card/daily/real-moon-phase.mjs';
 import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
 import {loadDrawCards,randomIndex} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
-import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../../modules/lrs/daily/DailyGuidanceReading.jsx';
+import {DAILY_GUIDANCE_FIELDS} from '../../../../modules/lrs/card/daily/guidance-fields.mjs';
+import {rememberDailyDraw,readDailyDraw} from '../../runtime/rune-daily-result.mjs';
 import '../../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 
@@ -15,7 +16,7 @@ const CARD_ROTATION=[0,90,-90,180];
 export default function RuneDaily3D({presentationSwitcher=null}){
 
   const [moon,setMoon]=useState(()=>realMoonPhase());
-  const [draw,setDraw]=useState(null);
+  const [draw,setDraw]=useState(readDailyDraw);
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState('');
   const [details,setDetails]=useState(false);
@@ -39,8 +40,10 @@ export default function RuneDaily3D({presentationSwitcher=null}){
       });
       if(!card)throw new Error('每日符文資料尚未就緒。');
       if(mounted.current){
-        setDraw({card,directionIndex:index,
-          direction:DIRECTIONS[index],birth:Date.now(),moon:currentMoon});
+        const item={card,directionIndex:index,
+          direction:DIRECTIONS[index],birth:Date.now(),moon:currentMoon};
+        rememberDailyDraw(item);
+        setDraw(item);
         // Daily has precisely one card, so reveal canonical details immediately.
         setDetails(false);
       }
@@ -53,7 +56,7 @@ export default function RuneDaily3D({presentationSwitcher=null}){
     <header className="rune-art-header">
       <p className="loc-eyebrow">LunaRunes · Living Daily</p>
       <h1>每日符文 · 月光指示</h1>
-      <p>抽取一枚符文，依當下真實月相與方向閱讀五項原始指引。結果會直接排在舞台下方，無須先開啟視窗。</p>
+      <p>抽取一枚符文，依當下真實月相與方向決定結果；五項原始指引在獨立解析頁閱讀。</p>
     </header>
     <nav className="rune-art-toolbar">
       <span className="rune-art-toolbar-label">真實月相：{moon}　·　每日指示</span>
@@ -62,13 +65,13 @@ export default function RuneDaily3D({presentationSwitcher=null}){
       <RuneArtStage mode="daily" items={draw?[draw]:[]}
         onSelect={()=>setDetails(true)} onBackgroundClick={!busy&&!draw?drawDaily:undefined}/>
       <div className="rune-art-stage-label" role="status">
-        {busy?'正在讀取符文與原始指引……':draw?'指引已呈現於下方；點選卡片可集中閱讀。':'輕觸月光，或使用下方按鈕抽取每日符文。'}
+        {busy?'正在讀取符文與原始指引……':draw?'抽牌完成；可進入每日抽牌解析，或點選卡片查看結果。':'輕觸月光，或使用下方按鈕抽取每日符文。'}
       </div>
     </section>
     {!draw?<div className="rune-art-daily-trigger"><button type="button" className="rune-skin-btn primary"
       onClick={drawDaily} disabled={busy}>{busy?'正在讀取…':'抽取每日符文'}</button></div>:null}
     {error?<p className="rune-skin-error" role="alert">{error}</p>:null}
-    {draw?<DailyGuidanceReading item={draw} onFocus={()=>setDetails(true)}/>:null}
+    {draw?<div className="rune-art-daily-trigger"><ScopeLink className="rune-skin-btn primary" href={runeFeatureHref('card/daily/reading')}>查看每日抽牌解析</ScopeLink></div>:null}
     <div className="rune-art-footer">
       <nav className="rune-skin-controls" aria-label="符文模式">
         <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
@@ -85,7 +88,7 @@ export default function RuneDaily3D({presentationSwitcher=null}){
           <div className="rune-art-modal-head rune-art-result-head">
             <div>
               <p className="loc-eyebrow">LUNARUNES · DAILY GUIDANCE</p>
-              <h2>每日符文指示</h2>
+              <h2>每日抽牌結果</h2>
             </div>
             <div className="rune-art-result-actions">
               <ScopeLink className="rune-art-result-home" href={runeFeatureHref('card')}>回到首頁</ScopeLink>
@@ -104,8 +107,8 @@ export default function RuneDaily3D({presentationSwitcher=null}){
                 <p>真實月相：{draw.moon}</p>
               </div>
             </div>
-            <div className="rune-art-daily-fields" aria-label="每日五項指示">
-              <DailyGuidanceFields card={draw.card} directionIndex={draw.directionIndex}/>
+            <div className="rune-art-daily-fields">
+              <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily/reading')}>閱讀五項原始指引</ScopeLink>
             </div>
           </div>
         </section>

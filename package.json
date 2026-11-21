@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "private": true,
   "type": "module",
-  "description": "lo3r@lrs LunaRunes: rune, boardgame, card, daily independently exported modules",
+  "description": "lo3r@lrs LunaRunes: rune, boardgame, card/daily nested capabilities",
   "scripts": {
     "dev:web": "vite --config web/vite.config.mjs",
     "build:web": "npm run check:framework && vite build --config web/vite.config.mjs",
@@ -29,9 +29,9 @@
     "./rune": "./modules/lrs/rune/index.mjs",
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
-    "./daily": "./modules/lrs/daily/index.mjs",
     "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs",
-    "./framework": "./modules/lrs/framework/index.mjs"
+    "./framework": "./modules/lrs/framework/index.mjs",
+    "./card/daily": "./modules/lrs/card/daily/index.mjs"
   },
   "dependencies": {
     "kysely": "0.29.8",

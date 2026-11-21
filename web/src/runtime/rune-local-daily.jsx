@@ -4,11 +4,11 @@ import {ScopeLink} from './rune-navigation.jsx';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {
   listLocalDailyRunes,addLocalDailyRune,updateLocalDailyRune,deleteLocalDailyRune
-} from '../../../modules/lrs/daily/local-records.mjs';
-import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/daily/record-slots.mjs';
+} from '../../../modules/lrs/card/daily/local-records.mjs';
+import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/card/daily/record-slots.mjs';
 import {normalizeDailyDraws,summarizeDailyDraws,rankDailyDraws,
-  pageDailyRanking,dailyTrend,DAILY_DIRECTIONS} from '../../../modules/lrs/daily/analytics.mjs';
-import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
+  pageDailyRanking,dailyTrend,DAILY_DIRECTIONS} from '../../../modules/lrs/card/daily/analytics.mjs';
+import {realMoonPhase} from '../../../modules/lrs/card/daily/real-moon-phase.mjs';
 
 // Standalone LRS Web: local device records only. No LOC session, private table,
 // shared database URL or pretend account is available in this runtime.
@@ -66,9 +66,10 @@ function useDeviceDaily(){
 function DailyLinks(){
   return <nav className="runes-home-nav lrs-daily-links" aria-label="每日符文頁面">
     <ScopeLink className="loc-button" href="/">回符文首頁</ScopeLink>
-    <ScopeLink className="loc-button" href="/daily/">每日符文抽牌</ScopeLink>
-    <ScopeLink className="loc-button" href="/daily/log/">本機每日紀錄</ScopeLink>
-    <ScopeLink className="loc-button" href="/daily/trend/">本機紀錄趨勢</ScopeLink>
+    <ScopeLink className="loc-button" href="/card/daily/">每日符文抽牌</ScopeLink>
+    <ScopeLink className="loc-button" href="/card/daily/reading/">每日抽牌解析</ScopeLink>
+    <ScopeLink className="loc-button" href="/card/daily/log/">本機每日紀錄</ScopeLink>
+    <ScopeLink className="loc-button" href="/card/daily/trend/">本機紀錄趨勢</ScopeLink>
   </nav>;
 }
 
