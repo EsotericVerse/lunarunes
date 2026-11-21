@@ -6,7 +6,7 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 
 ## 創作與功能
 - 可抽符文為 1–66；第零符「德」不抽。原始卡面、四方向位、月相和已定義的規則不擅改。
-- `lrs:rune`：符文圖像素材、3D、Effekseer（不包含 LOC Scope Hero/編輯）；`lrs:card`：抽牌；`lrs:daily`：每日符文與紀錄；`lrs:boardgame`：遊戲及獨立模擬人生核心。
+- `lrs:rune`：符文圖像素材、3D、Effekseer（不包含 LOC Scope Hero/編輯）；`lrs:card`：抽牌（含 `card/daily` 的每日抽牌、解析與本機紀錄）；`lrs:boardgame`：遊戲及獨立模擬人生核心。
 - 按作者指定意象與實際畫面直接修改；需要時才按需查閱 `.agents/SKILL-INDEX.md` 和相關 Skills。不要一次載入全部。
 - 不以自編測試、主觀評分、政策或文書替代作者實際驗收；遇到錯誤直接修正，不改符文定義。
 

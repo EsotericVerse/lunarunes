@@ -11,11 +11,14 @@ test('LRS owns every feature route without LOC Scope or Next.js aliases',()=>{
     ['/', 'home','lrs:rune'],
     ['/card/','card-hub','lrs:card'],
     ['/card/duel/','duel','lrs:card'],
-    ['/daily/','daily','lrs:daily'],
-    ['/card/daily/','daily','lrs:daily'],
+    ['/card/daily/','daily','lrs:card'],
+    ['/card/daily/reading/','daily-reading','lrs:card'],
+    ['/daily/','daily','lrs:card'],
     ['/card/list/','list','lrs:rune'],
-    ['/daily/log/','daily-log','lrs:daily'],
-    ['/daily/trend/','daily-trend','lrs:daily'],
+    ['/card/daily/log/','daily-log','lrs:card'],
+    ['/card/daily/trend/','daily-trend','lrs:card'],
+    ['/daily/log/','daily-log','lrs:card'],
+    ['/daily/trend/','daily-trend','lrs:card'],
     ['/game/','game','lrs:boardgame'],
     ['/game/room/','game','lrs:boardgame'],
     ['/novel/moonwriter/','novel-moonwriter','lrs:reading'],
@@ -29,19 +32,22 @@ test('LRS owns every feature route without LOC Scope or Next.js aliases',()=>{
   }
   // Three LRS-owned module roots must resolve to live component contracts.
   assert.equal(resolveLrsFeatureRoute('/card/').view,'card-hub');
-  assert.deepEqual(resolveLrsFeatureRoute('/daily/').params,{feature:'daily'});
-  assert.equal(resolveLrsFeatureRoute('/daily/').view,'rune-presentation');
+  assert.deepEqual(resolveLrsFeatureRoute('/card/daily/').params,{feature:'daily'});
+  assert.equal(resolveLrsFeatureRoute('/card/daily/').view,'rune-presentation');
+  assert.equal(resolveLrsFeatureRoute('/card/daily/reading/').view,'daily-reading');
   assert.equal(resolveLrsFeatureRoute('/game/').view,'game-board');
-  assert.equal(resolveLrsFeatureRoute('/card/daily/').view,resolveLrsFeatureRoute('/daily/').view);
+  assert.equal(resolveLrsFeatureRoute('/daily/').path,'/card/daily');
+  assert.equal(resolveLrsFeatureRoute('/daily/log/').path,'/card/daily/log');
+  assert.equal(resolveLrsFeatureRoute('/daily/trend/').path,'/card/daily/trend');
   assert.equal(resolveLrsFeatureRoute('/lrunes/').found,false);
   assert.equal(resolveLrsFeatureRoute('/api/lrs/public-read').found,false);
   assert.equal(resolveLrsFeatureRoute('/card/daily?d=2d').found,false);
   assert.equal(resolveLrsFeatureRoute('/novel/moonwriter/INVALID-UID').found,false);
   assert.equal(resolveLrsFeatureRoute('/novel/moonwriter/104D20F5/').params.uid,'104D20F5');
 });
-test('registers five independent modules, validating uniqueness',()=>{
+test('registers four independent modules, with daily inside card',()=>{
   const f=createLrsFramework();
-  assert.equal(f.listModules().length,5);
+  assert.equal(f.listModules().length,4);
   assert.deepEqual(
     [...new Set(LRS_FEATURE_ROUTES.map(x=>x.module))].sort(),
     LRS_FEATURE_MODULES.map(x=>x.id).sort()

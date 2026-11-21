@@ -1,28 +1,13 @@
 'use client';
 
-import {runeImage,runeName} from '../rune/rune-directory.mjs';
+import {runeImage,runeName} from '../../rune/rune-directory.mjs';
 import './daily-guidance-reading.css';
 
-// Original five source fields and their canonical display order.
-// This module only presents already-loaded content; it never requests data.
-export const DAILY_GUIDANCE_FIELDS=Object.freeze([
-  ['sit_q','狀況形容'],
-  ['sit_a','狀況表達'],
-  ['daily_r','每日占卜提醒'],
-  ['daily_g','每日占卜引導'],
-  ['daily_b','每日占卜祝福']
-]);
+import {DAILY_GUIDANCE_FIELDS,readDailyGuidance} from './guidance-fields.mjs';
+export {DAILY_GUIDANCE_FIELDS,readDailyGuidance} from './guidance-fields.mjs';
 
 const CARD_PHASES=Object.freeze({1:'新月',2:'上弦',3:'滿月',4:'下弦'});
 const CARD_ROTATIONS=Object.freeze([0,90,-90,180]);
-
-export function readDailyGuidance(card,directionIndex){
-  const position=Number(directionIndex)+1;
-  return DAILY_GUIDANCE_FIELDS.map(([key,label],index)=>({
-    key,label,index,
-    text:String(card?.rune_etc?.[key]?.[position]||'').trim()
-  })).filter(field=>field.text);
-}
 
 export function DailyGuidanceFields({card,directionIndex}){
   const fields=readDailyGuidance(card,directionIndex);

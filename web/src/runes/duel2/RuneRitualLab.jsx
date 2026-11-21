@@ -187,7 +187,7 @@ export default function RuneRitualLab({presentationSwitcher=null}){
         <ScopeLink href={runeFeatureHref('')} className="rune-skin-btn">回符文首頁</ScopeLink>
         <ScopeLink href={runeFeatureHref('card')} className="rune-skin-btn">← 符文展示首頁</ScopeLink>
         <ScopeLink href={runeFeatureHref('card/list')} className="rune-skin-btn">切換指定圖鑑</ScopeLink>
-        <ScopeLink href={runeFeatureHref('daily')} className="rune-skin-btn">每日符文</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card/daily')} className="rune-skin-btn">每日符文</ScopeLink>
       </nav>
     </div>
     <details className="rune-art-draw-guide" aria-label="占卜張數說明">
