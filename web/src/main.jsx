@@ -3,11 +3,11 @@ import {createRoot} from 'react-dom/client';
 import RuneApp from './RuneApp.jsx';
 import {bindRunePublicReadPort,warmRuneBaseSession} from './runtime/rune-public-port.mjs';
 import {runePublicReadUrl} from './runtime/rune-public-url.mjs';
-import '../../app/styles/tokens.css';
-import '../../app/styles/components.css';
-import '../../app/styles/scope-system.css';
+import './styles/tokens.css';
+import './styles/components.css';
+import './styles/scope-system.css';
 import './rune-feature-presentation.css';
-import '../../app/styles/runes.css';
+import './styles/runes.css';
 import './style.css';
 
 // Browser Web reads its own LRS Worker API; Capacitor may use a separately

@@ -1,4 +1,4 @@
-import {bindCardDialect} from '../../../app/lrunes/rune-draw-core.mjs';
+import {bindCardDialect} from '../runes/rune-draw-core.mjs';
 import {lrsCardRune66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import {readRuneBaseSession,storeRuneBaseSession,clearRuneBaseMemory,
   runeBaseFetchQuery,reuseRuneBaseSession} from './rune-base-session.mjs';

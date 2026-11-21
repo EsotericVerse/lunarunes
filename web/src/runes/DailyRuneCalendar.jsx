@@ -1,7 +1,5 @@
-'use client';
-
 import {useMemo} from 'react';
-import {realMoonPhase} from '../../modules/lrs/daily/real-moon-phase.mjs';
+import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
 
 const WEEKDAYS=['日','一','二','三','四','五','六'];
 

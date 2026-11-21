@@ -1,5 +1,5 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import DailyRuneCalendar from '../../../app/lrunes/DailyRuneCalendar.jsx';
+import DailyRuneCalendar from '../runes/DailyRuneCalendar.jsx';
 import {ScopeLink} from './rune-navigation.jsx';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {

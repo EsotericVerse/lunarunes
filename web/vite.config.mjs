@@ -4,27 +4,12 @@ import {fileURLToPath} from 'node:url';
 
 const webRoot=fileURLToPath(new URL('.',import.meta.url));
 const repositoryRoot=fileURLToPath(new URL('..',import.meta.url));
-const local=path=>fileURLToPath(new URL(path,import.meta.url));
-const runeNav=local('./src/runtime/rune-navigation.jsx');
-const scopeLink=local('./src/runtime/scope-link.jsx');
-const read=local('./src/runtime/rune-public-port.mjs');
-const queries=local('./src/runtime/rune-query-hooks.jsx');
-// LRS reads its own rune data and reuses card/game components.
-// LOC Scope editing and home-frame imports are deliberately not adapted here.
-const runeAliases=[
-  {find:/^(?:\.\.\/)+modular\/routing\/scope-registry(?:\.js)?$/,replacement:runeNav},
-  {find:/^(?:\.\.\/)+modular\/use-native-navigation(?:\.js)?$/,replacement:runeNav},
-  {find:/^(?:\.\.\/)+modular\/ScopeLink(?:\.jsx)?$/,replacement:scopeLink},
-  {find:/^(?:\.\.\/)+loc\/auth\/use-account(?:\.js)?$/,replacement:runeNav},
-  {find:/^(?:\.\.\/)+loc\/db\/db-query\.mjs$/,replacement:read},
-  {find:/^(?:\.\.\/)+packages\/zenstack\/client-queries(?:\.mjs|\.js)?$/,replacement:queries},
-  {find:'next/dynamic',replacement:local('./src/runtime/next-dynamic.jsx')}
-];
+
+// LRS Web and IPA share one Vite build. No Next.js, LOC aliases or SSR shim.
 export default defineConfig({
   root:webRoot,
   plugins:[react()],
   base:'/',
-  resolve:{alias:runeAliases},
   server:{fs:{allow:[repositoryRoot]}},
   build:{outDir:'../dist/web-app',emptyOutDir:true,sourcemap:false,target:'es2022'}
 });

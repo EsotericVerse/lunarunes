@@ -1,25 +1,21 @@
-'use client';
-
 import {lazy,Suspense,useEffect,useRef,useState} from 'react';
 import {motion,useReducedMotion} from 'motion/react';
-import {selectRows} from '../loc/db/db-query.mjs';
+import {selectRows} from '../runtime/rune-public-port.mjs';
 import RuneArtStage from './visual/RuneArtStage';
 import RuneCardInfo from './RuneCardInfo';
-import EffekseerStage from '../../modules/lrs/rune/vfx/EffekseerStage';
-import {RUNE_GLYPH_STYLES,runeGlyphProfile} from '../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
-import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../modules/lrs/rune/rune-directory.mjs';
-import {navigationHref} from '../modular/routing/scope-registry.js';
-import useNativeNavigation from '../modular/use-native-navigation';
-import ScopeLink from '../modular/ScopeLink';
-import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../modules/lrs/card/zmodel/lrs-card-model.mjs';
-import '../../modules/lrs/rune/styles/skin-lab.css';
-import '../../modules/lrs/rune/art/rune-art-layout.css';
-import '../../modules/lrs/rune/vfx/effekseer-stage.css';
-import '../../modules/lrs/rune/styles/rune-chamber.css';
+import EffekseerStage from '../../../modules/lrs/rune/vfx/EffekseerStage';
+import {RUNE_GLYPH_STYLES,runeGlyphProfile} from '../../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
+import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../../modules/lrs/rune/rune-directory.mjs';
+import {ScopeLink,runeFeatureHref} from '../runtime/rune-navigation.jsx';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import '../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../modules/lrs/rune/art/rune-art-layout.css';
+import '../../../modules/lrs/rune/vfx/effekseer-stage.css';
+import '../../../modules/lrs/rune/styles/rune-chamber.css';
 
 // The room is loaded only when a visitor opens a rune; never render 66 canvases.
-const RuneChamber=lazy(()=>import('../../modules/lrs/rune/RuneChamber.jsx'));
-const RuneExtrudedGlyph=lazy(()=>import('../../modules/lrs/rune/vfx/RuneExtrudedGlyph'));
+const RuneChamber=lazy(()=>import('../../../modules/lrs/rune/RuneChamber.jsx'));
+const RuneExtrudedGlyph=lazy(()=>import('../../../modules/lrs/rune/vfx/RuneExtrudedGlyph'));
 
 // Nine canonical groups, eight runes each except the last group, which also
 // carries rune 0 (德 / Rune Zero, excluded from card draw): 0, 65, 66.
@@ -47,7 +43,7 @@ function groupIndex(row){
 }
 
 export default function Rune3DLibrary({presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [allRunes,setAllRunes]=useState([]);
   const [groupRows,setGroupRows]=useState([]);
   const [groupError,setGroupError]=useState('');
@@ -299,9 +295,9 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
 
     <footer className="rune-3d-footer">
       <nav className="rune-skin-controls" aria-label="符文圖鑑導覽">
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','',native)} native={native}>回符文首頁</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card/duel',native)} native={native}>符文抽牌</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card/daily',native)} native={native}>每日符文</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/duel')}>符文抽牌</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily')}>每日符文</ScopeLink>
       </nav>
     </footer>
 

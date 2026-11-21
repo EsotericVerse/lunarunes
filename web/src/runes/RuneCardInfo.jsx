@@ -1,9 +1,7 @@
-'use client';
-import {useState} from 'react';
-import dynamic from 'next/dynamic';
-import {runeGlyphProfile} from '../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
+import {lazy,Suspense,useState} from 'react';
+import {runeGlyphProfile} from '../../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
 
-const RuneExtrudedGlyph=dynamic(()=>import('../../modules/lrs/rune/vfx/RuneExtrudedGlyph'),{ssr:false,loading:()=>null});
+const RuneExtrudedGlyph=lazy(()=>import('../../../modules/lrs/rune/vfx/RuneExtrudedGlyph'));
 
 export function RuneImage({src,alt,className,card,fallbackText,glyphFirst=false,...imgProps}){
   const [imageFailed,setImageFailed]=useState(false);
@@ -14,7 +12,7 @@ export function RuneImage({src,alt,className,card,fallbackText,glyphFirst=false,
       return <span className={className} role="img" aria-label={alt}
         data-glyph-family={profile.family} data-glyph-finish={profile.finish}
         style={{'--rune-ink':profile.ink}}>
-        <RuneExtrudedGlyph word={word} profile={profile}/>
+        <Suspense fallback={null}><RuneExtrudedGlyph word={word} profile={profile}/></Suspense>
       </span>;
     }
   }

@@ -1,19 +1,15 @@
-'use client';
-
 import {useEffect,useRef,useState} from 'react';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {createPortal} from 'react-dom';
-import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
-import {navigationHref} from '../../modular/routing/scope-registry.js';
-import useNativeNavigation from '../../modular/use-native-navigation';
-import ScopeLink from '../../modular/ScopeLink';
+import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
+import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
 import {randomIndex,loadDrawCards,buildFixedReading} from '../rune-draw-core.mjs';
-import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
-import {RUNE_ALL_DRAW_MODES} from '../../../modules/lrs/card/rune-draw-modes.mjs';
+import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
+import {RUNE_ALL_DRAW_MODES} from '../../../../modules/lrs/card/rune-draw-modes.mjs';
 import RuneCardInfo from '../RuneCardInfo';
-import '../../../modules/lrs/rune/styles/skin-lab.css';
-import '../../../modules/lrs/rune/art/rune-art-layout.css';
+import '../../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 
 const MAX_DRAW=11;
 const REVEAL_MS=1000;
@@ -60,7 +56,7 @@ function RuneDrawCardDialog({item,onClose}){
     </section>
   </div>;
 }
-function RuneDrawResultDialog({items,reading,homeHref,homeHrefNative=false,onRestart,onClose}){
+function RuneDrawResultDialog({items,reading,homeHref,onRestart,onClose}){
   const dialogRef=useRuneDialogFocus(onClose);
   return <div className="rune-art-modal-backdrop rune-art-result-backdrop"
     role="presentation" onClick={onClose}>
@@ -72,7 +68,7 @@ function RuneDrawResultDialog({items,reading,homeHref,homeHrefNative=false,onRes
           <h2>本次占卜籤詩</h2>
         </div>
         <div className="rune-art-result-actions">
-          <ScopeLink className="rune-art-result-home" href={homeHref} native={homeHrefNative}>回到首頁</ScopeLink>
+          <ScopeLink className="rune-art-result-home" href={homeHref}>回到首頁</ScopeLink>
           <button type="button" className="rune-art-result-new" onClick={onRestart}>開始新抽牌</button>
           <button type="button" className="rune-art-result-close" onClick={onClose}
             aria-label="關閉占卜結果">×</button>
@@ -94,7 +90,7 @@ function RuneDrawResultDialog({items,reading,homeHref,homeHrefNative=false,onRes
 }
 const pause=milliseconds=>new Promise(done=>setTimeout(done,milliseconds));
 export default function RuneRitualLab({presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [items,setItems]=useState([]);
   const [busy,setBusy]=useState(false);
   const [finished,setFinished]=useState(false);
@@ -188,10 +184,10 @@ export default function RuneRitualLab({presentationSwitcher=null}){
     {error?<p className="rune-skin-error" role="alert">{error}</p>:null}
     <div className="rune-art-footer">
       <nav className="rune-skin-controls" aria-label="返回與模式切換">
-        <ScopeLink href={navigationHref('lrunes','',native)} native={native} className="rune-skin-btn">回符文首頁</ScopeLink>
-        <ScopeLink href={navigationHref('lrunes','card',native)} native={native} className="rune-skin-btn">← 符文展示首頁</ScopeLink>
-        <ScopeLink href={navigationHref('lrunes','card/list',native)} native={native} className="rune-skin-btn">切換指定圖鑑</ScopeLink>
-        <ScopeLink href={navigationHref('lrunes','card/daily',native)} native={native} className="rune-skin-btn">每日符文</ScopeLink>
+        <ScopeLink href={runeFeatureHref('')} className="rune-skin-btn">回符文首頁</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card')} className="rune-skin-btn">← 符文展示首頁</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card/list')} className="rune-skin-btn">切換指定圖鑑</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card/daily')} className="rune-skin-btn">每日符文</ScopeLink>
       </nav>
     </div>
     <details className="rune-art-draw-guide" aria-label="占卜張數說明">
@@ -214,8 +210,7 @@ export default function RuneRitualLab({presentationSwitcher=null}){
     ):null}
     {resultOpen&&finished&&typeof document!=='undefined'?createPortal(
       <RuneDrawResultDialog items={items} reading={reading}
-        homeHref={navigationHref('lrunes','card',native)}
-        homeHrefNative={native}
+        homeHref={runeFeatureHref('card')}
         onRestart={reset} onClose={()=>setResultOpen(false)}/>,document.body
     ):null}
     </div>
