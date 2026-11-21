@@ -1,19 +1,17 @@
-'use client';
-
 import {useEffect,useRef,useState} from 'react';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {createPortal} from 'react-dom';
-import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
-import {navigationHref} from '../../modular/routing/scope-registry.js';
-import useNativeNavigation from '../../modular/use-native-navigation';
-import ScopeLink from '../../modular/ScopeLink';
+import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
+import {navigationHref} from '../../runtime/rune-navigation.jsx';
+import useNativeNavigation from '../../runtime/rune-navigation.jsx';
+import {ScopeLink} from '../../runtime/rune-navigation.jsx';
 import {randomIndex,loadDrawCards,buildFixedReading} from '../rune-draw-core.mjs';
-import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
-import {RUNE_ALL_DRAW_MODES} from '../../../modules/lrs/card/rune-draw-modes.mjs';
+import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
+import {RUNE_ALL_DRAW_MODES} from '../../../../modules/lrs/card/rune-draw-modes.mjs';
 import RuneCardInfo from '../RuneCardInfo';
-import '../../../modules/lrs/rune/styles/skin-lab.css';
-import '../../../modules/lrs/rune/art/rune-art-layout.css';
+import '../../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 
 const MAX_DRAW=11;
 const REVEAL_MS=1000;

@@ -1,24 +1,20 @@
-'use client';
-
-import {useEffect,useState} from 'react';
-import dynamic from 'next/dynamic';
-import {prepareTransientResourceAction} from '../../packages/zenstack/client-queries';
-import '../../modules/lrs/rune/styles/rune-presentation-switch.css';
+import {lazy,Suspense,useEffect,useState} from 'react';
+import '../../../modules/lrs/rune/styles/rune-presentation-switch.css';
 
 // Keep the canonical 2D original-art module entirely independent of the
 // licensed Effekseer/Three.js renderer. Load only the selected presentation.
 const VISUALS=Object.freeze({
   duel:{
-    '2d':dynamic(()=>import('./duel2/RuneRitualLab'),{ssr:false}),
-    '3d':dynamic(()=>import('./Rune3DPreview'),{ssr:false})
+    '2d':lazy(()=>import('./duel2/RuneRitualLab')),
+    '3d':lazy(()=>import('./Rune3DPreview'))
   },
   daily:{
-    '2d':dynamic(()=>import('./daily3d/RuneDaily3D'),{ssr:false}),
-    '3d':dynamic(()=>import('./Rune3DPreview'),{ssr:false})
+    '2d':lazy(()=>import('./daily3d/RuneDaily3D')),
+    '3d':lazy(()=>import('./Rune3DPreview'))
   },
   list:{
-    '2d':dynamic(()=>import('./list2/RuneAtlasLab'),{ssr:false}),
-    '3d':dynamic(()=>import('./Rune3DLibrary'),{ssr:false})
+    '2d':lazy(()=>import('./list2/RuneAtlasLab')),
+    '3d':lazy(()=>import('./Rune3DLibrary'))
   }
 });
 const VIEW_LABELS=Object.freeze({'2d':'2D 原創美術','3d':'3D 符文特效'});
@@ -33,13 +29,6 @@ export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
   const allowedViews=Object.keys(VISUALS[selectedFeature]);
   const fallback=canonicalView(defaultView,'3d',allowedViews);
   const [view,setView]=useState(fallback);
-  const [entryReadyFor,setEntryReadyFor]=useState('');
-  // The old page's queries are discarded before the new 2D/3D scene mounts.
-  // An existing draw/game state is never cleared by a background timer.
-  useEffect(()=>{
-    prepareTransientResourceAction('navigation');
-    setEntryReadyFor(selectedFeature);
-  },[selectedFeature]);
   useEffect(()=>{
     const read=()=>{
       const params=new URLSearchParams(window.location.search);
@@ -55,7 +44,6 @@ export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
     if(!allowedViews.includes(next)||next===view)return;
     // Old presentation (including GPU textures) unmounts on the key change.
     // Do not reset the entire page again or delete an in-progress draw.
-    prepareTransientResourceAction('chart');
     setView(next);
     const url=new URL(window.location.href);
     url.searchParams.set('d',next);
@@ -69,11 +57,9 @@ export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
         className="rune-presentation-switch-option" onClick={()=>selectView(key)}>{VIEW_LABELS[key]}</button>)}
     </div>
   </div>;
-  if(entryReadyFor!==selectedFeature)
-    return <main className="loc-next-main"><p className="scope-status" role="status">正在清理舊資源，載入符文場域…</p></main>;
   const Component=VISUALS[selectedFeature][view];
   const extraProps=view==='3d'&&selectedFeature!=='list'?{mode:selectedFeature}:{};
-  return <Component key={selectedFeature+'-'+view}
-    {...extraProps}
-    presentationSwitcher={modeControl}/>;
+  return <Suspense fallback={<main className="loc-next-main"><p className="scope-status" role="status">正在載入符文畫面…</p></main>}>
+    <Component key={selectedFeature+'-'+view} {...extraProps} presentationSwitcher={modeControl}/>
+  </Suspense>;
 }

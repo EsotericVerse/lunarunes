@@ -1,18 +1,16 @@
-'use client';
-
 import {useEffect,useMemo,useState} from 'react';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import RuneCardInfo from '../RuneCardInfo';
 import {createPortal} from 'react-dom';
-import {selectRows} from '../../loc/db/db-query.mjs';
-import {navigationHref} from '../../modular/routing/scope-registry.js';
-import useNativeNavigation from '../../modular/use-native-navigation';
-import ScopeLink from '../../modular/ScopeLink';
-import {runeImage,groupImage} from '../../../modules/lrs/rune/rune-directory.mjs';
-import '../../../modules/lrs/rune/styles/skin-lab.css';
-import '../../../modules/lrs/rune/art/rune-art-layout.css';
-import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import {selectRows} from '../../runtime/rune-public-port.mjs';
+import {navigationHref} from '../../runtime/rune-navigation.jsx';
+import useNativeNavigation from '../../runtime/rune-navigation.jsx';
+import {ScopeLink} from '../../runtime/rune-navigation.jsx';
+import {runeImage,groupImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
+import '../../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../../modules/lrs/rune/art/rune-art-layout.css';
+import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
 const DETAIL_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords','extra_rules','extra_notes','rune_evolution_history','myth_story','soul_question','practice_challenge','ritual_advice','harmony_advice');

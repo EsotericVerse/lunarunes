@@ -1,18 +1,16 @@
-'use client';
-
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
-import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
-import {navigationHref} from '../../modular/routing/scope-registry.js';
-import useNativeNavigation from '../../modular/use-native-navigation';
-import ScopeLink from '../../modular/ScopeLink';
+import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
+import {navigationHref} from '../../runtime/rune-navigation.jsx';
+import useNativeNavigation from '../../runtime/rune-navigation.jsx';
+import {ScopeLink} from '../../runtime/rune-navigation.jsx';
 import {loadDrawCards,randomIndex} from '../rune-draw-core.mjs';
-import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
-import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../modules/lrs/daily/DailyGuidanceReading.jsx';
-import '../../../modules/lrs/rune/styles/skin-lab.css';
-import '../../../modules/lrs/rune/art/rune-art-layout.css';
+import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
+import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../../modules/lrs/daily/DailyGuidanceReading.jsx';
+import '../../../../modules/lrs/rune/styles/skin-lab.css';
+import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
 const CARD_ROTATION=[0,90,-90,180];

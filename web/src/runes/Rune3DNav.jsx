@@ -1,8 +1,6 @@
-'use client';
-
-import {navigationHref} from '../modular/routing/scope-registry.js';
-import useNativeNavigation from '../modular/use-native-navigation';
-import ScopeLink from '../modular/ScopeLink';
+import {navigationHref} from '../runtime/rune-navigation.jsx';
+import useNativeNavigation from '../runtime/rune-navigation.jsx';
+import {ScopeLink} from '../runtime/rune-navigation.jsx';
 
 export default function RuneArtNav(){
   const native=useNativeNavigation();
