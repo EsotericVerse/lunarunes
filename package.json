@@ -6,12 +6,13 @@
   "description": "lo3r@lrs LunaRunes: rune, boardgame, card, daily independently exported modules",
   "scripts": {
     "dev:web": "vite --config web/vite.config.mjs",
-    "build:web": "vite build --config web/vite.config.mjs",
+    "build:web": "npm run check:framework && vite build --config web/vite.config.mjs",
     "preview:web": "vite preview --config web/vite.config.mjs",
     "build:lrs:assets": "node scripts/prepare-lrs-release-assets.mjs",
     "build:pages": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-pages.mjs",
     "build:ipa": "npm run build:pages -- --target=ios",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "check:framework": "node --test scripts/check-lrs-framework.test.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
