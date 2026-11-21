@@ -1,6 +1,6 @@
 # LunaRunes（月符／符韻）
 
-LRS 獨立符文、美術與遊戲專案。Web 使用 **Vite + React**，Cloudflare Worker 負責 LRS 自己的靜態資源與 API。沒有 Next.js、App Router、SSR 或 LOC Scope 的程式碼副本。
+LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modules/lrs/framework/`**；路由、模組註冊與資源生命週期不依賴 React、Vite 或 LOC。Web 使用 React 適配層和 Vite 建置工具，Cloudflare Worker 負責 LRS 自己的靜態資源與 API。沒有 Next.js、App Router、SSR 或 LOC Scope 的程式碼副本。
 
 - 開發：`npm ci`、`npm run dev:web`
 - Web/IPA 共用的發布目錄：`npm run build:pages`，輸出 `dist/pages`（Vite 及原始符文素材）
@@ -14,3 +14,11 @@ LRS 獨立符文、美術與遊戲專案。Web 使用 **Vite + React**，Cloudfl
 - LRS 不改動 LOC／LAS 的程式與部署，也不觸發其他 Repository
 
 請以目前有效的 Cloudflare Builds 設定為準；Build 成功不代表 HTTP、API 或實際 WebGL 功能已經通過驗收。Cloudflare DNS、Access、Token、Secret 由管理者維護。
+
+## LRS Framework
+
+- **核心**：`modules/lrs/framework/index.mjs`，持有 LRS 模組註冊、唯一功能路由表、路由狀態與離頁釋放通知；純 ESM，無 DOM／React／Vite 相依。
+- **Web 適配層**：`web/src/runtime/lrs-app-runtime.mjs` 管理 History API、公開資料讀取離頁釋放；`lrs-feature-views.jsx` 將框架 View 映射到按需載入的 React 元件。
+- **資源規則**：只清理上一功能頁的暫時公開查詢與該頁元件資源；67 符及九組 Session、本機每日紀錄、3D GPU 效果的元件卸載規則不變。
+- **Web／IPA**：共用同一套框架與路由語意，Web 按需讀取已發布圖片，IPA 保留本機實體素材；打包工具可替換而不必重寫功能模組。
+- **邊界**：LOC 的 Scope、Hero、SSO 與 LAS 的 Plugins 不屬於 LRS Framework。

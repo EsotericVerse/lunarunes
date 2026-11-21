@@ -1,37 +1,20 @@
-import {lazy,Suspense,useEffect,useState} from 'react';
-import RuneFeatureIndex from './RuneFeatureIndex.jsx';
-import RuneCardHub from './runes/RuneCardHub.jsx';
+import {Suspense,useEffect,useSyncExternalStore} from 'react';
 import RunePageResourceBoundary from './runtime/RunePageResourceBoundary.jsx';
-import {pageFromPath} from './runtime/rune-routes.mjs';
-// LRS owns the 2D/3D presentation components; only the selected view is loaded.
-const RuneUnifiedView=lazy(()=>import('./runes/RuneUnifiedView.jsx'));
-const RuneArtNav=lazy(()=>import('./runes/Rune3DNav.jsx'));
-const RuneLocalDailyPage=lazy(()=>import('./runtime/rune-local-daily.jsx'));
-const MoonwriterPage=lazy(()=>import('./reading/MoonwriterPages.jsx'));
-const GameBoard=lazy(()=>import('../../modules/lrs/boardgame/GameBoard.jsx'));
+import LrsViewErrorBoundary from './runtime/LrsViewErrorBoundary.jsx';
+import {lrsFramework,attachLrsBrowser} from './runtime/lrs-app-runtime.mjs';
+import {LrsFeatureRenderer} from './runtime/lrs-feature-views.jsx';
 
-// This is the standalone LRS feature host, not the LOC-owned lrunes Scope.
+// LRS core selects module/route; React is only one possible renderer adapter.
 export default function RuneApp(){
-  const [page,setPage]=useState(()=>pageFromPath(window.location.pathname));
-  useEffect(()=>{
-    const update=()=>setPage(pageFromPath(window.location.pathname));
-    window.addEventListener('popstate',update);
-    return()=>window.removeEventListener('popstate',update);
-  },[]);
+  const route=useSyncExternalStore(lrsFramework.subscribe,lrsFramework.getSnapshot,lrsFramework.getSnapshot);
+  useEffect(()=>attachLrsBrowser(),[]);
   return <div className="lrs-feature-host" data-lrs-independent-app="true">
-    {/* LOC owns the lrunes Scope, Hero, editing and global navigation. */}
-    <RunePageResourceBoundary routeKey={page}>
-    <Suspense fallback={<main className="loc-next-main"><p className="scope-status" role="status">正在載入月之符文…</p></main>}>
-      {page==='home'?<RuneFeatureIndex/>
-        :page==='novel-moonwriter'?<MoonwriterPage/>
-        :page.startsWith('novel-moonwriter:')?<MoonwriterPage key={page} uid={page.split(':')[1]}/>
-        :page==='card'?<RuneCardHub Navigation={RuneArtNav}/>
-        :page==='daily-log'||page==='daily-trend'?<RuneLocalDailyPage view={page==='daily-log'?'log':'trend'}/>
-        :page==='game'?<GameBoard/>
-        :['duel','daily','list'].includes(page)
-          ?<RuneUnifiedView feature={page} defaultView="3d"/>
-          :<main className="loc-next-main"><p className="scope-status" role="status">找不到此符文頁面。</p></main>}
-    </Suspense>
+    <LrsViewErrorBoundary key={route.key}>
+    <RunePageResourceBoundary routeKey={route.key}>
+      <Suspense fallback={<main className="loc-next-main"><p className="scope-status" role="status">正在載入符文功能…</p></main>}>
+        <LrsFeatureRenderer route={route}/>
+      </Suspense>
     </RunePageResourceBoundary>
+    </LrsViewErrorBoundary>
   </div>;
 }
