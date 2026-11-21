@@ -1,6 +1,6 @@
 # LunaRunes Skills
 
-依當次作品需要，從 `.agents/skills/` 選擇技能；不預先載入全部，也不以 Skill 建立額外測試或 Workflow。
+依當次作品需要，從 `.agents/skills/` 選擇技能；不預先載入全部，也不因載入 Skill 就自動增加測試或 Workflow。若本次工作有必要，可自行補充對應測試與驗證，不設全面禁令。
 
 優先視任務使用：`art-direction`、`game-ui-ux`、`game-feel`、`card-experience`、`effekseer-vfx`、`3d-rendering`、`game-performance`、`scene-blueprint`、`game-rules`、`life-simulation`。其他已有技能按需使用，不自動移除。
 
