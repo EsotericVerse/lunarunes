@@ -2,7 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {createPortal} from 'react-dom';
-import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
+import {realMoonPhase} from '../../../../modules/lrs/card/daily/real-moon-phase.mjs';
 import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
 import {randomIndex,loadDrawCards,buildFixedReading} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
