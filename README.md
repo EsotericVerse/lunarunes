@@ -22,3 +22,11 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 - **資源規則**：只清理上一功能頁的暫時公開查詢與該頁元件資源；67 符及九組 Session、本機每日紀錄、3D GPU 效果的元件卸載規則不變。
 - **Web／IPA**：共用同一套框架與路由語意，Web 按需讀取已發布圖片，IPA 保留本機實體素材；打包工具可替換而不必重寫功能模組。
 - **邊界**：LOC 的 Scope、Hero、SSO 與 LAS 的 Plugins 不屬於 LRS Framework。
+
+## /card、/daily、/game 路由歸屬
+
+- `/card/`、`/card/duel/` 與 `/card/list/`：LRS 原生符文卡牌、抽牌與圖鑑。
+- `/daily/`：LRS 每日符文正式入口；`/daily/log/`、`/daily/trend/` 提供本機紀錄與趨勢。
+- `/card/daily/`：保留舊連結，直接進入與 `/daily/` 相同的每日符文功能，不複製模組。
+- `/game/` 與 `/game/room/`：LRS 本機桌遊入口與現行遊戲頁。
+- LOC 的歷史 `/card`、`/daily`、`/game` 頁面只負責連往 `https://lrs.lo3rwang.cc`；LRS 不負責 LOC Scope 的 Hero、內容與權限。

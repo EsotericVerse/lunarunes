@@ -297,7 +297,7 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
       <nav className="rune-skin-controls" aria-label="符文圖鑑導覽">
         <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
         <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/duel')}>符文抽牌</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily')}>每日符文</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('daily')}>每日符文</ScopeLink>
       </nav>
     </footer>
 

@@ -11,6 +11,7 @@ test('LRS owns every feature route without LOC Scope or Next.js aliases',()=>{
     ['/', 'home','lrs:rune'],
     ['/card/','card-hub','lrs:card'],
     ['/card/duel/','duel','lrs:card'],
+    ['/daily/','daily','lrs:daily'],
     ['/card/daily/','daily','lrs:daily'],
     ['/card/list/','list','lrs:rune'],
     ['/daily/log/','daily-log','lrs:daily'],
@@ -26,6 +27,12 @@ test('LRS owns every feature route without LOC Scope or Next.js aliases',()=>{
     assert.equal(matched.module,module,path);
     assert.equal(matched.found,true,path);
   }
+  // Three LRS-owned module roots must resolve to live component contracts.
+  assert.equal(resolveLrsFeatureRoute('/card/').view,'card-hub');
+  assert.deepEqual(resolveLrsFeatureRoute('/daily/').params,{feature:'daily'});
+  assert.equal(resolveLrsFeatureRoute('/daily/').view,'rune-presentation');
+  assert.equal(resolveLrsFeatureRoute('/game/').view,'game-board');
+  assert.equal(resolveLrsFeatureRoute('/card/daily/').view,resolveLrsFeatureRoute('/daily/').view);
   assert.equal(resolveLrsFeatureRoute('/lrunes/').found,false);
   assert.equal(resolveLrsFeatureRoute('/api/lrs/public-read').found,false);
   assert.equal(resolveLrsFeatureRoute('/card/daily?d=2d').found,false);
