@@ -28,7 +28,12 @@ export default function RuneUnifiedView({feature='duel',defaultView='3d'}){
   const selectedFeature=Object.hasOwn(VISUALS,feature)?feature:'duel';
   const allowedViews=Object.keys(VISUALS[selectedFeature]);
   const fallback=canonicalView(defaultView,'3d',allowedViews);
-  const [view,setView]=useState(fallback);
+  // Respect the selected presentation on the very first render. A ?d=2d
+  // request must not briefly mount a costly Three.js/WebGL scene first.
+  const [view,setView]=useState(()=>canonicalView(
+    typeof window==='undefined'?null:new URLSearchParams(window.location.search).get('d'),
+    fallback,allowedViews
+  ));
   useEffect(()=>{
     const read=()=>{
       const params=new URLSearchParams(window.location.search);
