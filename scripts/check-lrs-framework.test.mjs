@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {runeAssetDirectoryUrl,runeAssetUrl} from '../modules/lrs/rune/asset-url.mjs';
 import assert from 'node:assert/strict';
 import {
   createLrsFramework,resolveLrsFeatureRoute,LRS_FEATURE_ROUTES,
@@ -61,4 +62,12 @@ test('transitions release transient work before notifying subscribers',()=>{
   f.dispose();
   assert.equal(events.at(-1),'leave:game:none');
   assert.equal(f.subscribe?.constructor,Function);
+});
+
+test('Effekseer directory URLs preserve valid paths and reject traversal',()=>{
+  assert.equal(runeAssetDirectoryUrl('vendor/effekseer/'),'/vendor/effekseer/');
+  assert.equal(runeAssetUrl('vendor/effekseer/effekseer.wasm'),'/vendor/effekseer/effekseer.wasm');
+  assert.throws(()=>runeAssetUrl('vendor/effekseer/'),/Unsafe/);
+  assert.throws(()=>runeAssetDirectoryUrl('vendor/../effekseer/'),/Unsafe/);
+  assert.throws(()=>runeAssetDirectoryUrl('vendor//effekseer/'),/Unsafe/);
 });

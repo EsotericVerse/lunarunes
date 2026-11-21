@@ -23,3 +23,13 @@ export function runeAssetUrl(relative){
   return (base||'')+'/'+source;
 }
 export const RUNE_WEB_ASSET_ORIGIN=base;
+
+/** A directory URL for authored effect collections, never a file identifier.
+ * Reuse the same strict segment validation as runeAssetUrl.
+ */
+export function runeAssetDirectoryUrl(directory){
+  const source=String(directory||'');
+  if(!source.endsWith('/')||source.endsWith('//'))
+    throw new Error('Unsafe Rune asset directory: '+source);
+  return runeAssetUrl(source.slice(0,-1))+'/';
+}
