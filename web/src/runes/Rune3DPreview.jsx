@@ -410,7 +410,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       <nav className="rune-skin-controls" aria-label="符文三大功能">
         <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
         {MODES.filter(([id])=>id!==mode).map(([id,name])=>
-          <ScopeLink key={id} className="rune-skin-btn" href={runeFeatureHref('card/'+id)}>{name}</ScopeLink>)}
+          <ScopeLink key={id} className="rune-skin-btn" href={runeFeatureHref(id==='daily'?'daily':'card/'+id)}>{name}</ScopeLink>)}
       </nav>
     </footer>
     {selected&&<ResultDialog title={runeName(selected)+'之符文'} onClose={()=>setSelected(null)}>

@@ -21,7 +21,9 @@ export const LRS_FEATURE_ROUTES=Object.freeze([
   route('home','lrs:rune','feature-index',/^\/$/),
   route('card-hub','lrs:card','card-hub',/^\/card$/),
   route('duel','lrs:card','rune-presentation',/^\/card\/duel$/,()=>({feature:'duel'})),
-  route('daily','lrs:daily','rune-presentation',/^\/card\/daily$/,()=>({feature:'daily'})),
+  // Canonical daily entry is /daily; keep /card/daily as a legacy deep-link.
+  // Both resolve to the exact same LRS daily renderer and rules.
+  route('daily','lrs:daily','rune-presentation',/^\/(?:daily|card\/daily)$/,()=>({feature:'daily'})),
   route('list','lrs:rune','rune-presentation',/^\/card\/list$/,()=>({feature:'list'})),
   route('daily-log','lrs:daily','daily-history',/^\/daily\/log$/,()=>({view:'log'})),
   route('daily-trend','lrs:daily','daily-history',/^\/daily\/trend$/,()=>({view:'trend'})),

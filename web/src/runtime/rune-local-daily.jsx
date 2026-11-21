@@ -66,6 +66,7 @@ function useDeviceDaily(){
 function DailyLinks(){
   return <nav className="runes-home-nav lrs-daily-links" aria-label="每日符文頁面">
     <ScopeLink className="loc-button" href="/">回符文首頁</ScopeLink>
+    <ScopeLink className="loc-button" href="/daily/">每日符文抽牌</ScopeLink>
     <ScopeLink className="loc-button" href="/daily/log/">本機每日紀錄</ScopeLink>
     <ScopeLink className="loc-button" href="/daily/trend/">本機紀錄趨勢</ScopeLink>
   </nav>;
