@@ -3,9 +3,7 @@ import {createPortal} from 'react-dom';
 import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {realMoonPhase} from '../../../../modules/lrs/daily/real-moon-phase.mjs';
-import {navigationHref} from '../../runtime/rune-navigation.jsx';
-import useNativeNavigation from '../../runtime/rune-navigation.jsx';
-import {ScopeLink} from '../../runtime/rune-navigation.jsx';
+import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
 import {loadDrawCards,randomIndex} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
 import DailyGuidanceReading,{DailyGuidanceFields,DAILY_GUIDANCE_FIELDS} from '../../../../modules/lrs/daily/DailyGuidanceReading.jsx';
@@ -15,7 +13,7 @@ import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
 const CARD_ROTATION=[0,90,-90,180];
 export default function RuneDaily3D({presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [moon,setMoon]=useState(()=>realMoonPhase());
   const [draw,setDraw]=useState(null);
   const [busy,setBusy]=useState(false);
@@ -73,9 +71,9 @@ export default function RuneDaily3D({presentationSwitcher=null}){
     {draw?<DailyGuidanceReading item={draw} onFocus={()=>setDetails(true)}/>:null}
     <div className="rune-art-footer">
       <nav className="rune-skin-controls" aria-label="符文模式">
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','',native)} native={native}>回符文首頁</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card',native)} native={native}>← 符文展示首頁</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card/duel',native)} native={native}>一般抽牌</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card')}>← 符文展示首頁</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/duel')}>一般抽牌</ScopeLink>
       </nav>
     </div>
     {details&&draw&&typeof document!=='undefined'?createPortal(
@@ -90,7 +88,7 @@ export default function RuneDaily3D({presentationSwitcher=null}){
               <h2>每日符文指示</h2>
             </div>
             <div className="rune-art-result-actions">
-              <ScopeLink className="rune-art-result-home" href={navigationHref('lrunes','card',native)} native={native}>回到首頁</ScopeLink>
+              <ScopeLink className="rune-art-result-home" href={runeFeatureHref('card')}>回到首頁</ScopeLink>
               <button type="button" className="rune-art-result-close"
                 onClick={()=>setDetails(false)} aria-label="關閉每日指示">×</button>
             </div>

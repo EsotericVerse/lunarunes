@@ -6,9 +6,7 @@ import RuneCardInfo from './RuneCardInfo';
 import EffekseerStage from '../../../modules/lrs/rune/vfx/EffekseerStage';
 import {RUNE_GLYPH_STYLES,runeGlyphProfile} from '../../../modules/lrs/rune/vfx/rune-glyph-library.mjs';
 import {groupImage,runeImage,runeName,runeNumbersForGroup} from '../../../modules/lrs/rune/rune-directory.mjs';
-import {navigationHref} from '../runtime/rune-navigation.jsx';
-import useNativeNavigation from '../runtime/rune-navigation.jsx';
-import {ScopeLink} from '../runtime/rune-navigation.jsx';
+import {ScopeLink,runeFeatureHref} from '../runtime/rune-navigation.jsx';
 import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
 import '../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../modules/lrs/rune/art/rune-art-layout.css';
@@ -45,7 +43,7 @@ function groupIndex(row){
 }
 
 export default function Rune3DLibrary({presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [allRunes,setAllRunes]=useState([]);
   const [groupRows,setGroupRows]=useState([]);
   const [groupError,setGroupError]=useState('');
@@ -297,9 +295,9 @@ export default function Rune3DLibrary({presentationSwitcher=null}){
 
     <footer className="rune-3d-footer">
       <nav className="rune-skin-controls" aria-label="符文圖鑑導覽">
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','',native)} native={native}>回符文首頁</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card/duel',native)} native={native}>符文抽牌</ScopeLink>
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','card/daily',native)} native={native}>每日符文</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/duel')}>符文抽牌</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('card/daily')}>每日符文</ScopeLink>
       </nav>
     </footer>
 

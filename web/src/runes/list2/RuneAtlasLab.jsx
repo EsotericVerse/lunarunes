@@ -4,9 +4,7 @@ import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import RuneCardInfo from '../RuneCardInfo';
 import {createPortal} from 'react-dom';
 import {selectRows} from '../../runtime/rune-public-port.mjs';
-import {navigationHref} from '../../runtime/rune-navigation.jsx';
-import useNativeNavigation from '../../runtime/rune-navigation.jsx';
-import {ScopeLink} from '../../runtime/rune-navigation.jsx';
+import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
 import {runeImage,groupImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
 import '../../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../../modules/lrs/rune/art/rune-art-layout.css';
@@ -60,7 +58,7 @@ function RuneInfoDialog({rune,onClose}){
   </div>,document.body);
 }
 export default function RuneAtlasLab({presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [groups,setGroups]=useState([]);
   const [group,setGroup]=useState(null);
   const [runes,setRunes]=useState([]);
@@ -192,9 +190,9 @@ export default function RuneAtlasLab({presentationSwitcher=null}){
     <footer className="rune-art-footer">
       <span>原創美術展示 · 保留符文原始卡面</span>
       <nav className="rune-skin-controls" aria-label="返回與模式切換">
-        <ScopeLink href={navigationHref('lrunes','',native)} native={native} className="rune-skin-btn">回符文首頁</ScopeLink>
-        <ScopeLink href={navigationHref('lrunes','card',native)} native={native} className="rune-skin-btn">← 符文展示首頁</ScopeLink>
-        <ScopeLink href={navigationHref('lrunes','card/duel',native)} native={native} className="rune-skin-btn">切換隨機抽牌</ScopeLink>
+        <ScopeLink href={runeFeatureHref('')} className="rune-skin-btn">回符文首頁</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card')} className="rune-skin-btn">← 符文展示首頁</ScopeLink>
+        <ScopeLink href={runeFeatureHref('card/duel')} className="rune-skin-btn">切換隨機抽牌</ScopeLink>
       </nav>
     </footer>
     {details?<RuneInfoDialog rune={details} onClose={closeDetails}/>:null}

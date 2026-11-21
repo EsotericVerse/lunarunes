@@ -3,9 +3,7 @@ import {motion,useReducedMotion} from 'motion/react';
 import {createPortal} from 'react-dom';
 import EffekseerStage,{WaitingEffekseerStage,RuneMistBackdrop} from '../../../modules/lrs/rune/vfx/EffekseerStage';
 import {shouldMountRuneMist,shouldPlayRunePrelude} from '../../../modules/lrs/rune/vfx/gpu-lifecycle.mjs';
-import {navigationHref} from '../runtime/rune-navigation.jsx';
-import useNativeNavigation from '../runtime/rune-navigation.jsx';
-import {ScopeLink} from '../runtime/rune-navigation.jsx';
+import {ScopeLink,runeFeatureHref} from '../runtime/rune-navigation.jsx';
 import {selectRows} from '../runtime/rune-public-port.mjs';
 import {realMoonPhase} from '../../../modules/lrs/daily/real-moon-phase.mjs';
 import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs';
@@ -79,7 +77,7 @@ function ResultDialog({title,children,onClose}){
   </div>,document.body);
 }
 export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
-  const native=useNativeNavigation();
+
   const [items,setItems]=useState([]);
   const [groups,setGroups]=useState([]);
   const [group,setGroup]=useState(null);
@@ -410,9 +408,9 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
     </div>:null}
     <footer className="rune-3d-footer">
       <nav className="rune-skin-controls" aria-label="符文三大功能">
-        <ScopeLink className="rune-skin-btn" href={navigationHref('lrunes','',native)} native={native}>回符文首頁</ScopeLink>
+        <ScopeLink className="rune-skin-btn" href={runeFeatureHref('')}>回符文首頁</ScopeLink>
         {MODES.filter(([id])=>id!==mode).map(([id,name])=>
-          <ScopeLink key={id} className="rune-skin-btn" href={navigationHref('lrunes','card/'+id,native)} native={native}>{name}</ScopeLink>)}
+          <ScopeLink key={id} className="rune-skin-btn" href={runeFeatureHref('card/'+id)}>{name}</ScopeLink>)}
       </nav>
     </footer>
     {selected&&<ResultDialog title={runeName(selected)+'之符文'} onClose={()=>setSelected(null)}>
