@@ -1,11 +1,11 @@
 import {lazy,Suspense,useEffect,useState} from 'react';
 import RuneFeatureIndex from './RuneFeatureIndex.jsx';
-import RuneCardHub from '../../app/lrunes/RuneCardHub.jsx';
+import RuneCardHub from './runes/RuneCardHub.jsx';
 import RunePageResourceBoundary from './runtime/RunePageResourceBoundary.jsx';
 import {pageFromPath} from './runtime/rune-routes.mjs';
-// These are LOC's original 2D/3D presentation components, not a new gallery.
-const RuneUnifiedView=lazy(()=>import('../../app/lrunes/RuneUnifiedView.jsx'));
-const RuneArtNav=lazy(()=>import('../../app/lrunes/Rune3DNav.jsx'));
+// LRS owns the 2D/3D presentation components; only the selected view is loaded.
+const RuneUnifiedView=lazy(()=>import('./runes/RuneUnifiedView.jsx'));
+const RuneArtNav=lazy(()=>import('./runes/Rune3DNav.jsx'));
 const RuneLocalDailyPage=lazy(()=>import('./runtime/rune-local-daily.jsx'));
 const MoonwriterPage=lazy(()=>import('./reading/MoonwriterPages.jsx'));
 const GameBoard=lazy(()=>import('../../modules/lrs/boardgame/GameBoard.jsx'));

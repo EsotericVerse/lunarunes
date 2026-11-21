@@ -18,7 +18,3 @@ export function useAsyncResource(key,load,{enabled=true}={}){
   },[identity,enabled]);
   return state;
 }
-export function prepareTransientResourceAction(){
-  // React's keyed unmount remains the canonical presentation resource
-  // boundary; no LOC query-client ownership is available to reset here.
-}
