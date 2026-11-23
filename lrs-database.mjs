@@ -1,13 +1,12 @@
 /**
- * LRS read-only host implementation of the loc:dialect read port.
+ * LRS read-only PostgreSQL host implementation of its own Rune read port.
  *
  * Connection selection is the Worker's LRS_DATABASE_URL secret ONLY.
  * Table/column selection is the fixed, validated LRS Rune projection in
  * public-rune-read.mjs. No client-controlled host, DB URL, SQL or schema.
- * The original tables stay in place; this performs SELECT, never migration.
+ * Only fixed LRS Rune relations are readable; this performs SELECT, never migration.
  */
-// Fixed, module-only snapshot of LOC PR #1732. No loc-framework dependency.
-import {dialect} from './vendor/loc-dialect/index.mjs';
+import {dialect} from './lrs-postgres.mjs';
 
 export function lrsPublicSelect(db,query){
   // Defense in depth: never accept an arbitrary schema/table here, even
