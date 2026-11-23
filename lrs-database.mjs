@@ -12,7 +12,7 @@ export function lrsPublicSelect(db,query){
   // Defense in depth: never accept an arbitrary schema/table here, even
   // though the HTTP edge already validates them.
   if(query?.schema!=='silver'||
-     !['runes','runes_etc','runes_group','lrunes_blocks'].includes(query?.table))
+     !['runes','runes_etc','runes_group'].includes(query?.table))
     throw new TypeError('Unsupported LRS table');
   if(!Array.isArray(query.columns)||query.columns.length===0)
     throw new TypeError('LRS columns are required');
@@ -30,8 +30,8 @@ export function lrsPublicSelect(db,query){
 export async function readLrsPublicRows(connectionString,query){
   if(typeof connectionString!=='string'||!/^postgres(?:ql)?:\/\//i.test(connectionString))
     throw Object.assign(new Error('LRS_DATABASE_URL unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
-  // The isolated loc:dialect server-only adapter owns request-scoped pg
-  // connection lifecycle; LRS retains the exact read whitelist and query shape.
+  // LRS PostgreSQL owns its request-scoped connection lifecycle.
+  // This endpoint retains a fixed, validated read-only projection.
   const db=dialect('pg',connectionString);
   try{
     const rows=await lrsPublicSelect(db,query).execute();
