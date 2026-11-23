@@ -1,6 +1,6 @@
 // Narrow LRS-only public novel reader: one already-listed chapter per request.
 // Never accept a caller-selected table, column, SQL, URL or arbitrary Galaxy UID.
-import {dialect} from './vendor/loc-dialect/index.mjs';
+import {dialect} from './lrs-postgres.mjs';
 import {moonwriterChapter} from './modules/lrs/reading/moonwriter-catalog.mjs';
 
 const headers={
