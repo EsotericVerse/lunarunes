@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Assemble the independent LunaRunes Web bundle for GitHub Pages.
+ * Assemble the independent LunaRunes Web/IPA release bundle.
  * Never copies build assets into LOC, and never builds an IPA.
  * Existing original art and authored effects are exported separately from
  * the Web application build, then combined only in this release artifact.
@@ -38,7 +38,7 @@ const version=JSON.parse(await readFile(path.join(root,'release','version.json')
 if(version.schema!=='lunarunes.release-version.v1'||!/^(?:\d+\.\d+R|\d+\.\d+\.\d+)$/.test(version.version))
   throw Error('LRS release must have a valid owner-designated version');
 if(manifest.schema!=='lunarunes.artifacts.v1'||manifest.target!=='web'||!manifest.includesEffects)
-  throw Error('LunaRunes GitHub Pages release requires a validated Web runtime/artifact pack');
+  throw Error('LunaRunes release requires a validated Web runtime/artifact pack');
 if(!(await stat(path.join(app,'index.html'))).size)throw Error('Missing standalone Rune Web build');
 const seen=new Set();
 const releaseEntries=[];
@@ -60,8 +60,7 @@ async function recursivelyCopy(dir,prefix=''){
   for(const entry of await readdir(dir,{withFileTypes:true})){
     if(entry.isSymbolicLink())throw Error('Refusing to publish symlink');
     const relative=path.posix.join(prefix,entry.name),real=path.join(dir,entry.name);
-    // GitHub Pages does not apply _redirects. A 404.html copy of the SPA
-    // entrypoint handles direct URLs without touching DNS or any Worker.
+    // Generate Worker-specific texture aliases below; SPA fallback is configured in Wrangler.
     if(relative==='_redirects')continue;
     if(entry.isDirectory())await recursivelyCopy(real,relative);
     else if(entry.isFile())await install(real,relative);
@@ -97,12 +96,8 @@ try{
      !seen.has('vendor/effekseer/effekseer.js')||
      !seen.has('assets/lunarunes/cards/66.png')||
      !seen.has('pics/01.soul.jpg')||
-     !seen.has('index.html'))throw Error('Rune GitHub Pages release missing critical runtime dependencies');
+     !seen.has('index.html'))throw Error('Rune release missing critical runtime dependencies');
   releaseEntries.sort((a,b)=>a.path.localeCompare(b.path,'en'));
-  // GitHub Pages serves the same SPA shell at deep links (with HTTP 404 status).
-  // The original index.html remains the single build entrypoint.
-  await cp(path.join(stage,'index.html'),path.join(stage,'404.html'));
-  await writeFile(path.join(stage,'.nojekyll'),'');
   const output={schema:'lunarunes.pages-release.v1',
     sourceCommit:manifest.sourceCommit,releaseVersion:version.version,includesEffects:true,
     mediaSchema:RUNE_MEDIA_VERSION_SCHEMA,mediaVersion:runeMediaVersion(releaseEntries),
