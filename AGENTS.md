@@ -13,7 +13,8 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 ## 專案隔離與部署
 - LOC 唯一持有 `lrunes` Scope 入口、Hero 編排、可編輯區塊及主站導覽。LRS 的 `/` 僅列出自己的符文功能路徑，不發布 LOC Scope 副本；不要讀取 `silver.lrunes_blocks`。
 - 以 `EsotericVerse/lunarunes` 為本次工作範圍；未經授權不修改 LOC／LAS 的程式、資料庫、預覽、部署或 IPA。確實需要跨專案交付或通知時，提出具體契約與影響，不因 LRS 自己的變更就自動連帶觸發其他 Repo。
-- LRS Web 原始碼以此 Repo 為準；`main` 是合併後基準，分支可自行 Build 與 Preview。先核對當下 `package.json`、`wrangler.json`、GitHub Workflows 與 Cloudflare Builds 的有效設定，再決定使用 `build:pages`、`preview:web`、Wrangler Preview 或部署入口；不把文件中的指令當永久規格。Build、Preview、Deploy、合併各自驗證；不強制正式／預覽各 Build 一次，不要求先正式部署才能 Preview，能重用產物時避免重複建置。必要測試可自行執行，不以資源節省當全面禁令。
+- LRS Web 原始碼以此 Repo 為準；`main` 是正式交付基準。依變更範圍、風險與協作狀況選擇 Git 流程：範圍明確、低風險的小修可依既有權限與分支保護直接提交 main；功能開發、較大調整、需要隔離或多人協作的改動，使用分支及 PR。Draft 適合尚未完成的工作；完成必要驗證、符合合併條件且無具體阻礙時，轉為 Ready 並自行完成正常合併，不把 Draft 或 Preview 當作交付終點。使用者有指定流程時依其要求。Build／Preview／Deploy 各按實際需要安排；Preview 可能重新 Build，正式部署也可能需要獨立產物，不因已有 Preview 而跳過必要建置，也不為節省額度而排斥分支、PR 或必要驗證。依目前可用資源安排有意義的提交、並行建置與發布，避免同一用途的重複觸發，不要求固定次數、固定順序或每次都跑完整流程。Preview 由 Agent 按需使用，不以作者親自查看 Preview 作為正常合併的固定前提；交付以 main 和實際生效狀態為準。
+- 先核對當下 `package.json`、`wrangler.json`、GitHub Workflows 與 Cloudflare Builds 的有效設定，再選擇實際建置、預覽及部署入口；不把舊指令當永久規格。可重用產物時避免無必要的重複建置，Build、Preview、Deploy、合併各自依實際結果回報。
 - `wrangler.json` 指向既有 `lunarunes` Worker；只服務 LRS 自己的靜態資源與 API，以現有程式碼路由為準，不擴增其他用途。不擅自改 Cloudflare DNS／Access／Token／Secret／網域設定，不自行 Grant 或延長授權。
 - IPA 只由 LRS GitHub Actions 的 `LRS IPA` 手動打包，不跨 Repo。iOS 素材隨 App 打包，Web 使用獨立已發布素材。
 - 不為形式新增無必要的測試或檢查 Workflow；若本次問題確有必要，可新增或修改對應測試並核實結果，不因「不設額外」而禁止驗證。Cloudflare Access 等外部權限狀態以當下設定為準，不自行重建、Grant、延長權限或使用跨 Repo 大權杖。
