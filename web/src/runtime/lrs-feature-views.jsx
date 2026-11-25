@@ -17,7 +17,7 @@ const RENDERERS=Object.freeze({
   'rune-presentation':({feature})=> <RuneUnifiedView feature={feature} defaultView="3d"/>,
   'daily-history':({view})=> <RuneLocalDailyPage view={view}/>,
   'daily-reading':()=> <RuneDailyReading/>,
-  'game-board':()=> <GameBoard/>,
+  'game-board':({online})=> <GameBoard key={online?'online':'local'} online={online}/>,
   'novel':({uid})=> <MoonwriterPage key={uid||'contents'} uid={uid||''}/>,
   'not-found':()=> <main className="loc-next-main"><p className="scope-status" role="status">找不到此符文頁面。</p></main>
 });

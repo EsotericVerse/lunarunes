@@ -30,5 +30,6 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 - `/card/daily/log/`、`/card/daily/trend/`：獨立本機紀錄與趨勢。每日程式位於 `modules/lrs/card/daily/`。
 - 舊公開連結 `/daily/`、`/daily/log/`、`/daily/trend/` 只改到對應 `/card/daily/` 路徑，不保留另一套每日模組。
 - 解析頁只使用同一瀏覽器執行期間的暫存抽牌結果；重新整理後沒有結果就提示先抽牌，並不自動建立紀錄。
-- `/game/` 與 `/game/room/`：LRS 本機桌遊入口與現行遊戲頁。
+- `/game/`：保留 LRS 本機桌遊。
+- `/game/room/`：選用線上桌遊試驗，2–4 人以房間代碼加入；每房間獨立 SQLite-backed Durable Object、WebSocket Hibernation、伺服器執行既有規則、私人手牌分離。房間保存 24 小時，暫不寫入 Neon 戰績；無新帳號或跨專案依賴。
 - LOC 的歷史 `/card`、`/daily`、`/game` 頁面只負責連往 `https://lrs.lo3rwang.cc`；LRS 不負責 LOC Scope 的 Hero、內容與權限。

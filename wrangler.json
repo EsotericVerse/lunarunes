@@ -19,5 +19,21 @@
       "binding": "LRS_HYPERDRIVE",
       "id": "ad545e80146e4737a3f511c3ea3841f1"
     }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LRS_GAME_ROOMS",
+        "class_name": "LrsGameRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "lrs-game-room-v1",
+      "new_sqlite_classes": [
+        "LrsGameRoom"
+      ]
+    }
   ]
 }

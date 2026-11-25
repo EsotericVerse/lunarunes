@@ -8,7 +8,7 @@ export const LRS_FRAMEWORK_VERSION='1.0.0';
 export const LRS_FEATURE_MODULES=Object.freeze([
   {id:LRS_MODULE.modules.rune,name:'rune',roles:['catalogue','3d','assets']},
   {id:LRS_MODULE.modules.card,name:'card',roles:['draw','readings','daily-draw','daily-reading','local-records']},
-  {id:LRS_MODULE.modules.boardgame,name:'boardgame',roles:['local-game','life-engine']},
+  {id:LRS_MODULE.modules.boardgame,name:'boardgame',roles:['local-game','online-room','life-engine']},
   {id:LRS_MODULE.modules.reading,name:'reading',roles:['novel']}
 ].map(entry=>Object.freeze({...entry,roles:Object.freeze(entry.roles)})));
 
@@ -25,7 +25,7 @@ export const LRS_FEATURE_ROUTES=Object.freeze([
   route('list','lrs:rune','rune-presentation',/^\/card\/list$/,()=>({feature:'list'})),
   route('daily-log','lrs:card','daily-history',/^\/card\/daily\/log$/,()=>({view:'log'})),
   route('daily-trend','lrs:card','daily-history',/^\/card\/daily\/trend$/,()=>({view:'trend'})),
-  route('game','lrs:boardgame','game-board',/^\/game(?:\/room)?$/),
+  route('game','lrs:boardgame','game-board',/^\/game(\/room)?$/,match=>({online:!!match[1]})),
   route('novel-moonwriter','lrs:reading','novel',/^\/novel\/moonwriter$/),
   route('novel-moonwriter-chapter','lrs:reading','novel',/^\/novel\/moonwriter\/([A-Za-z0-9]{8})$/,match=>({uid:match[1]}))
 ]);
@@ -51,7 +51,7 @@ export function resolveLrsFeatureRoute(pathname='/',routes=LRS_FEATURE_ROUTES){
     const match=descriptor.match.exec(path);
     if(!match)continue;
     const params=Object.freeze(descriptor.parameters(match));
-    const key=descriptor.id+(params.uid?':'+params.uid:'');
+    const key=descriptor.id+(params.uid?':'+params.uid:params.online?':online':'');
     return Object.freeze({id:descriptor.id,key,module:descriptor.module,view:descriptor.view,path,params,found:true});
   }
   return Object.freeze({id:'unmatched',key:'unmatched',module:null,view:'not-found',path,params:Object.freeze({}),found:false});

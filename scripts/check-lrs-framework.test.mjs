@@ -139,3 +139,29 @@ test('LRS database reads require Hyperdrive and never fall back to the old secre
   assert.equal(calls,1);
   assert.equal((await readPublicMoonwriter(new Request('https://lrs.example/api/lrs/moonwriter/104D20F5'),{LRS_DATABASE_URL:env.LRS_DATABASE_URL})).status,503);
 });
+
+import {createRoom,joinRoom,roomSnapshot,applyRoomAction} from '../modules/lrs/boardgame/online-room.mjs';
+test('online room preserves seat ownership, hidden hands, and the existing event engine',()=>{
+  const a='a'.repeat(32),b='b'.repeat(32),room=createRoom(2,a);
+  assert.equal(joinRoom(room,b),1);assert.equal(joinRoom(room,b),1);
+  assert.throws(()=>joinRoom(room,'c'.repeat(32)));
+  assert.throws(()=>applyRoomAction(room,1,{action:'start'}));
+  applyRoomAction(room,0,{action:'start'});
+  assert.equal(roomSnapshot(room,0).game.players[1].hand.length,0);
+  assert.equal(roomSnapshot(room,0).game.players[1].handCount,8);
+  assert.equal('tokens' in roomSnapshot(room,0),false);
+  const move=(seat,action,extra={})=>applyRoomAction(room,seat,{action,stage:room.game.stage,round:room.game.round,...extra});
+  assert.throws(()=>move(1,'confirmOpening'));
+  for(const seat of [0,1]){
+    for(const c of room.game.players[seat].hand.slice(0,3))move(seat,'toggleCard',{cardId:c.id,selected:true});
+    move(seat,'confirmOpening');
+  }
+  assert.equal(room.game.stage,'event');
+  for(const seat of [1,0])for(const c of room.game.players[seat].hand.slice(0,3))move(seat,'toggleCard',{cardId:c.id,selected:true});
+  move(0,'resolveEvent');assert.equal(room.game.round,2);
+  assert.throws(()=>applyRoomAction(room,0,{action:'resolveEvent',stage:'event',round:1}));
+});
+test('online and local game routes have different lifecycle keys',()=>{
+  const local=resolveLrsFeatureRoute('/game/'),online=resolveLrsFeatureRoute('/game/room/');
+  assert.equal(local.params.online,false);assert.equal(online.params.online,true);assert.notEqual(local.key,online.key);
+});
