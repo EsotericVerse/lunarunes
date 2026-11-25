@@ -1,6 +1,6 @@
 // Narrow LRS-only public novel reader: one already-listed chapter per request.
 // Never accept a caller-selected table, column, SQL, URL or arbitrary Galaxy UID.
-import {dialect} from './lrs-postgres.mjs';
+import {dialect,lrsDatabaseConnection} from './lrs-postgres.mjs';
 import {moonwriterChapter} from './modules/lrs/reading/moonwriter-catalog.mjs';
 
 const headers={
@@ -17,7 +17,8 @@ export async function readPublicMoonwriter(request,env){
   if(!match||url.search)return json({error:'Invalid chapter request'},400);
   const expected=moonwriterChapter(match[1]);
   if(!expected)return json({error:'Novel chapter not found'},404);
-  const connection=env?.LRS_DATABASE_URL;
+  let connection;
+  try{connection=lrsDatabaseConnection(env);}catch{return json({error:'Novel reader unavailable'},503);}
   if(typeof connection!=='string'||!/^postgres(?:ql)?:\/\//i.test(connection))
     return json({error:'Novel reader unavailable'},503);
   const db=dialect('pg',connection);
