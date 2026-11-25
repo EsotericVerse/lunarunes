@@ -1,7 +1,7 @@
 /**
  * LRS read-only PostgreSQL host implementation of its own Rune read port.
  *
- * Connection selection is the Worker's LRS_DATABASE_URL secret ONLY.
+ * Connection selection is the Worker's LRS_HYPERDRIVE binding ONLY.
  * Table/column selection is the fixed, validated LRS Rune projection in
  * public-rune-read.mjs. No client-controlled host, DB URL, SQL or schema.
  * Only fixed LRS Rune relations are readable; this performs SELECT, never migration.
@@ -29,7 +29,7 @@ export function lrsPublicSelect(db,query){
 
 export async function readLrsPublicRows(connectionString,query){
   if(typeof connectionString!=='string'||!/^postgres(?:ql)?:\/\//i.test(connectionString))
-    throw Object.assign(new Error('LRS_DATABASE_URL unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
+    throw Object.assign(new Error('LRS Hyperdrive unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
   // LRS PostgreSQL owns its request-scoped connection lifecycle.
   // This endpoint retains a fixed, validated read-only projection.
   const db=dialect('pg',connectionString);

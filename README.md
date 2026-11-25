@@ -7,7 +7,7 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 - Cloudflare Production：Build `npm run build:pages`；Deploy `npx wrangler deploy`，部署階段不重跑 Build
 - Cloudflare Preview：Build `npm run build:pages`；Preview Deploy `npx wrangler preview`
 - 正式網址僅 `https://lrs.lo3rwang.cc/`；正式 Worker `workers.dev` 關閉、獨立 Preview URL 啟用
-- Worker API `/api/lrs/public-read`；資料庫 Secret `LRS_DATABASE_URL` 僅在 Worker runtime。LRS 使用自己的 PostgreSQL-only 連線層 `lrs-postgres.mjs`，包含最新的請求級連線重試與釋放，不再依賴 LOC dialect 複製品。
+- Worker API `/api/lrs/public-read`、`/api/lrs/moonwriter/`；僅使用 `LRS_HYPERDRIVE` binding（`lrs-postgres`）取得 runtime connectionString，不讀取舊 URL Secret。LRS 自有 PostgreSQL-only Kysely/pg 連線層，每個請求最多一條本地連線，結束即釋放；上游連線池由 Hyperdrive 管理。Query Cache 關閉。
 - IPA：手動啟動 GitHub Actions `LRS IPA`，以本機打包素材輸出未簽署 IPA，不把網站 URL 當作原生 App 的素材來源
 - LRS `/` 只提供符文功能導覽；`lrunes` Scope、Hero、文字編排及編輯權限由 LOC 持有，位於 `https://loc.lo3rwang.cc/lrunes/`
 - `modules/lrs/` 為 Rune/Card（內含 Daily）/Boardgame 模組；`web/src/runes/` 為 Vite 專用的 React 功能畫面

@@ -13,5 +13,11 @@
   },
   "previews": {},
   "workers_dev": false,
-  "preview_urls": true
+  "preview_urls": true,
+  "hyperdrive": [
+    {
+      "binding": "LRS_HYPERDRIVE",
+      "id": "ad545e80146e4737a3f511c3ea3841f1"
+    }
+  ]
 }

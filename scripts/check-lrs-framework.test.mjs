@@ -120,3 +120,22 @@ test('special rune reading omits absent original guidance without inventing text
   assert.equal(buildDailyInterpretation({card:{rune_id:8,moon_phase:1},
     directionIndex:0,moon:'上弦'}).moonRelation,'different');
 });
+
+import {lrsConnectionString} from '../lrs-postgres.mjs';
+import {handlePublicRuneRead} from '../public-rune-read.mjs';
+import {readPublicMoonwriter} from '../public-moonwriter-read.mjs';
+
+test('LRS database reads require Hyperdrive and never fall back to the old secret',async()=>{
+  const url='postgresql://user:example@hyperdrive.invalid:5432/db';
+  const env={LRS_HYPERDRIVE:{connectionString:url},LRS_DATABASE_URL:'postgresql://legacy.invalid/db'};
+  assert.equal(lrsConnectionString(env),url);
+  assert.equal(lrsConnectionString({LRS_DATABASE_URL:env.LRS_DATABASE_URL}),null);
+  assert.equal(lrsConnectionString({LRS_HYPERDRIVE:{connectionString:'invalid'}}),null);
+  const request=()=>new Request('https://lrs.example/api/lrs/public-read',{method:'POST',body:JSON.stringify({table:'silver.runes_group',query:{columns:['group_id'],limit:1}})});
+  let calls=0;
+  const read=async(connection,query)=>{calls++;assert.equal(connection,url);assert.equal(query.table,'runes_group');return {rows:[{group_id:1}]};};
+  assert.equal((await handlePublicRuneRead(request(),env,read)).status,200);
+  assert.equal((await handlePublicRuneRead(request(),{LRS_DATABASE_URL:env.LRS_DATABASE_URL},read)).status,503);
+  assert.equal(calls,1);
+  assert.equal((await readPublicMoonwriter(new Request('https://lrs.example/api/lrs/moonwriter/104D20F5'),{LRS_DATABASE_URL:env.LRS_DATABASE_URL})).status,503);
+});
