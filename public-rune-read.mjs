@@ -3,6 +3,7 @@
 // This validates the narrow loc:dialect read port before direct LRS DB access.
 import {LRS_CARD_RUNE66_FIELDS} from './modules/lrs/card/zmodel/lrs-card-model.mjs';
 import {readLrsPublicRows} from './lrs-database.mjs';
+import {lrsDatabaseConnection} from './lrs-postgres.mjs';
 
 const TABLE_FIELDS=Object.freeze({
   'silver.runes':new Set(Object.keys(LRS_CARD_RUNE66_FIELDS)),
@@ -65,10 +66,10 @@ export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublic
 
   // This is a server-side Cloudflare Worker Secret. The browser never sees
   // LRS_DATABASE_URL; the API never accepts a database identifier or URL.
-  const connection=env?.LRS_DATABASE_URL;
-  if(typeof connection!=='string'||!connection.trim())
-    return response({error:'LRS database connection is not configured'},503);
   try{
+    const connection=lrsDatabaseConnection(env);
+    if(typeof connection!=='string'||!connection.trim())
+      return response({error:'LRS database connection is not configured'},503);
     const result=await readImpl(connection,query);
     if(!result||!Array.isArray(result.rows))
       return response({error:'Invalid LRS database read response'},502);
