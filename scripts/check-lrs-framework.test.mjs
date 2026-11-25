@@ -120,3 +120,12 @@ test('special rune reading omits absent original guidance without inventing text
   assert.equal(buildDailyInterpretation({card:{rune_id:8,moon_phase:1},
     directionIndex:0,moon:'上弦'}).moonRelation,'different');
 });
+
+test('LRS Hyperdrive binding takes precedence over the direct URL',async()=>{
+  const {lrsDatabaseConnection}=await import('../lrs-postgres.mjs');
+  const direct='postgresql://direct.invalid/db';
+  const pooled='postgresql://hyperdrive.invalid/db';
+  assert.equal(lrsDatabaseConnection({LRS_DATABASE_URL:direct}),direct);
+  assert.equal(lrsDatabaseConnection({LRS_DATABASE_URL:direct,LRS_HYPERDRIVE:{connectionString:pooled}}),pooled);
+  assert.throws(()=>lrsDatabaseConnection({LRS_DATABASE_URL:direct,LRS_HYPERDRIVE:{}}),/binding invalid/);
+});
