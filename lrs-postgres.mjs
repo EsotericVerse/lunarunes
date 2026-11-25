@@ -101,6 +101,16 @@ export function requestScopedPostgresPool(options,ClientClass,{
 }
 
 
+// The deployment binding is trusted and applies only to the LRS database.
+export function lrsDatabaseConnection(env={}){
+  const binding=env.LRS_HYPERDRIVE;
+  if(binding===undefined)return env.LRS_DATABASE_URL;
+  const url=binding?.connectionString;
+  if(typeof url!=='string'||!/^postgres(?:ql)?:\/\//i.test(url))
+    throw Object.assign(new Error('LRS Hyperdrive binding invalid'),{code:'DATABASE_NOT_CONFIGURED'});
+  return url;
+}
+
 export function dialect(driver,url){
   if(driver!=='pg')throw new Error('LRS only supports the PostgreSQL driver');
   if(typeof url!=='string'||!url.trim())throw new TypeError('LRS database URL is required');
