@@ -165,3 +165,14 @@ test('online and local game routes have different lifecycle keys',()=>{
   const local=resolveLrsFeatureRoute('/game/'),online=resolveLrsFeatureRoute('/game/room/');
   assert.equal(local.params.online,false);assert.equal(online.params.online,true);assert.notEqual(local.key,online.key);
 });
+
+
+test('LRS backup validates records and rejects conflicting identities before storage',async()=>{
+  const {normalizeLocalRuneBackup}=await import('../modules/lrs/card/daily/local-records.mjs');
+  const row={record_date:'2025-05-31',draw_kind:'main',rune_number:1,direction:'正位'};
+  const base={format:'lrs-rune-records',version:1,draws:[],daily:[row,row]};
+  assert.equal(normalizeLocalRuneBackup(base).daily.length,1);
+  assert.throws(()=>normalizeLocalRuneBackup({...base,daily:[row,{...row,rune_number:2}]}));
+  assert.throws(()=>normalizeLocalRuneBackup({...base,daily:[{...row,record_date:'2025-02-30'}]}));
+  assert.throws(()=>normalizeLocalRuneBackup({...base,version:2}));
+});

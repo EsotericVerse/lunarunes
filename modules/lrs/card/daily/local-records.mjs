@@ -155,3 +155,76 @@ export async function deleteLocalDailyRune({recordDate,drawKind}={}){
     };
   });
 }
+
+
+// LRS owns this portable, versioned backup; LOC never needs to read it.
+export const RUNE_BACKUP_MAX_BYTES=32*1024*1024;
+export function normalizeLocalRuneBackup(input){
+  if(!input||input.format!=='lrs-rune-records'||input.version!==1||
+      !Array.isArray(input.daily)||!Array.isArray(input.draws)||
+      input.daily.length+input.draws.length>20000)
+    throw new Error('不支援的 LunaRunes 備份格式或紀錄數量。');
+  const unique=(rows,key,validate)=>{
+    const seen=new Map();
+    for(const raw of rows){
+      const row=validate(raw),id=key(row),prior=seen.get(id);
+      if(prior&&JSON.stringify(prior)!==JSON.stringify(row))
+        throw new Error('備份內有相同識別碼但內容不同的紀錄。');
+      seen.set(id,row);
+    }
+    return [...seen.values()];
+  };
+  const daily=unique(input.daily,row=>JSON.stringify([row.record_date,row.draw_kind]),raw=>{
+    const row=validateDaily(raw);
+    const date=new Date(row.record_date+'T00:00:00Z');
+    if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==row.record_date)
+      throw new Error('備份中有無效日期。');
+    return row;
+  });
+  const draws=unique(input.draws,row=>row.draw_id,raw=>{
+    const row=validateDraw(raw);
+    if(!Number.isFinite(Date.parse(row.created_at)))throw new Error('備份中有無效抽牌時間。');
+    return row;
+  });
+  return {format:'lrs-rune-records',version:1,daily,draws};
+}
+export async function exportLocalRuneBackup(){
+  return transact(['daily','draws'],'readonly',(tx,set)=>{
+    const daily=tx.objectStore('daily').getAll();
+    const draws=tx.objectStore('draws').getAll();
+    const finish=()=>{
+      if(daily.readyState==='done'&&draws.readyState==='done')
+        set({format:'lrs-rune-records',version:1,exported_at:new Date().toISOString(),
+          daily:daily.result||[],draws:draws.result||[]});
+    };
+    daily.onsuccess=finish;draws.onsuccess=finish;
+  });
+}
+export async function importLocalRuneBackup(input){
+  const data=normalizeLocalRuneBackup(input);
+  return transact(['daily','draws'],'readwrite',(tx,set,fail)=>{
+    const result={added:0,unchanged:0,conflicts:0};
+    const queue=[
+      ...data.daily.map(row=>({store:'daily',key:[row.record_date,row.draw_kind],row,validate:validateDaily})),
+      ...data.draws.map(row=>({store:'draws',key:row.draw_id,row,validate:validateDraw}))
+    ];
+    let index=0;
+    function next(){
+      if(index>=queue.length){set(result);return;}
+      const item=queue[index++],store=tx.objectStore(item.store),req=store.get(item.key);
+      req.onsuccess=()=>{
+        try{
+          if(req.result===undefined){
+            const add=store.add(item.row);
+            add.onsuccess=()=>{result.added++;next();};
+          }else{
+            if(JSON.stringify(item.validate(req.result))===JSON.stringify(item.row))result.unchanged++;
+            else result.conflicts++;
+            next();
+          }
+        }catch(error){fail(error);}
+      };
+    }
+    next();
+  });
+}

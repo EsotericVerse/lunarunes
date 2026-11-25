@@ -3,7 +3,8 @@ import DailyRuneCalendar from '../runes/DailyRuneCalendar.jsx';
 import {ScopeLink} from './rune-navigation.jsx';
 import {runeImage} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {
-  listLocalDailyRunes,addLocalDailyRune,updateLocalDailyRune,deleteLocalDailyRune
+  listLocalDailyRunes,addLocalDailyRune,updateLocalDailyRune,deleteLocalDailyRune,
+  exportLocalRuneBackup,importLocalRuneBackup,RUNE_BACKUP_MAX_BYTES
 } from '../../../modules/lrs/card/daily/local-records.mjs';
 import {dailyRecordSlots,availableDailyRuneKind} from '../../../modules/lrs/card/daily/record-slots.mjs';
 import {normalizeDailyDraws,summarizeDailyDraws,rankDailyDraws,
@@ -81,6 +82,7 @@ function LocalDailyLog({rows}){
   const [editForm,setEditForm]=useState(null);
   const [busy,setBusy]=useState(false);
   const [notice,setNotice]=useState('');
+  const earliestMonth=rows.reduce((earliest,row)=>Math.min(earliest,monthOf(row.record_date)),MIN_MONTH);
   const {year,month}=monthParts(monthValue);
   const currentMonth=String(year)+'-'+String(month).padStart(2,'0');
   const visible=useMemo(()=>rows.filter(row=>String(row.record_date).slice(0,7)===currentMonth),[rows,currentMonth]);
@@ -88,7 +90,7 @@ function LocalDailyLog({rows}){
   const slots=dailyRecordSlots(rows,form.record_date);
   const occupied=slots[form.draw_kind];
   const moveMonth=offset=>{
-    const next=Math.max(MIN_MONTH,monthValue+offset);
+    const next=Math.max(earliestMonth,monthValue+offset);
     const {year:nextYear,month:nextMonth}=monthParts(next);
     setMonthValue(next);
     setSelectedDate(String(nextYear)+'-'+String(nextMonth).padStart(2,'0')+'-01');
@@ -136,10 +138,44 @@ function LocalDailyLog({rows}){
       recordDate:row.record_date,drawKind:row.draw_kind
     }),'本機紀錄已刪除。');
   }
+  async function exportBackup(){
+    setBusy(true);setNotice('');
+    try{
+      const backup=await exportLocalRuneBackup();
+      const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
+      const link=document.createElement('a');
+      link.href=url;link.download='lunarunes-records-'+todayInTaipei()+'.json';
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      setNotice('已匯出 '+(backup.daily.length+backup.draws.length)+' 筆本機紀錄。');
+    }catch(reason){setNotice('匯出失敗：'+String(reason?.message||reason));}
+    finally{setBusy(false);}
+  }
+  async function importBackup(event){
+    const file=event.target.files?.[0];event.target.value='';
+    if(!file)return;
+    setBusy(true);setNotice('');
+    try{
+      if(file.size>RUNE_BACKUP_MAX_BYTES)throw new Error('備份檔案超過 32 MB。');
+      const result=await importLocalRuneBackup(JSON.parse(await file.text()));
+      window.dispatchEvent(new CustomEvent('loc-rune-local-changed'));
+      setNotice('匯入 '+result.added+' 筆；相同 '+result.unchanged+' 筆；衝突 '+result.conflicts+' 筆（未覆寫）。');
+    }catch(reason){setNotice('匯入失敗：'+String(reason?.message||reason));}
+    finally{setBusy(false);}
+  }
   const chooseForm=setter=>event=>setter(current=>({...current,[event.target.name]:event.target.value}));
   return <>
+    <section className="loc-card">
+      <h2>符文紀錄匯入與匯出</h2>
+      <div className="lrs-local-daily-actions">
+        <button className="loc-button" type="button" disabled={busy} onClick={()=>void exportBackup()}>匯出全部抽牌及每日紀錄</button>
+        <label>匯入 LRS 備份<input type="file" accept=".json,application/json" disabled={busy} onChange={importBackup}/></label>
+      </div>
+      <p className="scope-status">僅處理本機紀錄；同一筆已有資料時不覆寫。</p>
+      {notice?<p role="status" className="scope-status">{notice}</p>:null}
+    </section>
     <DailyRuneCalendar year={year} month={month} rows={visible}
-      selectedDate={selectedDate} canPrevious={monthValue>MIN_MONTH}
+      selectedDate={selectedDate} canPrevious={monthValue>earliestMonth}
       onPrevious={()=>moveMonth(-1)} onNext={()=>moveMonth(1)}
       onSelectDate={date=>{setSelectedDate(date);setEditing(null);}}/>
     <section className="loc-card" aria-live="polite">
