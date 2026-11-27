@@ -20,6 +20,12 @@ LRS 是獨立的符文、美術與遊戲創作專案。作者決定符文語意�
 - 不為形式新增無必要的測試或檢查 Workflow；若本次問題確有必要，可新增或修改對應測試並核實結果，不因「不設額外」而禁止驗證。Cloudflare Access 等外部權限狀態以當下設定為準，不自行重建、Grant、延長權限或使用跨 Repo 大權杖。
 - 保留原始素材、著作權與第三方授權；著作權修改由作者決定。
 
+## LAS Adapter 交接與 Universe 命名
+
+- LAS Adapter 長期部署 Cloudflare，負責 SQL Dialect（PostgreSQL／MySQL／MSSQL）、資料連線、授權及服務端匯入／匯出；Container、Hyperdrive 等平台能力集中在 LAS。LOC／LRS 保有各自資料庫及業務規則，未來可移往 VPS。不建立任意 SQL Gateway，不在 LRS 新增其他 dialect 或服務端資料匯入／匯出實作。
+- LRS 持有抽牌、符韻、模擬人生與多人即時運算。文字密度推演資料表使用 `universe` 命名（建議 `lrs_universe`）；LOC 的 Galaxy 原始紀錄及既有小說來源不改名。Universe 與 Galaxy 的原始紀錄分開，推演不得回寫原始文章；實際表結構待業務規格確定後再建立。
+- 交接契約見 `contracts/las-adapter.md`。在 LAS 接收端、授權與實際連線驗證完成前，現有 Cloudflare PostgreSQL host 是過渡實作，不提前移除 Binding 或依賴。VPS 遷移不改變現行正式部署流程。瀏覽器 IndexedDB 的本機紀錄與既有本機備份保持可用，備份業務轉移範圍須在 LAS 契約確認後處理。
+
 ## 文字與交付
 - 繁體中文說明遵循 `.agents/skills/zh-tw-writing/SKILL.md`；不干涉原創故事及符文語言。
 - 完成後分別報告實際修改、測試／Build、Preview、合併、部署及畫面驗收：有做就附證據，未執行或不適用就明說；任何單層成功均不等同整體功能驗證。

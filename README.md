@@ -12,6 +12,7 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 - LRS `/` 只提供符文功能導覽；`lrunes` Scope、Hero、文字編排及編輯權限由 LOC 持有，位於 `https://loc.lo3rwang.cc/lrunes/`
 - `modules/lrs/` 為 Rune/Card（內含 Daily）/Boardgame 模組；`web/src/runes/` 為 Vite 專用的 React 功能畫面
 - LRS 不改動 LOC／LAS 的程式與部署，也不觸發其他 Repository
+- SQL Dialect、資料連線及服務端匯入／匯出轉交 LAS Adapter；目前直接 PostgreSQL 是過渡 host，API handler 已隔離成固定讀取介面。文字密度推演使用 Universe 命名，不改寫 LOC Galaxy。參見 [交接契約](contracts/las-adapter.md)。
 
 請以目前有效的 Cloudflare Builds 設定為準；Build 成功不代表 HTTP、API 或實際 WebGL 功能已經通過驗收。Cloudflare DNS、Access、Token、Secret 由管理者維護。
 

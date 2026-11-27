@@ -122,6 +122,7 @@ test('special rune reading omits absent original guidance without inventing text
 });
 
 import {lrsConnectionString} from '../lrs-postgres.mjs';
+import {createLrsCloudflareDataPort} from '../lrs-database.mjs';
 import {handlePublicRuneRead} from '../public-rune-read.mjs';
 import {readPublicMoonwriter} from '../public-moonwriter-read.mjs';
 
@@ -133,11 +134,31 @@ test('LRS database reads require Hyperdrive and never fall back to the old secre
   assert.equal(lrsConnectionString({LRS_HYPERDRIVE:{connectionString:'invalid'}}),null);
   const request=()=>new Request('https://lrs.example/api/lrs/public-read',{method:'POST',body:JSON.stringify({table:'silver.runes_group',query:{columns:['group_id'],limit:1}})});
   let calls=0;
-  const read=async(connection,query)=>{calls++;assert.equal(connection,url);assert.equal(query.table,'runes_group');return {rows:[{group_id:1}]};};
-  assert.equal((await handlePublicRuneRead(request(),env,read)).status,200);
-  assert.equal((await handlePublicRuneRead(request(),{LRS_DATABASE_URL:env.LRS_DATABASE_URL},read)).status,503);
+  const port={readRuneRows:async(query,{signal})=>{calls++;assert.ok(signal);assert.equal(query.table,'runes_group');return {rows:[{group_id:1}]};}};
+  assert.equal((await handlePublicRuneRead(request(),port)).status,200);
+  const missing=createLrsCloudflareDataPort({LRS_DATABASE_URL:env.LRS_DATABASE_URL});
+  assert.equal((await handlePublicRuneRead(request(),missing)).status,503);
+  assert.equal((await handlePublicRuneRead(request(),undefined)).status,503);
   assert.equal(calls,1);
-  assert.equal((await readPublicMoonwriter(new Request('https://lrs.example/api/lrs/moonwriter/104D20F5'),{LRS_DATABASE_URL:env.LRS_DATABASE_URL})).status,503);
+  assert.equal((await readPublicMoonwriter(new Request('https://lrs.example/api/lrs/moonwriter/104D20F5'),missing)).status,503);
+});
+
+test('LRS read handlers use fixed host capabilities without a Worker or SQL connection',async()=>{
+  const endpoint='https://lrs.example/api/lrs/public-read';
+  let calls=0;
+  const port={
+    async readRuneRows(query){calls++;assert.equal(query.schema,'silver');return {rows:[{group_id:1}]};},
+    async readMoonwriterChapter(expected){calls++;return {...expected,content:'原始文章'};}
+  };
+  const request=body=>new Request(endpoint,{method:'POST',body:JSON.stringify(body)});
+  assert.equal((await handlePublicRuneRead(request({table:'silver.runes_group',query:{columns:['group_id'],limit:1}}),port)).status,200);
+  assert.equal((await handlePublicRuneRead(request({table:'silver.lrs_universe',query:{columns:['uid']}}),port)).status,400);
+  assert.equal(calls,1);
+  const novel=()=>new Request('https://lrs.example/api/lrs/moonwriter/104D20F5');
+  assert.equal((await readPublicMoonwriter(novel(),port)).status,200);
+  assert.equal((await readPublicMoonwriter(novel(),{readMoonwriterChapter:async expected=>({...expected,uid:'OTHERUID',content:'wrong'})})).status,404);
+  assert.equal((await readPublicMoonwriter(new Request('https://lrs.example/api/lrs/moonwriter/INVALID0'),port)).status,404);
+  assert.equal(calls,2);
 });
 
 import {createRoom,joinRoom,roomSnapshot,applyRoomAction} from '../modules/lrs/boardgame/online-room.mjs';

@@ -1,9 +1,7 @@
 // LRS owns its standalone public Rune read endpoint; LOC keyword analysis,
 // Z-Model Galaxy/Anchor and existing tables are NOT moved or modified.
-// This validates the narrow loc:dialect read port before direct LRS DB access.
+// Validate the fixed Rune projection before passing it to the host data port.
 import {LRS_CARD_RUNE66_FIELDS} from './modules/lrs/card/zmodel/lrs-card-model.mjs';
-import {readLrsPublicRows} from './lrs-database.mjs';
-import {lrsConnectionString} from './lrs-postgres.mjs';
 
 const TABLE_FIELDS=Object.freeze({
   'silver.runes':new Set(Object.keys(LRS_CARD_RUNE66_FIELDS)),
@@ -56,7 +54,7 @@ export function publicRuneQuery(body){
     head:false,count:null,cardinality:null
   };
 }
-export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublicRows){
+export async function handlePublicRuneRead(request,dataPort){
   if(request.method!=='POST')return response({error:'Method not allowed'},405);
   if(Number(request.headers.get('content-length')||0)>12000)return invalid();
   let body;
@@ -64,17 +62,18 @@ export async function handlePublicRuneRead(request,env={},readImpl=readLrsPublic
   const query=publicRuneQuery(body);
   if(!query)return invalid();
 
-  // Only the Worker binding supplies the database connection; never the caller.
-  const connection=lrsConnectionString(env);
-  if(!connection)
+  // Host supplies a fixed read capability, never a connection or SQL from the caller.
+  if(typeof dataPort?.readRuneRows!=='function')
     return response({error:'LRS database connection is not configured'},503);
   try{
-    const result=await readImpl(connection,query);
+    const result=await dataPort.readRuneRows(query,{signal:request.signal});
     if(!result||!Array.isArray(result.rows))
       return response({error:'Invalid LRS database read response'},502);
     return response({rows:result.rows,dataSource:'lrs-database'},200);
-  }catch{
+  }catch(error){
     // Never echo SQL, host names, credentials or database driver errors.
+    if(error?.code==='DATABASE_NOT_CONFIGURED')
+      return response({error:'LRS database connection is not configured'},503);
     return response({error:'LRS database read unavailable'},503);
   }
 }

@@ -1,12 +1,12 @@
 /**
- * LRS read-only PostgreSQL host implementation of its own Rune read port.
+ * Transitional Cloudflare PostgreSQL host implementation of the LRS data port.
  *
  * Connection selection is the Worker's LRS_HYPERDRIVE binding ONLY.
  * Table/column selection is the fixed, validated LRS Rune projection in
  * public-rune-read.mjs. No client-controlled host, DB URL, SQL or schema.
  * Only fixed LRS Rune relations are readable; this performs SELECT, never migration.
  */
-import {dialect} from './lrs-postgres.mjs';
+import {dialect,lrsConnectionString} from './lrs-postgres.mjs';
 
 export function lrsPublicSelect(db,query){
   // Defense in depth: never accept an arbitrary schema/table here, even
@@ -39,4 +39,30 @@ export async function readLrsPublicRows(connectionString,query){
   }finally{
     await db.destroy();
   }
+}
+
+/** Temporary host adapter; replace at the composition root after LAS handover.
+ * Neither endpoint handlers nor the game/semantic engine own a SQL connection.
+ */
+export function createLrsCloudflareDataPort(env){
+  function connection(){
+    const url=lrsConnectionString(env);
+    if(!url)throw Object.assign(new Error('LRS data port unavailable'),{code:'DATABASE_NOT_CONFIGURED'});
+    return url;
+  }
+  return Object.freeze({
+    readRuneRows(query){return readLrsPublicRows(connection(),query);},
+    async readMoonwriterChapter(expected){
+      const db=dialect('pg',connection());
+      try{
+        return await db.selectFrom('silver.lrunes_galaxy')
+          .select(['uid','title','content'])
+          .where('uid','=',expected.uid)
+          .where('site','=','vocus')
+          .where('list','=',true)
+          .where('title','=',expected.title)
+          .limit(1).executeTakeFirst();
+      }finally{await db.destroy();}
+    }
+  });
 }

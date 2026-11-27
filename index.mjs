@@ -1,5 +1,6 @@
 import {handlePublicRuneRead} from './public-rune-read.mjs';
 import {readPublicMoonwriter} from './public-moonwriter-read.mjs';
+import {createLrsCloudflareDataPort} from './lrs-database.mjs';
 export {LrsGameRoom} from './lrs-game-room.mjs';
 
 // LRS native app uses its local bundled files and only the LRS public data endpoint.
@@ -21,12 +22,12 @@ export default {
       if(origin&&origin!==url.origin)return new Response('Forbidden',{status:403});
       return env.LRS_GAME_ROOMS.getByName(match[1]).fetch(request);
     }
-    if(pathname.startsWith('/api/lrs/moonwriter/'))return readPublicMoonwriter(request,env);
+    if(pathname.startsWith('/api/lrs/moonwriter/'))return readPublicMoonwriter(request,createLrsCloudflareDataPort(env));
     if(pathname==='/api/lrs/public-read'){
       const native=request.headers.get('origin')===IOS_ORIGIN;
       if(request.method==='OPTIONS')
         return native?new Response(null,{status:204,headers:cors()}):new Response(null,{status:403});
-      const result=await handlePublicRuneRead(request,env);
+      const result=await handlePublicRuneRead(request,createLrsCloudflareDataPort(env));
       if(!native)return result;
       const headers=new Headers(result.headers);
       for(const [key,value] of Object.entries(cors()))headers.set(key,value);
