@@ -7,6 +7,7 @@ import {
   lrsLucusRouteRuneIdsForGroup,lrsLucusRuneNumberForRoute,lrsLucusLocalRuneId,
   lrsLucusIsDrawableRune,lrsLucusDrawCandidates,lrsLucusGroupRowMatches,lrsLucusGroupRowsMatch
 } from '../modules/lrs/lucus/lrs-lucus.mjs';
+import {createCardModule} from '../modules/lrs/card/draw-core.mjs';
 
 const GROUP_FIXTURE=[
   {group_id:'靈魂',english_name:'Soul',runeslist:[1,2,3,4,5,6,7,8]},
@@ -92,4 +93,15 @@ test('all 67 group route identities round-trip through LRSLucus',()=>{
       assert.equal(lrsLucusRuneNumberForRoute(group.id,Number(local)),runeId);
     }
   }
+});
+
+test('lrs:card rejects 德 and out-of-range IDs before any database read',async()=>{
+  let reads=0;
+  const card=createCardModule({
+    readRows:async()=>{reads++;return {rows:[]};},
+    projectColumns:()=> 'rune_id'
+  });
+  await assert.rejects(card.loadDrawCards([{runeNumber:0,dir:1}]),/not drawable under LRSLucus/);
+  await assert.rejects(card.loadDrawCards([{runeNumber:67,dir:1}]),/not drawable under LRSLucus/);
+  assert.equal(reads,0);
 });

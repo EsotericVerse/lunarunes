@@ -1,3 +1,4 @@
+import {lrsLucusGroupForRune,lrsLucusIsDrawableRune} from '../lucus/lrs-lucus.mjs';
 /** Nine semantic card-flight rhythms. The rune manifestation VFX remains Effekseer-owned. */
 const PATHS=Object.freeze({
   // x/y are ratios of the stage measured once when a draw starts.
@@ -28,15 +29,12 @@ const ORBIT_GLYPHS=Object.freeze({
 });
 export function runeDrawOrbitGlyphs(group){return ORBIT_GLYPHS[group]||[];}
 export function runeDrawAppearance(group){return MOON_ORIGIN_GROUPS.has(group)?'moon':'deck';}
-const GROUPS=Object.freeze(['靈魂','連結','生命','自然','礦物','元素','秩序','無序','特殊']);
-
-/** Respect the canonical eight groups of eight, plus rune 65/66. */
+/** Group identity is always resolved through LRSLucus, never by a second formula. */
 export function runeDrawGroup(rune){
-  const id=Number(rune?.rune_id);
-  if(Number.isInteger(id)&&id>=1&&id<=64)return GROUPS[Math.floor((id-1)/8)];
-  if(id===65||id===66)return '特殊';
-  const group=String(rune?.group_name||'');
-  return Object.hasOwn(PATHS,group)?group:'特殊';
+  const group=lrsLucusGroupForRune(rune?.rune_id);
+  if(group)return group.groupId;
+  const fallback=String(rune?.group_name||'');
+  return Object.hasOwn(PATHS,fallback)?fallback:'特殊';
 }
 
 /** Variations are deterministic per rune, never gameplay randomness. */
@@ -53,7 +51,7 @@ export function runeDrawMotion(group,directionIndex,{width=800,height=520}={},re
     };
   }
   const id=Number(runeId);
-  const variation=Number.isInteger(id)&&id>=1&&id<=66?((id-1)%8-3.5):0;
+  const variation=lrsLucusIsDrawableRune(id)?((id-1)%8-3.5):0;
   const moon=appearance==='moon';
   const x=path.x.map((n,i)=>Math.round((moon?([.23,.15+path.x[1]*.19,.055+path.x[2]*.17,0][i]):n)
     *width+(i===1?variation*.006*width:0)));

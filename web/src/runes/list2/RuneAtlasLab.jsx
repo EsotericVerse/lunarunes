@@ -9,10 +9,10 @@ import {runeImage,groupImage} from '../../../../modules/lrs/rune/rune-directory.
 import '../../../../modules/lrs/rune/styles/skin-lab.css';
 import '../../../../modules/lrs/rune/art/rune-art-layout.css';
 import {lrsCardRune66ColumnString as lRunes66ColumnString} from '../../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import {lrsLucusGroupForDatabaseId,lrsLucusGroupRowMatches} from '../../../../modules/lrs/lucus/lrs-lucus.mjs';
 
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
 const DETAIL_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords','extra_rules','extra_notes','rune_evolution_history','myth_story','soul_question','practice_challenge','ritual_advice','harmony_advice');
-const GROUP_NAMES=['靈魂','連結','生命','自然','礦物','元素','秩序','無序','特殊'];
 function cleanse(value){
   return String(value??'').replace(/&#x([0-9a-f]+);/gi,(_,hex)=>String.fromCodePoint(parseInt(hex,16)))
     .replace(/&#([0-9]+);/g,(_,n)=>String.fromCodePoint(parseInt(n,10)))
@@ -20,9 +20,7 @@ function cleanse(value){
     .replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'");
 }
 function groupIndex(row){
-  const nums=Array.isArray(row?.runeslist)?row.runeslist.map(Number).filter(Number.isInteger):[];
-  const a=nums.filter(n=>n>=1&&n<=64);
-  return a.length?Math.floor((Math.min(...a)-1)/8):8;
+  return (lrsLucusGroupForDatabaseId(row?.group_id)?.id||9)-1;
 }
 function RuneInfoDialog({rune,onClose}){
   const dialogRef=useRuneDialogFocus(onClose);
@@ -70,9 +68,14 @@ export default function RuneAtlasLab({presentationSwitcher=null}){
     const controller=new AbortController();
     selectRows('silver.runes_group',{columns:GROUP_COLUMNS,limit:9,offset:0,signal:controller.signal})
       .then(({rows})=>{if(active){
-        setGroups((rows||[]).map(row=>({...row,index:groupIndex(row)}))
-          .sort((a,b)=>a.index-b.index).map((row,i)=>({
-            ...row,id:row.index+1,name:row.group_id||GROUP_NAMES[i],
+        setGroups((rows||[]).map(row=>{
+          const definition=lrsLucusGroupForDatabaseId(row?.group_id);
+          if(!definition||!lrsLucusGroupRowMatches(row))
+            throw new Error('群組資料與 LRSLucus 關聯不一致：'+String(row?.group_id||''));
+          return {...row,index:groupIndex(row),id:definition.id,name:definition.groupId,
+            runeslist:[...definition.runeIds]};
+        }).sort((a,b)=>a.index-b.index).map(row=>({
+            ...row,
             english_name:cleanse(row.english_name||''),
             desc:cleanse(row.desc||''),
             quality:cleanse(row.quality||''),

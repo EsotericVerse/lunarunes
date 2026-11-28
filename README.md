@@ -23,9 +23,9 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 **LRSLucus** 是 LRS 九大群組與 67 個符文字的唯一關聯圖，也是抽牌、圖鑑路由及後續分組加權的基礎：
 
 - 第 1–8 群各包含 8 枚符文。
-- 第 9 群包含 0、65、66 三枚特殊符文。
+- 第 9 群的正式資料關聯順序為 65、66、0；圖鑑路由另保留 0、65、66 的呈現順序。
 - 共 67 個符文字；0「德」屬於關聯圖，但不參與抽牌；1–66 可抽。
-- 群組歸屬、圖鑑路由與本地符文編號統一由 `modules/lrs/lucus/lrs-lucus.mjs` 提供，不在 UI 或抽牌頁重複計算。
+- 群組歸屬以 `silver.runes_group.runeslist` 的 67 筆唯一關聯為準，並由 `LRSLucus` 固定驗證；圖鑑路由順序獨立保存。抽牌候選集合、VFX 群組判定、圖鑑路由與本地符文編號統一使用 `modules/lrs/lucus/lrs-lucus.mjs`，不在 UI 重複計算。
 - LRSLucus 是 LRS 專屬的符文關係圖，與 LOC 的 LOCLucus 資料面向各自獨立，但共用 Lucus 架構。未來跨系統連接與轉換使用 Lucus 架構及 LunArcus 協定；粒子化關聯格式與 Universe Tree 的完整連接仍屬未來設計。
 
 ## LRS Framework
