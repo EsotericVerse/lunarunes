@@ -2,6 +2,7 @@
 import {RUNE_ALL_DRAW_MODES} from './rune-draw-modes.mjs';
 import {buildSpreadAdvice} from './rune-guidance-engine.mjs';
 import {LRS_CARD_DRAW_READ_FIELDS} from './zmodel/lrs-card-model.mjs';
+import {lrsLucusIsDrawableRune} from '../lucus/lrs-lucus.mjs';
 const RUNE_DIRECTIONS=Object.freeze(['正位','半正位','半逆位','逆位']);
 const RUNE_FIELDS=LRS_CARD_DRAW_READ_FIELDS;
 function randomIndex(max){
@@ -17,6 +18,13 @@ function randomIndex(max){
 
 
 function directionNo(direction){return RUNE_DIRECTIONS.indexOf(direction)+1;}
+function assertDrawablePairs(pairs){
+  if(!Array.isArray(pairs)||!pairs.length)throw new TypeError('LRSLucus requires at least one draw candidate');
+  for(const pair of pairs){
+    if(!lrsLucusIsDrawableRune(pair?.runeNumber))
+      throw new RangeError('Rune is not drawable under LRSLucus: '+String(pair?.runeNumber));
+  }
+}
 
 /**
  * lrs:card business read port. The LRS runtime supplies readRows and an
@@ -106,6 +114,7 @@ async function loadSingleDrawCard(pair,{staticTypes=[],moonTypes=[],currentMoon=
 }
 
 async function loadDrawCards(pairs,{staticTypes=[],moonTypes=[],currentMoon='',signal=null}={}) {
+  assertDrawablePairs(pairs);
   if(pairs.length===1)return loadSingleDrawCard(pairs[0],{staticTypes,moonTypes,currentMoon,signal});
   if(!staticTypes.length&&moonTypes.length===1&&moonTypes[0]==='sit_q')
     return loadVerseOnlyCards(pairs,currentMoon,signal);

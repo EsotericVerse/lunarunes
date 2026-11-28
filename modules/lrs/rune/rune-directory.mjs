@@ -1,6 +1,6 @@
 import {runeAssetUrl} from './asset-url.mjs';
 import {
-  LRS_LUCUS_GROUPS,lrsLucusRuneIdsForGroup,
+  LRS_LUCUS_GROUPS,lrsLucusRouteRuneIdsForGroup,
   lrsLucusRuneNumberForRoute,lrsLucusLocalRuneId
 } from '../lucus/lrs-lucus.mjs';
 
@@ -22,7 +22,8 @@ export function runeImage(card){
   if(!Number.isInteger(id)||id<0||id>66)return '';
   return runeAssetUrl(`assets/lunarunes/cards/${String(id).padStart(2,'0')}.png`);
 }
-export function runeNumbersForGroup(groupId){return [...lrsLucusRuneIdsForGroup(groupId)];}
+// Keep the historical route order distinct from persisted group membership.
+export function runeNumbersForGroup(groupId){return [...lrsLucusRouteRuneIdsForGroup(groupId)];}
 export function runeNumberForRoute(groupId,runeId){
   return lrsLucusRuneNumberForRoute(groupId,runeId);
 }
@@ -33,7 +34,7 @@ export function groupParams(){
   return LRS_LUCUS_GROUPS.map(group=>({group:String(group.id).padStart(2,'0')}));
 }
 export function runeParams(){
-  return LRS_LUCUS_GROUPS.flatMap(group=>group.runeIds.map(rune=>({
+  return LRS_LUCUS_GROUPS.flatMap(group=>lrsLucusRouteRuneIdsForGroup(group.id).map(rune=>({
     group:String(group.id).padStart(2,'0'),
     rune:lrsLucusLocalRuneId(group.id,rune)
   })));

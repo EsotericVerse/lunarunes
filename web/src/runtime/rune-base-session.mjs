@@ -3,6 +3,7 @@
 // draw, direction/moon text, GPU state, image, HTTP response or SQL is stored.
 // HTTP public-read remains no-store. Native LOC never imports this Web file.
 import {LRS_CARD_RUNE66_FIELDS} from '../../../modules/lrs/card/zmodel/lrs-card-model.mjs';
+import {lrsLucusGroupForRune,lrsLucusGroupRowsMatch} from '../../../modules/lrs/lucus/lrs-lucus.mjs';
 
 const BASE_KEY='lrs:public-rune-base:v1:';
 const DEFINITIONS=Object.freeze({
@@ -29,10 +30,10 @@ function validated(table,rows){
       definition.columns.some(column=>!Object.hasOwn(row,column))))return false;
   if(table==='silver.runes'){
     const ids=new Set(rows.map(row=>Number(row.rune_id)));
-    return ids.size===67&&Array.from({length:67},(_,n)=>n).every(id=>ids.has(id));
+    return ids.size===67&&Array.from({length:67},(_,n)=>n).every(id=>ids.has(id))&&
+      rows.every(row=>lrsLucusGroupForRune(row.rune_id)?.groupId===String(row.group_name||''));
   }
-  const names=rows.map(row=>String(row.group_id??'').trim());
-  return names.every(Boolean)&&new Set(names).size===9;
+  return lrsLucusGroupRowsMatch(rows);
 }
 export function readRuneBaseSession(table,store=storage()){
   if(!Object.hasOwn(DEFINITIONS,table))return null;
