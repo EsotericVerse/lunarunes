@@ -4,7 +4,7 @@ import RuneArtStage from '../visual/RuneArtStage';
 import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {realMoonPhase} from '../../../../modules/lrs/card/daily/real-moon-phase.mjs';
 import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
-import {loadDrawCards,randomIndex} from '../rune-draw-core.mjs';
+import {loadDrawCards,randomIndex,lrsLucusDrawCandidates} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
 import {DAILY_GUIDANCE_FIELDS} from '../../../../modules/lrs/card/daily/guidance-fields.mjs';
 import {rememberDailyDraw,readDailyDraw} from '../../runtime/rune-daily-result.mjs';
@@ -32,7 +32,8 @@ export default function RuneDaily3D({presentationSwitcher=null}){
       setError('真實月相無法辨識，無法查詢每日指示。');
       lock.current=false;setBusy(false);return;
     }
-    const runeNumber=randomIndex(66)+1;
+    const candidates=lrsLucusDrawCandidates();
+    const runeNumber=candidates[randomIndex(candidates.length)];
     const index=randomIndex(4);
     try{
       const [card]=await loadDrawCards([{runeNumber,dir:index+1}],{

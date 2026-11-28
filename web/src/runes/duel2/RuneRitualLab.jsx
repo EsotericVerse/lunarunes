@@ -4,7 +4,7 @@ import useRuneDialogFocus from '../visual/useRuneDialogFocus';
 import {createPortal} from 'react-dom';
 import {realMoonPhase} from '../../../../modules/lrs/card/daily/real-moon-phase.mjs';
 import {ScopeLink,runeFeatureHref} from '../../runtime/rune-navigation.jsx';
-import {randomIndex,loadDrawCards,buildFixedReading} from '../rune-draw-core.mjs';
+import {randomIndex,loadDrawCards,buildFixedReading,lrsLucusDrawCandidates} from '../rune-draw-core.mjs';
 import {runeImage} from '../../../../modules/lrs/rune/rune-directory.mjs';
 import {RUNE_ALL_DRAW_MODES} from '../../../../modules/lrs/card/rune-draw-modes.mjs';
 import RuneCardInfo from '../RuneCardInfo';
@@ -114,7 +114,7 @@ export default function RuneRitualLab({presentationSwitcher=null}){
       setError('真實月相無法辨識，無法查詢籤詩。');setBusy(false);locked.current=false;return;
     }
     const used=new Set(cardsRef.current.map(x=>Number(x.card.rune_id)));
-    const remaining=Array.from({length:66},(_,i)=>i+1).filter(id=>!used.has(id));
+    const remaining=lrsLucusDrawCandidates(used);
     const runeNumber=remaining[randomIndex(remaining.length)];
     const directionIndex=randomIndex(4);
     try{

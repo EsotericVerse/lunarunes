@@ -12,7 +12,7 @@
     "build:pages": "npm run build:lrs:assets && npm run build:web && node scripts/assemble-rune-pages.mjs",
     "build:ipa": "npm run build:pages -- --target=ios",
     "deploy": "wrangler deploy",
-    "check:framework": "node --test scripts/check-lrs-framework.test.mjs"
+    "check:framework": "node --test scripts/check-lrs-framework.test.mjs scripts/check-lrs-lucus.test.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.3.0",
@@ -27,6 +27,7 @@
   "exports": {
     ".": "./modules/lrs/index.mjs",
     "./rune": "./modules/lrs/rune/index.mjs",
+    "./lucus": "./modules/lrs/lucus/index.mjs",
     "./card": "./modules/lrs/card/index.mjs",
     "./boardgame": "./modules/lrs/boardgame/index.mjs",
     "./boardgame/ui": "./modules/lrs/boardgame/ui.mjs",

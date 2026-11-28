@@ -6,7 +6,8 @@ import {shouldMountRuneMist,shouldPlayRunePrelude} from '../../../modules/lrs/ru
 import {ScopeLink,runeFeatureHref} from '../runtime/rune-navigation.jsx';
 import {selectRows} from '../runtime/rune-public-port.mjs';
 import {realMoonPhase} from '../../../modules/lrs/card/daily/real-moon-phase.mjs';
-import {randomIndex,loadDrawCards,buildFixedReading} from './rune-draw-core.mjs';
+import {randomIndex,loadDrawCards,buildFixedReading,lrsLucusDrawCandidates} from './rune-draw-core.mjs';
+import {lrsLucusGroupForDatabaseId,lrsLucusGroupRowMatches} from '../../../modules/lrs/lucus/lrs-lucus.mjs';
 import {runeImage,runeName,RUNE_CARD_BACK_IMAGE} from '../../../modules/lrs/rune/rune-directory.mjs';
 import {runeDrawGroup,runeDrawMotion,runeDrawOrbitGlyphs} from '../../../modules/lrs/card/rune-draw-motion.mjs';
 import RuneCardInfo from './RuneCardInfo';
@@ -19,7 +20,6 @@ import '../../../modules/lrs/rune/vfx/effekseer-stage.css';
 const DIRECTIONS=['正位','半正位','半逆位','逆位'];
 const GROUP_COLUMNS='group_id,english_name,desc,quality,style,runeslist';
 const RUNE_COLUMNS=lRunes66ColumnString('rune_id','rune_name','english_name','totem','group_name','moon_phase','card_attr','rune_description','archetype','char_action','positive_keywords','negative_keywords');
-const GROUP_NAMES=['靈魂','連結','生命','自然','礦物','元素','秩序','無序','特殊'];
 const MODES=[['duel','抽牌'],['daily','每日符文'],['list','符文圖鑑']];
 
 function ResultDialog({title,children,onClose}){
@@ -150,10 +150,11 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       .then(({rows})=>{
         if(!active)return;
         const mapped=(rows||[]).map(row=>{
-          const nums=(Array.isArray(row.runeslist)?row.runeslist:[]).map(Number).filter(Number.isInteger);
-          const primary=nums.filter(id=>id>=1&&id<=64);
-          const index=primary.length?Math.floor((Math.min(...primary)-1)/8):8;
-          return {...row,index,id:index+1,name:row.group_id||GROUP_NAMES[index],runeslist:nums};
+          const definition=lrsLucusGroupForDatabaseId(row?.group_id);
+          if(!definition||!lrsLucusGroupRowMatches(row))
+            throw new Error('群組資料與 LRSLucus 關聯不一致：'+String(row?.group_id||''));
+          return {...row,index:definition.id-1,id:definition.id,
+            name:definition.groupId,runeslist:[...definition.runeIds]};
         }).sort((a,b)=>a.index-b.index);
         setGroups(mapped);
       })
@@ -196,7 +197,7 @@ export default function Rune3DPreview({mode='duel',presentationSwitcher=null}){
       setBusy(false);lock.current=false;return;
     }
     const used=new Set(cards.current.map(item=>Number(item.card.rune_id)));
-    const remaining=Array.from({length:66},(_,i)=>i+1).filter(id=>!used.has(id));
+    const remaining=lrsLucusDrawCandidates(used);
     const runeNumber=remaining[randomIndex(remaining.length)];
     setSummonRuneId(runeNumber);
     const directionIndex=randomIndex(4);
