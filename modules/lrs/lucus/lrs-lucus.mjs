@@ -1,5 +1,5 @@
 /**
- * LRSLucus is the canonical relationship graph for the LRS rune catalogue.
+ * LRSLucus is LRS's domain-specific rune relation within the shared Lucus architecture.
  *
  * 9 groups contain 67 symbols. Groups 01-08 each contain eight drawable
  * symbols; group 09 contains the special trio 0/65/66. Symbol 0 is 德 and is
@@ -7,6 +7,8 @@
  *
  * Keep route identity, group membership and symbol membership derived from
  * this graph. Do not duplicate the mapping in UI routes or card components.
+ * This is not the complete particle-level Lucus core or the LunArcus protocol;
+ * future cross-system links use the shared Lucus architecture + LunArcus protocol.
  */
 const GROUPS=[
   {id:1,key:'soul',image:'pics/01.soul.jpg',runeIds:[1,2,3,4,5,6,7,8]},

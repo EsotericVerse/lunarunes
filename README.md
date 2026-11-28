@@ -16,7 +16,9 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 
 請以目前有效的 Cloudflare Builds 設定為準；Build 成功不代表 HTTP、API 或實際 WebGL 功能已經通過驗收。Cloudflare DNS、Access、Token、Secret 由管理者維護。
 
-## LRSLucus 符文關係圖
+## Lucus 架構與 LRSLucus 符文關係圖
+
+**Lucus = Lucas + Locus = Lucus**，是作者定義的特殊拉丁文字，意為「光之時空定錨點」，意象為 Universe Tree 上的神聖樹林。Lucus 是跨系統共用的基礎架構；LRS 以 LRSLucus 表達自身的符文關係，不代表 LRS 已實作完整的粒子化 Lucus 核心或 Universe Tree。
 
 **LRSLucus** 是 LRS 九大群組與 67 個符文字的唯一關聯圖，也是抽牌、圖鑑路由及後續分組加權的基礎：
 
@@ -24,7 +26,7 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 - 第 9 群包含 0、65、66 三枚特殊符文。
 - 共 67 個符文字；0「德」屬於關聯圖，但不參與抽牌；1–66 可抽。
 - 群組歸屬、圖鑑路由與本地符文編號統一由 `modules/lrs/lucus/lrs-lucus.mjs` 提供，不在 UI 或抽牌頁重複計算。
-- LRSLucus 是 LRS 自有資料關係，不與 LOC 的 LOCLucus 或 Galaxy 混用。
+- LRSLucus 是 LRS 專屬的符文關係圖，與 LOC 的 LOCLucus 資料面向各自獨立，但共用 Lucus 架構。未來跨系統連接與轉換使用 Lucus 架構及 LunArcus 協定；粒子化關聯格式與 Universe Tree 的完整連接仍屬未來設計。
 
 ## LRS Framework
 
