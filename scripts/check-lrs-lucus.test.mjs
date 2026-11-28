@@ -86,6 +86,11 @@ test('德 is a member but not drawable; all other 66 symbols are drawable',()=>{
 });
 
 test('all 67 group route identities round-trip through LRSLucus',()=>{
+  assert.equal(lrsLucusRuneNumberForRoute(1,0),null);
+  assert.equal(lrsLucusRuneNumberForRoute(1,1),1);
+  assert.equal(lrsLucusRuneNumberForRoute(1,8),8);
+  assert.equal(lrsLucusLocalRuneId(1,1),'01');
+  assert.equal(lrsLucusLocalRuneId(1,8),'08');
   for(const group of LRS_LUCUS_GROUPS){
     for(const runeId of group.routeRuneIds){
       const local=lrsLucusLocalRuneId(group.id,runeId);

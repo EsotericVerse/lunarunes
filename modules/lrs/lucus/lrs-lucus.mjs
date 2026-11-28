@@ -88,13 +88,16 @@ export function lrsLucusRouteRuneIdsForGroup(groupId){
   return LRS_LUCUS_GROUPS.find(group=>group.id===id)?.routeRuneIds||[];
 }
 export function lrsLucusRuneNumberForRoute(groupId,localRuneId){
-  const routeIds=lrsLucusRouteRuneIdsForGroup(groupId),local=Number(localRuneId);
-  if(!routeIds.length||!Number.isInteger(local)||local<0||local>=routeIds.length)return null;
-  return routeIds[local];
+  const id=Number(groupId),routeIds=lrsLucusRouteRuneIdsForGroup(id),local=Number(localRuneId);
+  if(!routeIds.length||!Number.isInteger(local))return null;
+  const index=id===9?local:local-1;
+  if(index<0||index>=routeIds.length)return null;
+  return routeIds[index];
 }
 export function lrsLucusLocalRuneId(groupId,runeId){
-  const index=lrsLucusRouteRuneIdsForGroup(groupId).indexOf(Number(runeId));
-  return index<0?null:String(index).padStart(2,'0');
+  const id=Number(groupId),index=lrsLucusRouteRuneIdsForGroup(id).indexOf(Number(runeId));
+  if(index<0)return null;
+  return String(id===9?index:index+1).padStart(2,'0');
 }
 export function lrsLucusIsDrawableRune(runeId){
   const id=Number(runeId);
