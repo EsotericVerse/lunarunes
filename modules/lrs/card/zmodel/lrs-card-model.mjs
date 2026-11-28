@@ -1,5 +1,5 @@
 // Portable, dependency-free metadata for the copied lrs:card ZModel.
-// This is the logical Rune66 Class within the existing KeywordAnchor tree.
+// Canonical group membership belongs to LRSLucus; this file is only the card read-field projection.
 export const LRS_CARD_CLASS='runes66';
 export const LRS_CARD_KEYWORD_TYPES=Object.freeze(['item','group','class']);
 export const LRS_CARD_RUNE66_FIELDS=Object.freeze({

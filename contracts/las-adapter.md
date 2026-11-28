@@ -17,6 +17,15 @@
 
 目前由 `index.mjs` 注入 `createLrsCloudflareDataPort(env)`；handler 不再直接建立 SQL 連線。LAS 接收端需交付具體固定操作、身分驗證及資料庫配置後，替換 composition root，驗證原版符文、每日抽牌、閱讀頁、iOS 及取消請求行為，再移除 LRS 的 pg/Kysely、lrs-postgres.mjs、過渡 SQL host、Hyperdrive 與不再使用的 Secret。沒有自動回退或跨 Repo 部署。尚未建立遠端 API 路徑、憑證或資料表。
 
+## LRSLucus 固定關聯
+
+LRSLucus 是 LRS 唯一的符文群組／符文字關聯圖，定義位於 `modules/lrs/lucus/lrs-lucus.mjs`：
+
+- 9 個群組、67 個符文字；第 1–8 群各 8 枚，第 9 群為 `[0,65,66]`。
+- `0 = 德` 是關聯成員但不抽；`1–66` 是可抽符文。
+- `silver.runes_group` 與 `silver.runes` 是現有讀取資料；群組成員關係由 LRS 的 LRSLucus 定義。LAS 只提供受限、已授權的資料讀取，不重排、不推導、不改寫群組成員，也不計算抽牌權重。
+- 五張牌的分組集中加權與八角連動屬於 LRS Rune Core，不交由 LAS Adapter 執行。
+
 ## Universe 命名
 
 LRS 文字密度推演資料表以 universe 為名稱基礎，預留建議名稱 `lrs_universe`。不使用 galaxy 作推演表名稱，不與 LOC Galaxy 混用。原始資料只作來源引用，推演結果、時間軸及模擬密度與原始紀錄分離。現階段無實體表、DDL 或 migration；欄位與實際建表待推演規格及 LAS 連線交接確認。

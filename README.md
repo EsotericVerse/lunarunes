@@ -16,6 +16,16 @@ LRS 獨立符文、美術與遊戲專案。LRS 自有輕量框架位於 **`modul
 
 請以目前有效的 Cloudflare Builds 設定為準；Build 成功不代表 HTTP、API 或實際 WebGL 功能已經通過驗收。Cloudflare DNS、Access、Token、Secret 由管理者維護。
 
+## LRSLucus 符文關係圖
+
+**LRSLucus** 是 LRS 九大群組與 67 個符文字的唯一關聯圖，也是抽牌、圖鑑路由及後續分組加權的基礎：
+
+- 第 1–8 群各包含 8 枚符文。
+- 第 9 群包含 0、65、66 三枚特殊符文。
+- 共 67 個符文字；0「德」屬於關聯圖，但不參與抽牌；1–66 可抽。
+- 群組歸屬、圖鑑路由與本地符文編號統一由 `modules/lrs/lucus/lrs-lucus.mjs` 提供，不在 UI 或抽牌頁重複計算。
+- LRSLucus 是 LRS 自有資料關係，不與 LOC 的 LOCLucus 或 Galaxy 混用。
+
 ## LRS Framework
 
 - **核心**：`modules/lrs/framework/index.mjs`，持有 LRS 模組註冊、唯一功能路由表、路由狀態與離頁釋放通知；純 ESM，無 DOM／React／Vite 相依。
